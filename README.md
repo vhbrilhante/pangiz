@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# pangiz
 
-## Getting Started
+App de finanças pessoais que responde uma pergunta: **quanto posso investir, e em que mês?**
 
-First, run the development server:
+PWA em Next.js + TypeScript + Tailwind. Os dados ficam no `localStorage` do aparelho por enquanto.
+
+## Rodar
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm test         # testes do motor de projeção
+npm run build && npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+No celular, abra o endereço (por exemplo via Tailscale) e use "Adicionar à tela de início".
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Fluxo (segue o Figma)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. `/boas-vindas`: 3 telas de onboarding (cartão prateado, visão total do saldo, projeções)
+2. `/cadastro` e `/login`
+3. `/verificacao`: código de 6 dígitos
+4. `/conectar`: escolher bancos, sincronizando, sucesso
+5. `/inicio`: saldo, saldo previsto, quanto investir, fatura, próximas contas, projeção, últimas transações
 
-## Learn More
+Além do Figma:
 
-To learn more about Next.js, take a look at the following resources:
+- `/projecao`: o diferencial. Saldo mês a mês (6, 12 ou 24 meses), quanto dá para investir em cada mês sem passar da reserva, detalhe de cada mês e aviso de dados desatualizados.
+- `/lancar` (botão +): gasto, receita, compra parcelada ou conta fixa, mostrando o impacto na projeção antes de salvar.
+- `/cartoes`: fatura em aberto, limite, próximas faturas e parcelamentos.
+- `/perfil`: contas (com "corrigir saldo"), contas fixas e renda, sair, apagar dados.
+- `/transacoes`: lista completa.
+- `/saldo-inicial`: caminho manual, só saldo e renda, para quem não quer conectar banco.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## O que ainda é simulado
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Login e verificação**: não há servidor. Qualquer código de 6 dígitos funciona.
+- **Conectar bancos**: carrega dados de exemplo (`src/lib/demo.ts`). A integração real (Open Finance ou importar extrato CSV/OFX) é o próximo passo grande.
+- **Apple, Google e Face ID**: só os botões.
 
-## Deploy on Vercel
+## Como a projeção funciona
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Tudo em `src/lib/projection.ts`, com testes em `projection.test.ts`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Parte do saldo das contas hoje.
+- Contas fixas e parcelas em boleto caem no dia delas.
+- Compras no cartão de um mês viram a fatura do mês seguinte; parcelas no cartão entram na fatura do mês da parcela.
+- "Pode investir" no mês M é o quanto dá para tirar no fim de M sem que o saldo fique abaixo da reserva em nenhum dia depois, até o fim do horizonte. O cálculo é guloso: sugere investir o mais cedo possível.
+
+## Estrutura
+
+```
+src/
+  app/                 telas (App Router)
+    (app)/             abas com a navegação de baixo
+  components/          ui.tsx (botões, campos, vidro), visuals.tsx (cartão 3D, gráficos, nav)
+  lib/
+    types.ts           modelo de dados
+    projection.ts      motor da projeção
+    store.tsx          estado + localStorage
+    demo.ts            bancos e dados de exemplo
+    dates.ts, format.ts, categories.ts
+```
