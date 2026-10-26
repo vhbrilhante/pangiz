@@ -20,7 +20,7 @@ function BillCard({ card }: { card: CardT }) {
     <div className="animate-rise delay-1 mt-5 touch-pan-y [perspective:1100px]">
       <div
         ref={tilt}
-        className="champagne flex aspect-[1.586] flex-col justify-between rounded-card p-[22px] [transform:rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))]"
+        className="glow flex aspect-[1.586] flex-col justify-between rounded-card p-[22px] [transform:rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))]"
       >
         <div className="flex items-center justify-between">
           <Wordmark className="text-value opacity-75" />
@@ -84,7 +84,7 @@ export default function Cards() {
   const month = monthOf(todayISO());
 
   return (
-    <Screen className="pb-36">
+    <Screen className="!pb-36">
       <div className="flex items-center justify-between">
         <Rise text="cartões" className="text-heading" />
         <button aria-label="Adicionar cartão" onClick={() => setAdding(!adding)} className="glass grid size-9 place-items-center rounded-full text-ink-soft">

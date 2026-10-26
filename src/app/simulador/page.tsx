@@ -149,7 +149,7 @@ export default function Simulator() {
     >
       <aside className="flex w-[200px] shrink-0 flex-col gap-5 text-ink">
         <div>
-          <p className="font-serif text-title">pangiz</p>
+          <p className="font-display text-title">pangiz</p>
           <p className="mt-1 text-caption text-muted">simulador de iPhone 15 · 393 × 852</p>
         </div>
 

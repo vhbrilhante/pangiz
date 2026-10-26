@@ -59,10 +59,10 @@ export default function Connect() {
             <span className="animate-spin-slow absolute inset-0 rounded-full border-[3px] border-line border-t-graphite" />
             <Landmark size={32} />
           </div>
-          <h1 className="mt-8 font-serif text-heading leading-none">Conectando suas contas</h1>
+          <h1 className="mt-8 font-display text-heading leading-none">Conectando suas contas</h1>
           <p className="mt-3 max-w-[300px] text-body text-ink-soft">Estamos buscando saldos, cartões e parcelas. Isso leva só alguns segundos.</p>
 
-          <div className="pearl mt-9 w-full rounded-card p-5 text-left">
+          <div className="glow mt-9 w-full rounded-card p-5 text-left">
             {selected.map((id, i) => (
               <div key={id}>
                 {i > 0 && <div className="my-3 h-px bg-graphite/10" />}
@@ -107,12 +107,12 @@ export default function Connect() {
           <div className="grid size-[92px] place-items-center rounded-full bg-ink text-page shadow-float">
             <Check size={34} />
           </div>
-          <h1 className="mt-8 font-serif text-heading">Tudo pronto! Suas contas estão conectadas</h1>
+          <h1 className="mt-8 font-display text-heading">Tudo pronto! Suas contas estão conectadas</h1>
           <p className="mt-3 max-w-[300px] text-body text-ink-soft">Já calculamos a sua primeira projeção dos próximos 12 meses.</p>
 
-          <div className="pearl relative mt-8 w-full overflow-hidden rounded-card p-5 text-left">
+          <div className="glow relative mt-8 w-full overflow-hidden rounded-card p-5 text-left">
             <p className="text-body-sm text-muted">Saldo total conectado</p>
-            <p className="mt-1 font-serif text-display leading-none">
+            <p className="mt-1 font-display text-display leading-none">
               <Money value={total} />
             </p>
             <div className="my-4 h-px bg-graphite/10" />
@@ -148,7 +148,7 @@ export default function Connect() {
     <Screen>
       <TopBar back="/verificacao" />
       <div className="animate-rise mt-10 flex flex-1 flex-col">
-        <h1 className="font-serif text-heading">Conecte suas contas e cartões</h1>
+        <h1 className="font-display text-heading">Conecte suas contas e cartões</h1>
         <p className="mt-3 text-body text-ink-soft">Escolha seus bancos. Quanto mais contas, mais certeira fica a projeção.</p>
 
         <label className="glass mt-7 flex h-[42px] items-center gap-2.5 rounded-full px-4">

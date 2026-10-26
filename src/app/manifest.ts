@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Saiba quanto você pode investir, e em que mês.",
     start_url: "/",
     display: "standalone",
-    background_color: "#121211",
-    theme_color: "#121211",
+    background_color: "#09090c",
+    theme_color: "#09090c",
     lang: "pt-BR",
     icons: [
       { src: "/icon", sizes: "512x512", type: "image/png" },

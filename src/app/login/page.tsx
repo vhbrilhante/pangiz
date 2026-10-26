@@ -46,7 +46,7 @@ export default function Login() {
     <Screen>
       <TopBar back="/boas-vindas" />
       <div className="animate-rise mt-12 flex flex-1 flex-col">
-        <h1 className="font-serif text-heading leading-none">Que bom te ver de novo</h1>
+        <h1 className="font-display text-heading leading-none">Que bom te ver de novo</h1>
         <p className="mt-3 text-body text-ink-soft">Entre para ver como está o seu futuro.</p>
 
         <form

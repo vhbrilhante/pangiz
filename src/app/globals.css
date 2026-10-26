@@ -1,28 +1,33 @@
 @import "tailwindcss";
 
-/* Visual escuro do protótipo: fundo esfumaçado, vidro discreto, cartão champanhe e títulos serifados em minúsculas. */
+/*
+ * Direção A · horizonte. Um preto quase puro e uma luz que nasce no horizonte (âmbar → coral → magenta → violeta).
+ * A luz é o único acento: mostra quanto dá pra investir. Geist em tudo, números pesados e apertados.
+ */
 :root {
   color-scheme: dark;
-  --page: #121211;
-  --ink: #efece3;
-  --ink-soft: #bdb9ae;
-  --muted: #85827a;
-  --line: rgb(239 236 227 / 0.09);
-  --glass: rgb(255 255 255 / 0.055);
-  --glass-strong: rgb(28 28 26 / 0.8);
-  --glass-border: rgb(255 255 255 / 0.11);
-  --positive: #a5d6aa;
-  --negative: #e7a08c;
-  --warning: #e3c38c;
-  /* "graphite" é a cor de destaque sólida (botões e seleção): no escuro, o creme claro. */
-  --graphite: #efece3;
-  --champagne-1: #e4e1cb;
-  --champagne-2: #bdbb9d;
-  --champagne-ink: #1d1d17;
-  /* Lavagem de champanhe: fundo de etiquetas e destaques fracos (o "Linen Mist" da Wise). */
-  --champagne-wash: rgb(228 225 203 / 0.12);
+  --page: #09090c;
+  --ink: #f4f1ea;
+  --ink-soft: #d8d2c6;
+  --muted: #a9a49a;
+  --line: rgb(244 241 234 / 0.1);
+  --glass: rgb(255 255 255 / 0.07);
+  --glass-strong: rgb(12 10 16 / 0.72);
+  --glass-border: rgb(255 255 255 / 0.1);
+  --positive: #9fdcb0;
+  --negative: #ff8a8a;
+  --warning: #ffc98a;
+  /* "graphite" é a cor sólida de ação e seleção: o creme claro. */
+  --graphite: #f4f1ea;
+  /* A luz do horizonte, do centro para a borda. */
+  --glow-1: #ffe2b8;
+  --glow-2: #ff9a5c;
+  --glow-3: #d9466a;
+  --glow-4: #5a2a7a;
+  --glow-ink: #1a0f14;
+  --glow-wash: rgb(255 154 92 / 0.14);
   /* Superfície elevada opaca: folhas e menus. */
-  --raised: #191917;
+  --raised: #121117;
   --spring: cubic-bezier(0.2, 0.9, 0.25, 1.15);
   --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
   /* Áreas seguras do aparelho. Em variável para o /simulador poder fixar as de um iPhone. */
@@ -32,48 +37,50 @@
 
 /*
  * Escala do design system (ver docs/design-system.md).
- * Tipo: a serifa é a voz (display, títulos, valores), com tracking mais apertado quanto maior.
- * Geist faz o trabalho quieto (corpo, rótulos, botões).
+ * Números grandes em Geist 600 com tracking bem apertado; quanto maior, mais apertado.
  */
 @theme {
-  --text-display-xl: 54px;
-  --text-display-xl--line-height: 1;
-  --text-display-xl--letter-spacing: -0.03em;
-  --text-display: 44px;
+  --text-hero: 72px;
+  --text-hero--line-height: 0.95;
+  --text-hero--letter-spacing: -0.05em;
+  --text-display-xl: 64px;
+  --text-display-xl--line-height: 0.95;
+  --text-display-xl--letter-spacing: -0.05em;
+  --text-display: 56px;
   --text-display--line-height: 1;
-  --text-display--letter-spacing: -0.025em;
+  --text-display--letter-spacing: -0.045em;
   --text-display-sm: 40px;
   --text-display-sm--line-height: 1;
-  --text-display-sm--letter-spacing: -0.02em;
-  --text-heading: 32px;
-  --text-heading--line-height: 1.06;
-  --text-heading--letter-spacing: -0.015em;
-  --text-title: 26px;
-  --text-title--line-height: 1;
-  --text-title--letter-spacing: -0.01em;
+  --text-display-sm--letter-spacing: -0.04em;
+  --text-heading: 30px;
+  --text-heading--line-height: 1.08;
+  --text-heading--letter-spacing: -0.03em;
   --text-value: 22px;
   --text-value--line-height: 1;
-  --text-value--letter-spacing: -0.01em;
-  --text-body-lg: 15px;
+  --text-value--letter-spacing: -0.03em;
+  --text-title: 17px;
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.01em;
+  --text-body-lg: 16px;
   --text-body-lg--line-height: 1.4;
-  --text-body: 14px;
-  --text-body--line-height: 1.45;
-  --text-body-sm: 13px;
+  --text-body: 15px;
+  --text-body--line-height: 1.4;
+  --text-body-sm: 14px;
   --text-body-sm--line-height: 1.45;
-  --text-label: 12px;
+  --text-label: 13px;
   --text-label--line-height: 1.35;
-  --text-caption: 11px;
+  --text-caption: 12px;
   --text-caption--line-height: 1.4;
-  --text-micro: 10px;
+  --text-micro: 11px;
   --text-micro--line-height: 1.2;
 
-  /* Raios: tudo que se toca é pílula (rounded-full); campos 16, cartões 24, cartões grandes 28, folhas 34. */
+  /* Raios: tudo que se toca é pílula (rounded-full); campos 16, cartões 22, cartões grandes 28, folhas 34. */
   --radius-field: 16px;
-  --radius-card: 24px;
+  --radius-card: 22px;
   --radius-card-lg: 28px;
   --radius-sheet: 34px;
 
-  /* Sombras: plano por padrão. Só o que flutua ganha sombra; o resto usa a borda fina do vidro. */
+  /* Sombras: plano por padrão. Só o que flutua ganha sombra. */
   --shadow-float: 0 14px 30px -10px rgb(0 0 0 / 0.9);
   --shadow-sheen: inset 0 1px 0 rgb(255 255 255 / 0.08);
 }
@@ -91,12 +98,17 @@
   --color-negative: var(--negative);
   --color-warning: var(--warning);
   --color-graphite: var(--graphite);
-  --color-champagne: var(--champagne-2);
-  --color-champagne-light: var(--champagne-1);
-  --color-champagne-wash: var(--champagne-wash);
+  --color-glow: var(--glow-2);
+  --color-glow-light: var(--glow-1);
+  --color-glow-wash: var(--glow-wash);
   --color-raised: var(--raised);
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
-  --font-serif: var(--font-serif-display), Georgia, "Times New Roman", serif;
+}
+
+/* Títulos e números: Geist pesado. */
+@utility font-display {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-weight: 600;
 }
 
 html {
@@ -104,7 +116,7 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Sem fundo no body: o fundo esfumaçado (z negativo) ficaria escondido atrás dele. */
+/* Sem fundo no body: a luz do horizonte (z negativo) ficaria escondida atrás dele. */
 body {
   color: var(--ink);
   font-family: var(--font-sans);
@@ -118,7 +130,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid rgb(239 236 227 / 0.55);
+  outline: 2px solid rgb(244 241 234 / 0.6);
   outline-offset: 2px;
 }
 
@@ -126,14 +138,13 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-/* Valores em serifa: algarismos alinhados para o odômetro não pular. Tamanho e tracking vêm de text-display*. */
+/* Valores: algarismos alinhados para o odômetro não pular. Tamanho e tracking vêm de text-hero/display*. */
 .big {
-  font-family: var(--font-serif-display), Georgia, serif;
-  font-weight: 400;
-  font-variant-numeric: lining-nums tabular-nums;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
-/* Vidro discreto sobre o fundo escuro. */
+/* Vidro escuro sobre a luz. */
 .glass {
   background: var(--glass);
   border: 1px solid var(--glass-border);
@@ -148,21 +159,38 @@ button {
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* Cartão champanhe. Dentro dele as cores de texto viram escuras. */
-.champagne,
-.pearl {
-  --ink: var(--champagne-ink);
-  --ink-soft: rgb(29 29 23 / 0.75);
-  --muted: rgb(29 29 23 / 0.6);
-  --line: rgb(29 29 23 / 0.12);
-  --graphite: var(--champagne-ink);
-  color: var(--champagne-ink);
+/* Superfície acesa: a luz do horizonte num cartão. Dentro dela o texto vira escuro. */
+.glow {
+  --ink: var(--glow-ink);
+  --ink-soft: rgb(26 15 20 / 0.78);
+  --muted: rgb(26 15 20 / 0.66);
+  --line: rgb(26 15 20 / 0.14);
+  --graphite: var(--glow-ink);
+  color: var(--glow-ink);
   background:
-    radial-gradient(70% 120% at var(--sx, 90%) -20%, rgb(255 255 255 / 0.65), transparent 60%),
-    radial-gradient(60% 140% at 0% 120%, rgb(140 140 110 / 0.35), transparent 60%),
-    linear-gradient(130deg, var(--champagne-1) 0%, var(--champagne-2) 48%, #dcd9c0 70%, #a9a78a 100%);
-  border: 1px solid rgb(255 255 255 / 0.45);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 24px 40px -24px rgb(0 0 0 / 0.8);
+    radial-gradient(80% 120% at var(--sx, 85%) -10%, rgb(255 255 255 / 0.55), transparent 55%),
+    linear-gradient(135deg, var(--glow-1) 0%, var(--glow-2) 42%, var(--glow-3) 100%);
+  box-shadow: 0 30px 60px -30px rgb(217 70 106 / 0.7);
+}
+
+/* A luz do horizonte: elipse desfocada que respira devagar. `--rise` (0 a 1) sobe a luz. */
+@keyframes horizon-breathe {
+  0%,
+  100% {
+    transform: translate(-50%, 0) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -14px) scale(1.04);
+  }
+}
+.horizon-light {
+  position: absolute;
+  left: 50%;
+  border-radius: 50%;
+  filter: blur(28px);
+  background: radial-gradient(closest-side, var(--glow-1) 0%, var(--glow-2) 22%, var(--glow-3) 44%, var(--glow-4) 66%, rgb(20 16 40 / 0) 100%);
+  animation: horizon-breathe 14s ease-in-out infinite;
+  transition: bottom 1.2s var(--ease), opacity 1.2s var(--ease);
 }
 
 /* Valores escondidos: desfoque em vez de bolinhas. */
@@ -316,7 +344,7 @@ button {
   }
 }
 
-/* Slider da reserva. */
+/* Slider da reserva: o trilho preenchido é a luz. */
 input[type="range"].reserve {
   -webkit-appearance: none;
   appearance: none;
@@ -328,18 +356,18 @@ input[type="range"].reserve {
 input[type="range"].reserve::-webkit-slider-runnable-track {
   height: 6px;
   border-radius: 6px;
-  background: linear-gradient(90deg, var(--champagne-2) var(--p, 30%), rgb(255 255 255 / 0.1) var(--p, 30%));
+  background: linear-gradient(90deg, var(--glow-3) 0%, var(--glow-2) var(--p, 30%), rgb(255 255 255 / 0.12) var(--p, 30%));
 }
 input[type="range"].reserve::-moz-range-track {
   height: 6px;
   border-radius: 6px;
-  background: linear-gradient(90deg, var(--champagne-2) var(--p, 30%), rgb(255 255 255 / 0.1) var(--p, 30%));
+  background: linear-gradient(90deg, var(--glow-3) 0%, var(--glow-2) var(--p, 30%), rgb(255 255 255 / 0.12) var(--p, 30%));
 }
 input[type="range"].reserve::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 26px;
-  height: 26px;
-  margin-top: -10px;
+  width: 28px;
+  height: 28px;
+  margin-top: -11px;
   border-radius: 50%;
   background: var(--ink);
   box-shadow: 0 4px 14px rgb(0 0 0 / 0.5);
@@ -349,8 +377,8 @@ input[type="range"].reserve:active::-webkit-slider-thumb {
   transform: scale(1.18);
 }
 input[type="range"].reserve::-moz-range-thumb {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border: 0;
   border-radius: 50%;
   background: var(--ink);

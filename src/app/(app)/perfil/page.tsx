@@ -66,11 +66,11 @@ export default function Profile() {
   const fixed = data.recurring;
 
   return (
-    <Screen className="pb-32">
-      <h1 className="font-serif text-heading leading-none">perfil</h1>
+    <Screen className="!pb-32">
+      <h1 className="font-display text-heading leading-none">perfil</h1>
 
       <Card className="mt-5 flex items-center gap-3">
-        <span className="pearl grid size-12 place-items-center rounded-full font-serif text-value">
+        <span className="glow grid size-12 place-items-center rounded-full font-display text-value">
           {data.user?.name.slice(0, 1).toUpperCase()}
         </span>
         <div>

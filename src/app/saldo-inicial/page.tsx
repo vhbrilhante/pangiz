@@ -26,7 +26,7 @@ export default function ManualSetup() {
           router.push("/inicio");
         }}
       >
-        <h1 className="font-serif text-heading">Só dois números para começar</h1>
+        <h1 className="font-display text-heading">Só dois números para começar</h1>
         <p className="mt-3 text-body text-ink-soft">Com o seu saldo e a sua renda já dá para ver a primeira projeção. Parcelas e contas você adiciona depois.</p>
 
         <div className="mt-9 space-y-5">

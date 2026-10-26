@@ -48,7 +48,7 @@ export function Card3D({ className, children }: { className?: string; children?:
   return (
     <div ref={tilt} className={cx("relative h-[300px] touch-pan-y [perspective:1100px]", className)}>
       <div
-        className="champagne absolute left-1/2 top-5 h-[240px] w-[380px] -translate-x-[46%] rounded-card-lg"
+        className="glow absolute left-1/2 top-5 h-[240px] w-[380px] -translate-x-[46%] rounded-card-lg"
         style={{
           transform: "rotateX(calc(28deg + var(--rx, 0deg))) rotateY(calc(-12deg + var(--ry, 0deg))) rotateZ(-12deg)",
           transition: "inherit",
@@ -162,24 +162,29 @@ export function ProjectionScrub({
           if (e.key === "ArrowRight") onSelect(Math.min(months.length - 1, selected + 1));
         }}
       >
-        <span className="absolute inset-x-0 border-t border-dashed border-ink/22" style={{ bottom: ((reserve - min) / span) * H }} />
+        <span className="absolute inset-x-0 border-t border-dashed border-ink/25" style={{ bottom: ((reserve - min) / span) * H }} />
         {months.map((m, i) => {
           const bh = Math.max(2, ((Math.max(m.end, 0) - min) / span) * H);
           const ih = (m.investable / span) * H;
           return (
             <span key={m.month}>
               <span
-                className="absolute bottom-0 rounded-[6px] transition-[height,background-color] duration-700 ease-[var(--ease)]"
+                className="absolute bottom-0 rounded-[8px] transition-[height,background] duration-700 ease-[var(--ease)]"
                 style={{
                   left: `${i * w + gap / 2}%`,
                   width: `${w - gap}%`,
                   height: bh,
-                  background: m.end < 0 ? "var(--negative)" : i === selected ? "var(--ink)" : "rgb(239 236 227 / .16)",
+                  background:
+                    m.end < 0
+                      ? "var(--negative)"
+                      : i === selected
+                        ? "linear-gradient(180deg, var(--glow-2), var(--glow-3))"
+                        : "linear-gradient(180deg, rgb(255 154 92 / .4), rgb(217 70 106 / .18))",
                 }}
               />
               {m.investable > 0 && m.end >= 0 && (
                 <span
-                  className="absolute rounded-[6px] bg-champagne transition-[height,bottom] duration-700 ease-[var(--ease)]"
+                  className="absolute rounded-[8px] bg-gradient-to-b from-glow-light to-glow transition-[height,bottom] duration-700 ease-[var(--ease)]"
                   style={{ left: `${i * w + gap / 2}%`, width: `${w - gap}%`, bottom: bh + 2, height: Math.max(3, ih) }}
                 />
               )}
@@ -228,38 +233,35 @@ const TABS = [
   { href: "/perfil", label: "perfil", icon: UserRound },
 ];
 
-/** Navegação: pílula de vidro com 4 abas, um destaque que desliza e o botão + creme. */
+/** Navegação: pílula escura só com ícones, um destaque que desliza e o botão + creme. */
 export function BottomNav() {
   const path = usePathname();
   const active = Math.max(0, TABS.findIndex((t) => path.startsWith(t.href)));
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-4 pb-[max(var(--safe-bottom),18px)]">
+    <nav aria-label="Navegação" className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-4 pb-[max(var(--safe-bottom),20px)]">
       <div className="flex items-center gap-2.5">
-        <div className="glass-strong relative flex h-[62px] flex-1 rounded-full p-[5px]">
+        <div className="glass-strong relative flex h-16 flex-1 rounded-full p-2">
           <span
             aria-hidden
-            className="absolute inset-y-[5px] left-[5px] w-[calc((100%-10px)/4)] rounded-full bg-white/11 transition-transform duration-[550ms] ease-[var(--spring)]"
+            className="absolute inset-y-2 left-2 w-[calc((100%-16px)/4)] rounded-full bg-white/12 transition-transform duration-[550ms] ease-[var(--spring)]"
             style={{ transform: `translateX(${active * 100}%)` }}
           />
           {TABS.map(({ href, label, icon: Icon }, i) => (
             <Link
               key={href}
               href={href}
+              aria-label={label}
               aria-current={i === active ? "page" : undefined}
-              className={cx(
-                "relative flex flex-1 flex-col items-center justify-center gap-[3px] rounded-full text-micro transition-colors",
-                i === active ? "text-ink" : "text-muted",
-              )}
+              className={cx("relative grid flex-1 place-items-center rounded-full transition-colors", i === active ? "text-ink" : "text-muted")}
             >
-              <Icon size={18} strokeWidth={1.7} />
-              {label}
+              <Icon size={20} strokeWidth={1.7} />
             </Link>
           ))}
         </div>
         <Link
           href="/lancar"
           aria-label="Novo lançamento"
-          className="group grid size-[62px] shrink-0 place-items-center rounded-full bg-ink text-page shadow-float transition active:scale-95"
+          className="group grid size-16 shrink-0 place-items-center rounded-full bg-ink text-page shadow-float transition active:scale-95"
         >
           <Plus size={22} className="transition-transform duration-[450ms] ease-[var(--spring)] group-active:rotate-90" />
         </Link>

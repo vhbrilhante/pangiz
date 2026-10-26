@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Newsreader } from "next/font/google";
+import { Geist } from "next/font/google";
 import { StoreProvider } from "@/lib/store";
 import "./globals.css";
 
@@ -8,11 +8,6 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const serif = Newsreader({
-  variable: "--font-serif-display",
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-});
 
 export const metadata: Metadata = {
   title: "pangiz",
@@ -21,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#121211",
+  themeColor: "#09090c",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -30,7 +25,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${geistSans.variable} ${serif.variable} antialiased`}>
+      <body className={`${geistSans.variable} antialiased`}>
         <StoreProvider>{children}</StoreProvider>
       </body>
     </html>

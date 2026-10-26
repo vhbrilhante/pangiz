@@ -22,9 +22,9 @@ export default function Transactions() {
   }, [data.transactions, filter]);
 
   return (
-    <Screen className="pb-32">
+    <Screen className="!pb-32">
       <TopBar back="/inicio" />
-      <h1 className="mt-6 font-serif text-heading leading-none">transações</h1>
+      <h1 className="mt-6 font-display text-heading leading-none">transações</h1>
       <div className="mt-5">
         <Segmented
           options={[

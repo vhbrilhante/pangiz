@@ -11,50 +11,60 @@ export function cx(...c: (string | false | null | undefined)[]) {
   return c.filter(Boolean).join(" ");
 }
 
-/** Fundo esfumaçado: três manchas difusas sobre o preto quente. */
-export function Backdrop() {
+export type Light = "bottom" | "middle" | "top" | "none";
+
+/**
+ * Fundo: preto quase puro, uma luz que nasce no horizonte e grão de filme por cima.
+ * `light` diz onde a luz fica; `rise` (0 a 1) a faz subir, para a Início mostrar com ela quanto dá pra investir.
+ */
+export function Backdrop({ light = "middle", rise = 0.5 }: { light?: Light; rise?: number }) {
+  const r = Math.max(0, Math.min(1, rise));
+  const place: Record<Exclude<Light, "none">, React.CSSProperties> = {
+    bottom: { bottom: -330 + r * 120, width: 780, height: 640 },
+    middle: { top: 230, width: 720, height: 430, opacity: 0.7 },
+    top: { top: -240, width: 640, height: 460, opacity: 0.75 },
+  };
   return (
-    <div
-      aria-hidden
-      className="pointer-events-none fixed inset-0 -z-10"
-      style={{
-        background: [
-          "radial-gradient(55% 40% at 78% 22%, rgb(120 118 108 / 0.32), transparent 70%)",
-          "radial-gradient(60% 35% at 10% 55%, rgb(70 68 62 / 0.45), transparent 70%)",
-          "radial-gradient(50% 45% at 70% 88%, rgb(95 92 84 / 0.30), transparent 70%)",
-          "linear-gradient(180deg, #121210 0%, #0b0b0a 100%)",
-        ].join(","),
-      }}
-    />
+    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-page">
+      <div className="absolute left-1/2 top-0 h-full w-full max-w-[430px] -translate-x-1/2">
+        {light !== "none" && <div className="horizon-light" style={place[light]} />}
+        <svg className="absolute inset-0 h-full w-full opacity-[0.16] mix-blend-overlay">
+          <filter id="grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#grain)" />
+        </svg>
+      </div>
+    </div>
   );
 }
 
 /** Container de celular: ocupa a tela no telefone e fica centralizado no desktop. */
-export function Screen({ children, className }: { children: React.ReactNode; className?: string }) {
+export function Screen({ children, className, light, rise }: { children: React.ReactNode; className?: string; light?: Light; rise?: number }) {
   const { data } = useStore();
   return (
     <div
       className={cx(
-        "relative mx-auto flex min-h-dvh w-full max-w-[430px] flex-col px-[22px] pt-[max(var(--safe-top),20px)] pb-[max(var(--safe-bottom),16px)]",
+        "relative mx-auto flex min-h-dvh w-full max-w-[430px] flex-col px-6 pt-[max(var(--safe-top),20px)] pb-[max(var(--safe-bottom),16px)]",
         data.settings.hideValues && "hide-values",
         className,
       )}
     >
-      <Backdrop />
+      <Backdrop light={light} rise={rise} />
       {children}
     </div>
   );
 }
 
 export function Wordmark({ className }: { className?: string }) {
-  return <span className={cx("font-serif text-title leading-none text-ink", className)}>pangiz</span>;
+  return <span className={cx("font-display text-[22px] leading-none tracking-[-0.04em] text-ink", className)}>pangiz</span>;
 }
 
 /** Título que entra palavra por palavra, com desfoque. */
 export function Rise({ text, className, as: Tag = "h1" }: { text: string; className?: string; as?: "h1" | "h2" | "p" }) {
   const words = text.split(" ");
   return (
-    <Tag className={cx("font-serif font-normal text-balance", className)}>
+    <Tag className={cx("font-display text-balance", className)}>
       {words.map((w, i) => (
         <span key={i}>
           <span className="word" style={{ animationDelay: `${i * 55}ms` }}>
@@ -104,7 +114,7 @@ export function Button({ variant = "primary", icon = ArrowUpRight, leading, size
   const Icon = variant === "link" ? null : icon;
   const base = cx(
     "flex items-center justify-center gap-1.5 rounded-full font-medium transition duration-200 active:scale-[0.96] disabled:opacity-35 disabled:active:scale-100",
-    variant === "link" ? "h-11 w-full text-body-sm" : size === "md" ? "h-[52px] w-full px-5 text-body-lg" : "h-10 px-5 text-body",
+    variant === "link" ? "h-11 w-full text-body-sm" : size === "md" ? "h-14 w-full px-5 text-body-lg" : "h-10 px-5 text-body",
     variant === "primary" && "bg-ink text-page",
     variant === "glass" && "border border-white/14 bg-white/9 text-ink shadow-sheen",
     variant === "ghost" && "text-ink-soft",
@@ -134,7 +144,7 @@ export function Button({ variant = "primary", icon = ArrowUpRight, leading, size
 
 export function IconButton({ icon: Icon, label, onClick, className }: { icon: LucideIcon; label: string; onClick?: () => void; className?: string }) {
   return (
-    <button aria-label={label} onClick={onClick} className={cx("glass grid size-9 place-items-center rounded-full text-ink-soft transition active:scale-95", className)}>
+    <button aria-label={label} onClick={onClick} className={cx("grid size-11 place-items-center rounded-full bg-white/8 text-ink transition active:scale-95", className)}>
       <Icon size={16} />
     </button>
   );
@@ -147,7 +157,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field({ l
   return (
     <label htmlFor={fid} className={cx("block", className)}>
       <span className="mb-[7px] block text-label text-muted">{label}</span>
-      <span className="glass flex h-[50px] items-center gap-2 rounded-field px-4 transition focus-within:border-white/30 focus-within:bg-white/8">
+      <span className="flex h-[52px] items-center gap-2 rounded-field bg-white/7 px-4 ring-1 ring-white/10 transition focus-within:border-white/30 focus-within:bg-white/8">
         <input
           ref={ref}
           id={fid}
@@ -215,7 +225,7 @@ export function OtpInput({ value, onChange, length = 6 }: { value: string; onCha
             className="absolute inset-0 w-full rounded-field bg-transparent text-center text-transparent caret-ink outline-none"
           />
           {d.trim() && (
-            <span key={d} aria-hidden className="animate-pop pointer-events-none absolute inset-0 grid place-items-center font-serif text-heading">
+            <span key={d} aria-hidden className="animate-pop pointer-events-none absolute inset-0 grid place-items-center font-display text-heading">
               {d}
             </span>
           )}
@@ -329,7 +339,7 @@ export function Segmented<T extends string>({ options, value, onChange }: { opti
           type="button"
           onClick={() => onChange(o.value)}
           aria-pressed={value === o.value}
-          className={cx("relative h-8 flex-1 rounded-full text-label transition-colors", value === o.value ? "text-page" : "text-ink-soft")}
+          className={cx("relative h-9 flex-1 rounded-full text-label transition-colors", value === o.value ? "text-page" : "text-ink-soft")}
         >
           {o.label}
         </button>
@@ -348,7 +358,7 @@ export function Tag({ tone = "neutral", children, className }: { tone?: "neutral
       className={cx(
         "inline-flex h-6 items-center gap-1 whitespace-nowrap rounded-full px-2.5 text-caption font-medium",
         tone === "neutral" && "bg-white/8 text-ink-soft",
-        tone === "accent" && "bg-champagne-wash text-champagne-light",
+        tone === "accent" && "bg-glow-wash text-glow-light",
         tone === "positive" && "bg-positive/14 text-positive",
         tone === "negative" && "bg-negative/14 text-negative",
         className,
@@ -366,7 +376,7 @@ export function Chip({ on, onClick, children }: { on: boolean; onClick: () => vo
       onClick={onClick}
       aria-pressed={on}
       className={cx(
-        "h-[34px] shrink-0 whitespace-nowrap rounded-full px-3.5 text-label transition active:scale-95",
+        "h-9 shrink-0 whitespace-nowrap rounded-full px-3.5 text-label transition active:scale-95",
         on ? "bg-ink text-page" : "glass text-ink-soft",
       )}
     >

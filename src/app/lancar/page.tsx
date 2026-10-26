@@ -101,110 +101,111 @@ function NewEntry() {
 
   const diff = after ? after.totalInvestable - before.totalInvestable : 0;
 
+  const saveLabel = kind === "parcelado" ? "salvar parcelamento" : kind === "fixo" ? "salvar conta do mês" : kind === "receita" ? "salvar receita" : "salvar gasto";
+
   return (
-    <div className={cx("mx-auto min-h-dvh max-w-[430px]", data.settings.hideValues && "hide-values")}>
-      <Backdrop />
-      <button aria-label="Fechar" onClick={() => router.back()} className="animate-fade fixed inset-0 bg-black/55" />
+    <div className={cx("relative mx-auto flex min-h-dvh max-w-[430px] flex-col px-6 pb-[max(var(--safe-bottom),20px)] pt-[max(var(--safe-top),20px)]", data.settings.hideValues && "hide-values")}>
+      <Backdrop light="top" />
+      <div className="flex items-center justify-between">
+        <h1 className="text-title font-medium">novo lançamento</h1>
+        <button aria-label="Fechar" onClick={() => router.back()} className="grid size-11 place-items-center rounded-full bg-white/8 transition active:scale-95">
+          <X size={16} />
+        </button>
+      </div>
+
+      <div className="mt-4">
+        <Segmented options={KINDS} value={kind} onChange={pickKind} />
+      </div>
+
+      <div className="mt-6 text-center">
+        <p className="big text-display-xl">
+          <Roll value={amount} compact={cents % 100 === 0} />
+        </p>
+        <p className="mt-2.5 min-h-5 text-label text-ink-soft">
+          {kind === "parcelado" && amount > 0 && `${count}x de ${money(amount / count)} a partir de ${monthLong(addMonths(month, 1))}`}
+          {kind === "fixo" && amount > 0 && `todo dia ${day}`}
+        </p>
+      </div>
+
+      <div className="-mx-6 mt-3 flex gap-2 overflow-x-auto px-6 pb-0.5 [scrollbar-width:none]">
+        {categories.map((c) => (
+          <Chip key={c} on={category === c} onClick={() => setCategory(c)}>
+            {CATEGORIES[c].label.toLowerCase()}
+          </Chip>
+        ))}
+      </div>
+
+      <div className="mt-2.5 flex flex-wrap items-center gap-2">
+        {sources.map((s) => (
+          <Chip key={s.id} on={source === s.id} onClick={() => setSource(s.id)}>
+            {s.label.toLowerCase()}
+          </Chip>
+        ))}
+        {kind === "parcelado" && (
+          <span className="ml-auto flex h-9 items-center gap-1 rounded-full bg-white/8 px-1">
+            <button aria-label="Menos parcelas" onClick={() => setCount((n) => Math.max(2, n - 1))} className="grid size-8 place-items-center rounded-full active:bg-white/10">
+              <Minus size={14} />
+            </button>
+            <span className="tabular min-w-9 text-center text-label">{count}x</span>
+            <button aria-label="Mais parcelas" onClick={() => setCount((n) => Math.min(24, n + 1))} className="grid size-8 place-items-center rounded-full active:bg-white/10">
+              <Plus size={14} />
+            </button>
+          </span>
+        )}
+      </div>
+
       <div
-        role="dialog"
-        aria-label="Novo lançamento"
-        className="animate-sheet fixed inset-x-0 bottom-0 mx-auto max-h-[94dvh] max-w-[430px] overflow-y-auto rounded-t-sheet border-t border-glass-border bg-raised px-[22px] pb-[max(var(--safe-bottom),22px)] pt-3"
+        className="mt-4 flex min-h-[56px] items-center gap-3 rounded-card px-4 py-3 text-label leading-normal"
+        style={{ background: "linear-gradient(90deg, rgb(217 70 106 / .22), rgb(255 154 92 / .12))" }}
+        aria-live="polite"
       >
-        <div className="mx-auto mb-3.5 h-[5px] w-[38px] rounded-full bg-ink/20" />
-        <div className="flex items-center justify-between">
-          <h1 className="font-serif text-title leading-none">novo lançamento</h1>
-          <button aria-label="Fechar" onClick={() => router.back()} className="glass grid size-9 place-items-center rounded-full text-ink-soft">
-            <X size={15} />
-          </button>
-        </div>
-
-        <div className="mt-3.5">
-          <Segmented options={KINDS} value={kind} onChange={pickKind} />
-        </div>
-
-        <div className="mt-5 text-center">
-          <p className="big text-display-xl">
-            <Roll value={amount} />
-          </p>
-          <p className="mt-2 min-h-4 text-caption text-muted">
-            {kind === "parcelado" && amount > 0 && `${count}x de ${money(amount / count)} a partir de ${monthLong(addMonths(month, 1))}`}
-            {kind === "fixo" && amount > 0 && `todo dia ${day}`}
-          </p>
-        </div>
-
-        <div className="-mx-[22px] mt-3 flex gap-2 overflow-x-auto px-[22px] pb-0.5 [scrollbar-width:none]">
-          {categories.map((c) => (
-            <Chip key={c} on={category === c} onClick={() => setCategory(c)}>
-              {CATEGORIES[c].label.toLowerCase()}
-            </Chip>
-          ))}
-        </div>
-
-        <div className="mt-2.5 flex flex-wrap items-center gap-2">
-          {sources.map((s) => (
-            <Chip key={s.id} on={source === s.id} onClick={() => setSource(s.id)}>
-              {s.label}
-            </Chip>
-          ))}
-          {kind === "parcelado" && (
-            <span className="glass ml-auto flex items-center gap-1 rounded-full p-1">
-              <button aria-label="Menos parcelas" onClick={() => setCount((n) => Math.max(2, n - 1))} className="grid size-8 place-items-center rounded-full active:bg-white/10">
-                <Minus size={14} />
-              </button>
-              <span className="tabular min-w-11 text-center text-body">{count}x</span>
-              <button aria-label="Mais parcelas" onClick={() => setCount((n) => Math.min(24, n + 1))} className="grid size-8 place-items-center rounded-full active:bg-white/10">
-                <Plus size={14} />
-              </button>
-            </span>
-          )}
-        </div>
-
-        <div className="glass mt-3.5 min-h-[62px] rounded-field px-3.5 py-3 text-label leading-normal text-ink-soft" aria-live="polite">
+        <span className="size-2 shrink-0 rounded-full bg-glow" />
+        <span className="text-ink-soft">
           {!after ? (
-            "digite um valor para ver como ele muda o que você pode investir."
+            "digite um valor pra ver como ele muda o que dá pra investir."
           ) : (
             <>
               em {data.settings.horizon} meses você investe{" "}
-              <b className={cx("m font-medium", diff < 0 ? "text-negative" : diff > 0 && "text-positive")}>{money(after.totalInvestable, { compact: true })}</b>
-              {diff !== 0 && <span className="m"> ({money(diff, { compact: true, sign: true })})</span>}
+              <b className={cx("m font-semibold", diff < 0 ? "text-ink" : "text-positive")}>{money(after.totalInvestable, { compact: true })}</b>
+              {diff !== 0 && <span className="m">, {money(Math.abs(diff), { compact: true })} a {diff < 0 ? "menos" : "mais"}</span>}
               {after.firstInvestMonth && before.firstInvestMonth && after.firstInvestMonth.month !== before.firstInvestMonth.month
-                ? `. o primeiro mês para investir passa a ser ${monthLong(after.firstInvestMonth.month)}`
+                ? `. o primeiro mês pra investir passa a ser ${monthLong(after.firstInvestMonth.month)}`
                 : ""}
               .{after.goesNegative && !before.goesNegative && <span className="text-negative"> o saldo fica negativo em algum momento.</span>}
             </>
           )}
-        </div>
-
-        <div className="mt-3.5 grid grid-cols-3 gap-1.5">
-          {KEYS.map((k) => (
-            <button
-              key={k}
-              onClick={() => press(k)}
-              aria-label={k === "del" ? "Apagar" : k}
-              className="grid h-[50px] place-items-center rounded-field font-serif text-value transition active:scale-[0.92] active:bg-white/10"
-            >
-              {k === "del" ? <Delete size={20} /> : k}
-            </button>
-          ))}
-        </div>
-
-        <button
-          disabled={!amount || saved}
-          onClick={save}
-          className={cx(
-            "mt-3 flex h-[52px] w-full items-center justify-center gap-1.5 rounded-full text-body-lg font-medium text-page transition active:scale-[0.96] disabled:opacity-35",
-            saved ? "bg-positive disabled:opacity-100" : "bg-ink",
-          )}
-        >
-          {saved ? (
-            <>
-              <Check size={16} /> salvo
-            </>
-          ) : (
-            "salvar"
-          )}
-        </button>
+        </span>
       </div>
+
+      <div className="mt-auto grid grid-cols-3 gap-1.5 pt-4">
+        {KEYS.map((k) => (
+          <button
+            key={k}
+            onClick={() => press(k)}
+            aria-label={k === "del" ? "Apagar" : k}
+            className="grid h-[52px] place-items-center rounded-field text-[24px] transition active:scale-[0.92] active:bg-white/10"
+          >
+            {k === "del" ? <Delete size={22} /> : k}
+          </button>
+        ))}
+      </div>
+
+      <button
+        disabled={!amount || saved}
+        onClick={save}
+        className={cx(
+          "mt-3 flex h-14 w-full items-center justify-center gap-1.5 rounded-full text-body-lg font-medium text-page transition active:scale-[0.96] disabled:opacity-35",
+          saved ? "bg-positive disabled:opacity-100" : "bg-ink",
+        )}
+      >
+        {saved ? (
+          <>
+            <Check size={16} /> salvo
+          </>
+        ) : (
+          saveLabel
+        )}
+      </button>
     </div>
   );
 }

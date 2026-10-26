@@ -28,7 +28,7 @@ export default function SignUp() {
           router.push("/verificacao");
         }}
       >
-        <h1 className="font-serif text-heading">Crie sua conta e comece a planejar</h1>
+        <h1 className="font-display text-heading">Crie sua conta e comece a planejar</h1>
         <p className="mt-3 text-body text-ink-soft">Leva menos de um minuto.</p>
 
         <div className="mt-9 space-y-5">

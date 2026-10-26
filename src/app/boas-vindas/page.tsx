@@ -73,7 +73,7 @@ export default function Onboarding() {
             </div>
           )}
           {step === 2 && (
-            <div key="b" className="champagne animate-rise delay-2 absolute inset-x-10 top-[140px] rounded-card p-[18px] text-left">
+            <div key="b" className="glow animate-rise delay-2 absolute inset-x-10 top-[140px] rounded-card p-[18px] text-left">
               <p className="text-caption text-muted">saldo previsto · fim do mês</p>
               <p className="big mt-2 text-heading">
                 <Roll value={10320} />

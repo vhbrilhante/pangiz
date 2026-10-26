@@ -1,94 +1,87 @@
-# Design system do pangiz
+# Design system do pangiz · direção A, horizonte
 
-Escuro, quente e calmo: um preto esfumaçado, vidro discreto, **um** destaque em champanhe por tela e valores grandes em serifa.
-Os tokens estão em `src/app/globals.css` (cores em `:root`, escala em `@theme`). Os componentes estão em `src/components/ui.tsx` e `src/components/visuals.tsx`.
+Um preto quase puro e uma luz que nasce no horizonte. A luz é o único acento e carrega a ideia do app:
+**quanto dá pra investir, e quando**. Na Início ela sobe conforme o valor do mês escolhido.
 
-A estrutura segue a referência da Wise (uma cor dominante, um único acento, pílulas, display apertado, superfícies planas).
-As cores, a tipografia e o tom são os do pangiz.
+Os tokens estão em `src/app/globals.css` (cores em `:root`, escala em `@theme`). Os componentes estão em
+`src/components/ui.tsx` e `src/components/visuals.tsx`. Os previews aprovados estão no canvas "pangiz redesign".
 
-## Da Wise para o pangiz
-
-| Wise | Papel | pangiz | Token |
-|---|---|---|---|
-| Forest Ink `#163300` | cor dominante, peso e autoridade | preto quente `#121211` (fundo) e `#1d1d17` (texto sobre champanhe) | `page`, `--champagne-ink` |
-| Lime Voltage `#9fe870` | o único acento, um por seção | champanhe `#bdbb9d` → `#e4e1cb` | `champagne`, `champagne-light`, `.champagne` |
-| Linen Mist `#e2f6d5` | lavagem do acento: etiquetas e destaques fracos | champanhe a 12% | `champagne-wash` |
-| Fog `#e8ebe6` | superfície de cartão | vidro branco a 5,5% com borda de 11% | `glass`, `glass-border` |
-| Spruce `#054d28` | superfície escura secundária | `#191917` opaco (folhas) | `raised` |
-| Obsidian / Charcoal | display / corpo | creme `#efece3` | `ink` |
-| Slate / Pebble | texto de apoio / suave | `#bdb9ae` / `#85827a` | `ink-soft`, `muted` |
-| Alarm Red | alerta | terracota `#e7a08c` | `negative` |
-| Wise Sans 900 | a voz do display | Newsreader 400, serifa | `font-serif`, `.big` |
-| Inter | o trabalho quieto | Geist | `font-sans` |
-
-O que **não** veio da Wise: o tema claro, o verde e o lima, o caixa-alta e o peso 900.
-A voz do pangiz é a serifa leve em minúsculas, não o bloco gritado.
+Referências: [gradients.sh](https://gradients.sh/) (coleção First Light), apple-design (movimento contínuo e interrompível)
+e taste-skill (sem serifa genérica, sem paleta bege e latão, um conceito tirado do próprio assunto).
 
 ## Cor
 
-- **Um destaque por tela.** O champanhe marca a resposta principal: o cartão "pode investir" na Início, a fatura em Cartões, a parte investível no gráfico. Dois champanhes na mesma área competem.
-- **Ação ≠ destaque.** A ação principal é creme sólido (`bg-ink text-page`). O champanhe é o que o usuário precisa ver; o creme é o que ele toca.
-- **Inversão.** Dentro de `.champagne` as cores de texto viram escuras sozinhas (`--ink`, `--muted` e `--line` são redefinidos). É o equivalente da seção verde-escura da Wise.
-- Valores positivos em `positive`, negativos em `negative`. Gastos comuns ficam em `ink`, sem vermelho.
-
-## Superfícies
-
-| Nível | Nome | Uso |
+| Papel | Valor | Token |
 |---|---|---|
-| 0 | `page` + fundo esfumaçado (`Backdrop`) | toda tela |
-| 1 | `.glass` | cartões, listas, campos, chips inativos |
-| 2 | `champagne-wash` | etiquetas de destaque |
-| 3 | `.champagne` | o destaque da tela |
-| 4 | `bg-ink` | botão principal, chip e aba ativos |
+| fundo | `#09090c` | `page` |
+| texto | `#f4f1ea` | `ink` |
+| texto de apoio | `#d8d2c6` | `ink-soft` |
+| rótulos e metadados | `#a9a49a` | `muted` |
+| vidro | branco a 7% | `glass` (`bg-white/7`, `bg-white/8`) |
+| superfície opaca que flutua | `rgb(12 10 16 / .72)` + desfoque | `glass-strong` |
+| luz do horizonte | `#ffe2b8` → `#ff9a5c` → `#d9466a` → `#5a2a7a` | `--glow-1..4`, `glow`, `glow-light` |
+| texto sobre a luz | `#1a0f14` | `--glow-ink` |
+| lavagem da luz | `#ff9a5c` a 14% | `glow-wash` |
+| positivo / negativo / atenção | `#9fdcb0` / `#ff8a8a` / `#ffc98a` | `positive`, `negative`, `warning` |
 
-Superfícies opacas (`raised`, `.glass-strong`) só no que flutua: folha do +, navegação inferior.
+- **A luz é o único acento.** Ela aparece no fundo (`Backdrop`), no cartão aceso (`.glow`), nas barras do gráfico, no trilho da reserva e na caixa de impacto do +. Nada mais é colorido.
+- **Ação é creme** (`bg-ink text-page`): botão principal, botão +, pílula ou segmento selecionado.
+- Gastos comuns ficam em `ink`, sem vermelho. `negative` só para saldo negativo e alertas.
+
+## Fundo
+
+`<Screen light="bottom|middle|top|none" rise={0..1}>` desenha a luz e o grão de filme por trás da tela.
+
+| Tela | `light` | Por quê |
+|---|---|---|
+| Início | `bottom`, `rise` = investível do mês ÷ saldo | a luz nasce embaixo e sobe com o valor |
+| Projeção | `middle` | ilumina o gráfico |
+| + | `top` | ilumina o valor sendo digitado |
+| Cartões, Perfil, Transações, entrada | `middle` (padrão) | |
+
+A luz respira devagar (14 s). O grão é um `feTurbulence` a 16% em `overlay`. Com `prefers-reduced-motion`, tudo para.
 
 ## Tipografia
 
-A serifa é a voz: valores, títulos e saudação. Quanto maior, mais apertado o tracking (como a Wise faz com a Wise Sans).
+Geist em tudo. Números e títulos em `font-display` (Geist 600), com tracking mais apertado quanto maior.
 
-| Token | Tamanho | Entrelinha | Tracking | Uso |
-|---|---|---|---|---|
-| `text-display-xl` | 54 | 1 | −0,03em | saldo da Início, valor no + |
-| `text-display` | 44 | 1 | −0,025em | total da Projeção |
-| `text-display-sm` | 40 | 1 | −0,02em | valor no cartão champanhe, fatura |
-| `text-heading` | 32 | 1,06 | −0,015em | título de tela |
-| `text-title` | 26 | 1 | −0,01em | saudação, marca, título de folha |
-| `text-value` | 22 | 1 | −0,01em | valores secundários |
-| `text-body-lg` | 15 | 1,4 | | botões |
-| `text-body` | 14 | 1,45 | | linhas de lista |
-| `text-body-sm` | 13 | 1,45 | | parágrafos curtos |
-| `text-label` | 12 | 1,35 | | chips, segmentado |
-| `text-caption` | 11 | 1,4 | | rótulos e metadados |
-| `text-micro` | 10 | 1,2 | | abas, eixo do gráfico |
+| Token | Tamanho | Tracking | Uso |
+|---|---|---|---|
+| `text-hero` | 72 | −0,05em | quanto dá pra investir (Início) |
+| `text-display-xl` | 64 | −0,05em | total da Projeção, valor no + |
+| `text-display` | 56 | −0,045em | saldo |
+| `text-display-sm` | 40 | −0,04em | fatura |
+| `text-heading` | 30 | −0,03em | títulos do fluxo de entrada |
+| `text-value` | 22 | −0,03em | valores secundários |
+| `text-title` | 17 | −0,01em | título de tela, saudação (medium) |
+| `text-body-lg` / `body` / `body-sm` | 16 / 15 / 14 | | botões, linhas, parágrafos |
+| `text-label` / `caption` / `micro` | 13 / 12 / 11 | | chips, rótulos, eixo |
 
-Microcopy em minúsculas, com ` · ` como separador ("saldo disponível agora", "Nubank · Itaú · atualizado agora").
-Dinheiro sempre por `<Money>` ou `<Roll>`; negativo com o sinal de menos tipográfico: `− R$ 126,90`.
+Microcopy em minúsculas, com ` · ` como separador. Dinheiro sempre por `<Money>` ou `<Roll>`; negativo com `−` (U+2212).
+Valores redondos aparecem sem centavos (`compact`): `R$ 3.020`.
 
 ## Forma
 
-- **Tudo que se toca é pílula** (`rounded-full`): botões, chips, segmentado, etiquetas, abas, botões de ícone.
-- `rounded-field` (16) para campos, teclas e caixas de informação; `rounded-card` (24) para cartões e listas;
-  `rounded-card-lg` (28) para cartões de destaque grandes; `rounded-t-sheet` (34) para folhas.
-- **Plano por padrão.** A separação vem da borda fina do vidro. Sombra só no que flutua: `shadow-float` (botão +, ícone de sucesso)
-  e a sombra própria do `.champagne`. `shadow-sheen` é o brilho de 1px no topo do botão de vidro.
+- **Tudo que se toca é pílula** (`rounded-full`) e tem pelo menos 44 px: botões (56), botão de ícone (44), chips e segmentos (36 de altura dentro de uma área maior), abas (64).
+- `rounded-field` 16 (campos, teclas), `rounded-card` 22 (cartões e listas), `rounded-card-lg` 28, `rounded-t-sheet` 34.
+- **Plano por padrão.** Sem bordas pesadas: vidro a 7% e, quando precisa, um anel de 1 px a 10%. Sombra só no que flutua (`shadow-float`) e o brilho do `.glow`.
 
 ## Componentes
 
 | Componente | Regra |
 |---|---|
-| `Button` | `primary` creme, um por tela. `glass` para ações neutras. `link` (texto sublinhado) para a segunda ação: nunca dois botões cheios lado a lado. |
-| `Segmented` | pílula de vidro; o ativo é creme e desliza entre as opções. |
+| `Screen` | posiciona a luz (`light`, `rise`) e aplica "ocultar valores". |
+| `Button` | `primary` creme (um por tela), `glass`, `ghost`, `link` para a segunda ação. |
+| `Segmented` | pílula de vidro; o ativo é creme e desliza com mola. |
 | `Chip` | pílula; ativo creme, inativo vidro. |
-| `Tag` | pílula pequena: `accent` (lavagem champanhe), `neutral`, `positive`, `negative`. |
-| `Card` | vidro, `rounded-card`, 18px de respiro. |
-| `.champagne` | o destaque da tela. Inclina com o dedo (`useTilt`). |
-| `Roll` | valor em odômetro; respeita "ocultar valores" (desfoca). |
-| `BottomNav` | 4 abas com pílula que desliza + botão + creme. |
-| `Island` | aviso que sai do topo (código chegou, saldos atualizados). |
+| `Tag` | pílula pequena: `accent` (lavagem da luz), `neutral`, `positive`, `negative`. |
+| `.glow` | o cartão aceso (fatura, cartão do onboarding). Texto escuro por dentro. Inclina com o dedo. |
+| `Roll` | odômetro; respeita "ocultar valores" (desfoca). |
+| `ProjectionScrub` | barras acesas pela luz; o mês escolhido acende inteiro; arraste ou setas. |
+| `BottomNav` | pílula escura só com ícones (com `aria-label`), destaque que desliza e + creme. |
+| `Island` | aviso que sai da Dynamic Island (código chegou, saldos atualizados). |
 
 ## Movimento
 
-`--ease` para entradas e transições, `--spring` para o que desliza (pílulas, segmentado, botão +).
-Entradas: subida com fade (`animate-rise`, `delay-1..3`) e títulos palavra por palavra (`Rise`). Uma vez por tela, nada em loop.
-`prefers-reduced-motion` desliga tudo isso.
+`--ease` para entradas, `--spring` para o que desliza (segmentado, abas, +). Entradas sobem com fade uma vez por tela.
+A luz e o odômetro são o movimento contínuo; o resto responde ao toque. Tudo é interrompível.

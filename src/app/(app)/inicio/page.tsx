@@ -1,13 +1,13 @@
 "use client";
 
-import { ArrowUpRight, Eye, EyeOff, RefreshCw, Sparkles } from "lucide-react";
+import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
-import { IconBubble, Money, Roll, Screen } from "@/components/ui";
-import { Island, Sparkline, useTilt } from "@/components/visuals";
+import { cx, IconBubble, Money, Roll, Screen } from "@/components/ui";
+import { Island } from "@/components/visuals";
 import { Pullable } from "@/components/pull";
 import { CATEGORIES } from "@/lib/categories";
-import { dayLabel, monthLong, monthShort, relativeDay, todayISO } from "@/lib/dates";
+import { monthLong, monthShort, relativeDay, todayISO } from "@/lib/dates";
 import { money } from "@/lib/format";
 import { currentBalance, project, upcoming } from "@/lib/projection";
 import { useStore } from "@/lib/store";
@@ -19,16 +19,18 @@ function greeting() {
   return "boa noite";
 }
 
-// Início enxuto: o saldo de agora, a resposta (quanto investir e quando) e o próximo pagamento.
+// Início: o saldo de agora e, em cima da luz do horizonte, quanto dá pra investir e em que mês.
+// A luz sobe conforme o valor do mês escolhido.
 export default function Home() {
   const { data, setSettings, update } = useStore();
   const p = useMemo(() => project(data), [data]);
   const balance = currentBalance(data);
-  const first = p.firstInvestMonth;
-  const six = p.months.slice(0, 6);
+  const months = p.months.slice(0, 5);
+  const [picked, setPicked] = useState<number | null>(null);
+  const selIndex = picked ?? Math.max(0, months.findIndex((m) => m.investable > 0));
+  const sel = months[selIndex];
   const next = useMemo(() => upcoming(data, 45)[0], [data]);
   const hide = data.settings.hideValues;
-  const tilt = useTilt<HTMLAnchorElement>(0.6);
   const [island, setIsland] = useState(false);
   const [syncedNow, setSyncedNow] = useState(false);
 
@@ -45,82 +47,84 @@ export default function Home() {
   }, [update]);
 
   return (
-    <Screen className="pb-36">
+    <Screen light="bottom" rise={sel.investable / Math.max(balance, 1)} className="!pb-[calc(max(var(--safe-bottom),20px)+88px)]">
       <Island open={island}>
         <RefreshCw size={13} />
         <span>saldos atualizados</span>
       </Island>
       <Pullable onRefresh={refresh}>
-        <header className="flex h-9 items-center justify-between">
-          <h1 className="font-serif text-title leading-none">
+        <header className="flex items-center justify-between">
+          <h1 className="text-title font-medium">
             {greeting()}, {data.user?.name.split(" ")[0].toLowerCase() ?? "você"}
           </h1>
           <button
             aria-label={hide ? "Mostrar valores" : "Esconder valores"}
             onClick={() => setSettings({ hideValues: !hide })}
-            className="glass grid size-9 place-items-center rounded-full text-ink-soft transition active:scale-95"
+            className="grid size-11 place-items-center rounded-full bg-white/8 transition active:scale-95"
           >
-            {hide ? <EyeOff size={16} /> : <Eye size={16} />}
+            {hide ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </header>
 
-        <section className="mt-10">
-          <p className="animate-rise text-caption text-muted">saldo disponível agora</p>
-          <p className="big mt-2.5 text-display-xl">
+        <section className="mt-9">
+          <p className="animate-rise text-label text-muted">saldo disponível</p>
+          <p className="big mt-2.5 text-display">
             <Roll value={balance} />
           </p>
-          <p className="animate-rise delay-1 mt-3 text-caption text-muted">
-            {data.accounts.map((a) => a.name).join(" · ")} · {syncedNow ? "atualizado agora" : "puxe para atualizar"}
+          <p className="animate-rise delay-1 mt-2.5 text-label text-muted">
+            {data.accounts.map((a) => a.name.replace(/^conta /i, "").toLowerCase()).join(" · ")} ·{" "}
+            {syncedNow ? "atualizado agora" : "puxe pra atualizar"}
           </p>
         </section>
-
-        <Link
-          ref={tilt}
-          href="/projecao"
-          className="champagne animate-rise delay-2 mt-[34px] block rounded-card p-[18px] [transform:perspective(900px)_rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))]"
-        >
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-caption text-muted">
-              <Sparkles size={12} /> {first ? `pode investir em ${monthLong(first.month)}` : "ainda não sobra para investir"}
-            </span>
-            <ArrowUpRight size={14} className="opacity-55" />
-          </div>
-          <p className="big mt-2.5 text-display-sm">
-            <Roll value={first?.investable ?? 0} />
-          </p>
-          <p className="mt-2 text-caption text-muted">
-            {first
-              ? `e ainda sobram ${money(data.settings.reserve, { compact: true })} na conta`
-              : p.goesNegative
-                ? `o saldo fica negativo em ${dayLabel(p.goesNegative.date)}`
-                : "seu saldo não passa da reserva"}
-          </p>
-          <div className="mt-[18px]">
-            <Sparkline values={[balance, ...six.map((m) => m.endBalance)]} height={48} />
-          </div>
-          <div className="mt-2 flex justify-between text-caption text-muted">
-            <span>hoje</span>
-            <span>
-              {monthShort(six[six.length - 1].month)} · <Money value={six[six.length - 1].endBalance} compact />
-            </span>
-          </div>
-        </Link>
-
-        {next && (
-          <Link href="/projecao" className="glass animate-rise delay-3 mt-3 flex min-h-[62px] items-center gap-3 rounded-card px-3.5">
-            <IconBubble icon={CATEGORIES[next.category].icon} />
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-body">
-                {next.description}
-                {next.detail && <span className="text-muted"> · {next.detail}</span>}
-              </span>
-              <span className="text-caption text-muted">próximo pagamento · {relativeDay(next.date)}</span>
-            </span>
-            <Money value={-next.amount} className="text-body" />
-          </Link>
-        )}
-
       </Pullable>
+
+      <section className="animate-rise delay-2 mt-auto pt-16" aria-live="polite">
+        <p className="text-label opacity-80">
+          {sel.investable > 0 ? `dá pra investir em ${monthLong(sel.month)}` : `em ${monthLong(sel.month)} não sobra pra investir`}
+        </p>
+        <Link href="/projecao" className="big mt-2.5 block text-hero">
+          <Roll value={sel.investable} compact />
+        </Link>
+        <p className="mt-2.5 max-w-[270px] text-body-sm opacity-85">
+          {sel.investable > 0
+            ? `sem tocar nos ${money(data.settings.reserve, { compact: true })} que ficam de reserva.`
+            : p.goesNegative
+              ? "o saldo fica negativo em algum momento. veja a projeção."
+              : "o saldo não passa da reserva neste mês."}
+        </p>
+        <div className="mt-4 flex gap-1.5" role="group" aria-label="Mês">
+          {months.map((m, i) => (
+            <button
+              key={m.month}
+              onClick={() => setPicked(i)}
+              aria-pressed={i === selIndex}
+              className={cx(
+                "h-9 rounded-full px-3.5 text-label transition active:scale-95",
+                i === selIndex ? "bg-ink font-medium text-page" : "bg-black/35 text-ink backdrop-blur-md",
+              )}
+            >
+              {monthShort(m.month)}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {next && (
+        <Link
+          href="/projecao"
+          className="animate-rise delay-3 mt-5 flex h-16 items-center gap-3 rounded-card bg-black/45 px-4 backdrop-blur-xl"
+        >
+          <IconBubble icon={CATEGORIES[next.category].icon} />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-body font-medium">
+              {next.description.toLowerCase()}
+              {next.detail && <span className="font-normal text-muted"> · {next.detail}</span>}
+            </span>
+            <span className="text-caption text-ink-soft">próximo pagamento · {relativeDay(next.date)}</span>
+          </span>
+          <Money value={-next.amount} compact className="text-body font-medium" />
+        </Link>
+      )}
     </Screen>
   );
 }
