@@ -87,7 +87,7 @@ export default function Cards() {
     <Screen className="!pb-36">
       <div className="flex items-center justify-between">
         <Rise text="cartões" className="text-heading" />
-        <button aria-label="Adicionar cartão" onClick={() => setAdding(!adding)} className="glass grid size-9 place-items-center rounded-full text-ink-soft">
+        <button aria-label="Adicionar cartão" onClick={() => setAdding(!adding)} className="grid size-11 place-items-center rounded-full bg-tile text-ink">
           <Plus size={16} />
         </button>
       </div>
@@ -109,7 +109,7 @@ export default function Cards() {
       {data.installments.length > 0 && (
         <section className="animate-rise delay-2 mt-6">
           <SectionHeader title="parcelamentos" />
-          <div className="glass divide-y divide-line overflow-hidden rounded-card">
+          <div className="paper divide-y divide-line overflow-hidden rounded-card-lg">
             {data.installments.map((p) => {
               const paid = Math.min(p.count, Math.max(0, monthDiff(p.firstMonth, month) + (p.cardId ? 0 : 1)));
               return (
@@ -120,7 +120,7 @@ export default function Cards() {
                       <span className="truncate">{p.description}</span>
                       <Money value={p.installmentAmount} />
                     </div>
-                    <div className="mt-[9px] h-[3px] overflow-hidden rounded-full bg-white/8">
+                    <div className="mt-[9px] h-[3px] overflow-hidden rounded-full bg-tile">
                       <div className="h-full rounded-full bg-ink" style={{ width: `${(paid / p.count) * 100}%` }} />
                     </div>
                     <p className="mt-1.5 flex items-center gap-2 text-caption text-muted">

@@ -47,10 +47,10 @@ function AccountRow({ a }: { a: Account }) {
             inputMode="decimal"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="tabular h-10 flex-1 rounded-field bg-white/8 px-3 text-body outline-none ring-1 ring-white/10"
+            className="tabular h-10 flex-1 rounded-field bg-tile px-3 text-body outline-none ring-1 ring-line"
             aria-label="Saldo real da conta"
           />
-          <button className="grid size-10 place-items-center rounded-field bg-ink text-page" aria-label="Salvar saldo">
+          <button className="grid size-10 place-items-center rounded-field bg-ink text-on-ink" aria-label="Salvar saldo">
             <Check size={16} />
           </button>
         </form>
@@ -81,8 +81,8 @@ export default function Profile() {
 
       <section id="contas" className="mt-6 scroll-mt-6">
         <SectionHeader title="contas" />
-        <p className="-mt-1 mb-2 text-label text-muted">Toque no saldo para corrigir com o valor que aparece no seu banco.</p>
-        <div className="glass divide-y divide-line rounded-card px-4">
+        <p className="-mt-1 mb-2 text-label text-muted">toque no saldo para corrigir com o valor que aparece no seu banco.</p>
+        <div className="paper divide-y divide-line rounded-card-lg px-4">
           {data.accounts.map((a) => (
             <AccountRow key={a.id} a={a} />
           ))}
@@ -95,13 +95,13 @@ export default function Profile() {
                 setNewAcc(null);
               }}
             >
-              <Field label="Nome" placeholder="Ex.: Conta Inter" value={newAcc.name} onChange={(e) => setNewAcc({ ...newAcc, name: e.target.value })} />
-              <Field label="Saldo atual" inputMode="decimal" placeholder="R$ 0,00" value={newAcc.balance} onChange={(e) => setNewAcc({ ...newAcc, balance: e.target.value })} />
-              <Button type="submit">Adicionar conta</Button>
+              <Field label="nome" placeholder="ex.: Conta Inter" value={newAcc.name} onChange={(e) => setNewAcc({ ...newAcc, name: e.target.value })} />
+              <Field label="saldo atual" inputMode="decimal" placeholder="R$ 0,00" value={newAcc.balance} onChange={(e) => setNewAcc({ ...newAcc, balance: e.target.value })} />
+              <Button type="submit">adicionar conta</Button>
             </form>
           ) : (
             <button onClick={() => setNewAcc({ name: "", balance: "" })} className="flex h-12 w-full items-center gap-2 text-body-sm font-medium text-ink-soft">
-              <Plus size={15} /> Adicionar conta
+              <Plus size={15} /> adicionar conta
             </button>
           )}
         </div>
@@ -109,7 +109,7 @@ export default function Profile() {
 
       <section className="mt-6">
         <SectionHeader title="todo mês" />
-        {fixed.length === 0 && <p className="text-body-sm text-muted">Nada cadastrado. Use o + para adicionar salário, aluguel, assinaturas.</p>}
+        {fixed.length === 0 && <p className="text-body-sm text-muted">nada cadastrado. use o + para adicionar salário, aluguel, assinaturas.</p>}
         <div className="space-y-3">
           {fixed.map((r) => (
             <div key={r.id} className="flex items-center gap-3">
@@ -131,10 +131,10 @@ export default function Profile() {
 
       <section className="mt-8 space-y-3">
         <p className="text-label text-muted">
-          Seus dados ficam só neste aparelho por enquanto. Reserva atual: {money(data.settings.reserve)}. Hoje é {todayISO().split("-").reverse().join("/")}.
+          seus dados ficam só neste aparelho por enquanto. reserva atual: {money(data.settings.reserve)}. hoje é {todayISO().split("-").reverse().join("/")}.
         </p>
         <Button variant="link" onClick={() => connectBanks(data.accounts.map((a) => a.bank).filter((b) => b !== "manual"))}>
-          Recarregar dados de exemplo
+          recarregar dados de exemplo
         </Button>
         <Button
           variant="glass"
@@ -144,20 +144,20 @@ export default function Profile() {
             router.push("/login");
           }}
         >
-          Sair
+          sair
         </Button>
         <Button
           variant="ghost"
           icon={Trash2}
           className="text-negative"
           onClick={() => {
-            if (confirm("Apagar todos os dados deste aparelho?")) {
+            if (confirm("apagar todos os dados deste aparelho?")) {
               reset();
               router.push("/");
             }
           }}
         >
-          Apagar todos os dados
+          apagar todos os dados
         </Button>
       </section>
     </Screen>

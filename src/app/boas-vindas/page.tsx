@@ -67,8 +67,8 @@ export default function Onboarding() {
                 <Roll value={12450} />
               </p>
               <div className="mt-2.5 flex justify-between text-caption text-muted">
-                <span>Itaú R$ 8.200,00</span>
-                <span>Nubank R$ 4.250,00</span>
+                <span>itaú R$ 8.200,00</span>
+                <span>nubank R$ 4.250,00</span>
               </div>
             </div>
           )}

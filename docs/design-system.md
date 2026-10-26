@@ -1,87 +1,67 @@
-# Design system do pangiz · direção A, horizonte
+# Design system do pangiz · bento verde
 
-Um preto quase puro e uma luz que nasce no horizonte. A luz é o único acento e carrega a ideia do app:
-**quanto dá pra investir, e quando**. Na Início ela sobe conforme o valor do mês escolhido.
+Base preta e blocos grandes e redondos empilhados, como cartões numa mesa:
 
-Os tokens estão em `src/app/globals.css` (cores em `:root`, escala em `@theme`). Os componentes estão em
-`src/components/ui.tsx` e `src/components/visuals.tsx`. Os previews aprovados estão no canvas "pangiz redesign".
+- **claro** (`.paper`): a visão geral, o saldo, listas e formulários;
+- **verde** (`.glow`, o degradê lima → verde → verde-água): a resposta, quanto dá pra investir e quando;
+- **floresta** (`.forest`): a projeção, com barras redondas;
+- **escuro** (`.glass-strong`): detalhe do mês e a navegação.
 
-Referências: [gradients.sh](https://gradients.sh/) (coleção First Light), apple-design (movimento contínuo e interrompível)
-e taste-skill (sem serifa genérica, sem paleta bege e latão, um conceito tirado do próprio assunto).
+Serifa (Hedvig Letters Serif) para números e títulos, Instrument Sans para o resto, tudo em minúsculas.
+Os tokens estão em `src/app/globals.css`; os componentes em `src/components/ui.tsx` e `src/components/visuals.tsx`.
 
 ## Cor
 
 | Papel | Valor | Token |
 |---|---|---|
-| fundo | `#09090c` | `page` |
-| texto | `#f4f1ea` | `ink` |
-| texto de apoio | `#d8d2c6` | `ink-soft` |
-| rótulos e metadados | `#a9a49a` | `muted` |
-| vidro | branco a 7% | `glass` (`bg-white/7`, `bg-white/8`) |
-| superfície opaca que flutua | `rgb(12 10 16 / .72)` + desfoque | `glass-strong` |
-| luz do horizonte | `#ffe2b8` → `#ff9a5c` → `#d9466a` → `#5a2a7a` | `--glow-1..4`, `glow`, `glow-light` |
-| texto sobre a luz | `#1a0f14` | `--glow-ink` |
-| lavagem da luz | `#ff9a5c` a 14% | `glow-wash` |
-| positivo / negativo / atenção | `#9fdcb0` / `#ff8a8a` / `#ffc98a` | `positive`, `negative`, `warning` |
+| base | `#0b0c0b` | `page` |
+| texto sobre a base | `#f4f3ee` | `ink` |
+| apoio / rótulos | `#d3d5cd` / `#9a9d95` | `ink-soft`, `muted` |
+| bloco claro | `#f5f4ee`, tiles `#e7e6df`, texto `#121411` | `.paper`, `--paper*` |
+| degradê verde | `#eafc9a` → `#c6f25a` → `#7fdd8c` → `#2fb07a`, texto `#0f1f0d` | `.glow`, `--g1..4`, `lime` |
+| floresta | `#1d5a3e` → `#0e2e21` | `.forest` |
+| escuro | `#1a1c1a` | `.glass-strong` |
+| positivo / negativo / atenção | `#9fe39a` / `#ff8f84` / `#ffcf7a` | `positive`, `negative`, `warning` |
 
-- **A luz é o único acento.** Ela aparece no fundo (`Backdrop`), no cartão aceso (`.glow`), nas barras do gráfico, no trilho da reserva e na caixa de impacto do +. Nada mais é colorido.
-- **Ação é creme** (`bg-ink text-page`): botão principal, botão +, pílula ou segmento selecionado.
-- Gastos comuns ficam em `ink`, sem vermelho. `negative` só para saldo negativo e alertas.
-
-## Fundo
-
-`<Screen light="bottom|middle|top|none" rise={0..1}>` desenha a luz e o grão de filme por trás da tela.
-
-| Tela | `light` | Por quê |
-|---|---|---|
-| Início | `bottom`, `rise` = investível do mês ÷ saldo | a luz nasce embaixo e sobe com o valor |
-| Projeção | `middle` | ilumina o gráfico |
-| + | `top` | ilumina o valor sendo digitado |
-| Cartões, Perfil, Transações, entrada | `middle` (padrão) | |
-
-A luz respira devagar (14 s). O grão é um `feTurbulence` a 16% em `overlay`. Com `prefers-reduced-motion`, tudo para.
+- **Cada bloco redefine as cores de dentro.** `ink`, `muted`, `line`, `tile` e `on-ink` mudam por bloco, então
+  `bg-tile`, `bg-ink text-on-ink` e `text-muted` funcionam igual em qualquer um deles.
+- **Ação é a cor `ink` do bloco** (`bg-ink text-on-ink`): preta no claro e no verde, clara no escuro e no floresta.
+- **O verde é o destaque.** Um bloco verde por tela, o botão + e o "simular" da projeção. Barras com sobra pra investir em lima.
 
 ## Tipografia
 
-Geist em tudo. Números e títulos em `font-display` (Geist 600), com tracking mais apertado quanto maior.
+| Token | Tamanho | Uso |
+|---|---|---|
+| `text-hero` | 64 | reservado para um número de destaque |
+| `text-display-xl` | 56 | valor no + |
+| `text-display` | 46 | saldo, total da projeção |
+| `text-display-sm` | 38 | quanto investir no bloco verde, fatura |
+| `text-heading` | 32 | títulos de tela e saudação (serifa) |
+| `text-value` | 24 | valores secundários |
+| `text-title` / `body-lg` / `body` / `body-sm` | 18 / 16 / 15 / 14 | |
+| `text-label` / `caption` / `micro` | 13 / 12 / 11 | pílulas, rótulos, eixo |
 
-| Token | Tamanho | Tracking | Uso |
-|---|---|---|---|
-| `text-hero` | 72 | −0,05em | quanto dá pra investir (Início) |
-| `text-display-xl` | 64 | −0,05em | total da Projeção, valor no + |
-| `text-display` | 56 | −0,045em | saldo |
-| `text-display-sm` | 40 | −0,04em | fatura |
-| `text-heading` | 30 | −0,03em | títulos do fluxo de entrada |
-| `text-value` | 22 | −0,03em | valores secundários |
-| `text-title` | 17 | −0,01em | título de tela, saudação (medium) |
-| `text-body-lg` / `body` / `body-sm` | 16 / 15 / 14 | | botões, linhas, parágrafos |
-| `text-label` / `caption` / `micro` | 13 / 12 / 11 | | chips, rótulos, eixo |
-
-Microcopy em minúsculas, com ` · ` como separador. Dinheiro sempre por `<Money>` ou `<Roll>`; negativo com `−` (U+2212).
-Valores redondos aparecem sem centavos (`compact`): `R$ 3.020`.
+`font-display` e `.big` usam a serifa. Microcopy em minúsculas com ` · `; marcas e siglas mantêm a grafia (Open Finance, Face ID).
+Dinheiro por `<Money>`/`<Roll>`, com espaço inseparável (`R$ 1.200` nunca quebra) e `−` (U+2212) nos negativos.
 
 ## Forma
 
-- **Tudo que se toca é pílula** (`rounded-full`) e tem pelo menos 44 px: botões (56), botão de ícone (44), chips e segmentos (36 de altura dentro de uma área maior), abas (64).
-- `rounded-field` 16 (campos, teclas), `rounded-card` 22 (cartões e listas), `rounded-card-lg` 28, `rounded-t-sheet` 34.
-- **Plano por padrão.** Sem bordas pesadas: vidro a 7% e, quando precisa, um anel de 1 px a 10%. Sombra só no que flutua (`shadow-float`) e o brilho do `.glow`.
+- **Tudo é redondo.** Botões, pílulas, teclas, barras e abas são `rounded-full`. Pílulas de 44 a 56 px de altura.
+- Blocos `rounded-card-lg` (32) com 20 px de respiro, `rounded-card` (28) para cartões internos, `rounded-field` (20) para tiles e campos.
+- Blocos a 10 px das bordas e 10 px entre si. Sem bordas: a separação é a cor do bloco.
 
 ## Componentes
 
 | Componente | Regra |
 |---|---|
-| `Screen` | posiciona a luz (`light`, `rise`) e aplica "ocultar valores". |
-| `Button` | `primary` creme (um por tela), `glass`, `ghost`, `link` para a segunda ação. |
-| `Segmented` | pílula de vidro; o ativo é creme e desliza com mola. |
-| `Chip` | pílula; ativo creme, inativo vidro. |
-| `Tag` | pílula pequena: `accent` (lavagem da luz), `neutral`, `positive`, `negative`. |
-| `.glow` | o cartão aceso (fatura, cartão do onboarding). Texto escuro por dentro. Inclina com o dedo. |
-| `Roll` | odômetro; respeita "ocultar valores" (desfoca). |
-| `ProjectionScrub` | barras acesas pela luz; o mês escolhido acende inteiro; arraste ou setas. |
-| `BottomNav` | pílula escura só com ícones (com `aria-label`), destaque que desliza e + creme. |
-| `Island` | aviso que sai da Dynamic Island (código chegou, saldos atualizados). |
+| `Screen` | base preta com um respiro de verde (`light`); telas em bento usam `!px-2.5`. |
+| `Card` | bloco claro. |
+| `Button` | `primary` na cor de ação do bloco; `link` para a segunda ação. |
+| `Segmented` / `Chip` | pílulas; o ativo na cor de ação. |
+| `ProjectionScrub` | barras redondas no bloco floresta; o mês escolhido em branco, meses com sobra em lima. |
+| `BottomNav` | barra escura com botões redondos de 56 px (o ativo claro) e o + verde. |
+| `Island`, `Roll`, `Tag`, `useTilt` | como antes: aviso no topo, odômetro, etiqueta, inclinação com o dedo. |
 
 ## Movimento
 
-`--ease` para entradas, `--spring` para o que desliza (segmentado, abas, +). Entradas sobem com fade uma vez por tela.
-A luz e o odômetro são o movimento contínuo; o resto responde ao toque. Tudo é interrompível.
+`--ease` para entradas, `--spring` para o que desliza. As micro-interações são a próxima etapa.

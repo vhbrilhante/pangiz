@@ -104,16 +104,17 @@ function NewEntry() {
   const saveLabel = kind === "parcelado" ? "salvar parcelamento" : kind === "fixo" ? "salvar conta do mês" : kind === "receita" ? "salvar receita" : "salvar gasto";
 
   return (
-    <div className={cx("relative mx-auto flex min-h-dvh max-w-[430px] flex-col px-6 pb-[max(var(--safe-bottom),20px)] pt-[max(var(--safe-top),20px)]", data.settings.hideValues && "hide-values")}>
+    <div className={cx("relative mx-auto flex min-h-dvh max-w-[430px] flex-col px-2.5 pb-[max(var(--safe-bottom),12px)] pt-[max(var(--safe-top),20px)]", data.settings.hideValues && "hide-values")}>
       <Backdrop light="top" />
-      <div className="flex items-center justify-between">
-        <h1 className="text-title font-medium">novo lançamento</h1>
-        <button aria-label="Fechar" onClick={() => router.back()} className="grid size-11 place-items-center rounded-full bg-white/8 transition active:scale-95">
+      <div className="flex items-center justify-between px-2.5 pb-3 pt-1">
+        <h1 className="font-display text-heading">novo lançamento</h1>
+        <button aria-label="Fechar" onClick={() => router.back()} className="grid size-11 place-items-center rounded-full bg-tile transition active:scale-95">
           <X size={16} />
         </button>
       </div>
 
-      <div className="mt-4">
+      <section className="paper animate-rise flex flex-1 flex-col rounded-card-lg p-4">
+      <div>
         <Segmented options={KINDS} value={kind} onChange={pickKind} />
       </div>
 
@@ -127,7 +128,7 @@ function NewEntry() {
         </p>
       </div>
 
-      <div className="-mx-6 mt-3 flex gap-2 overflow-x-auto px-6 pb-0.5 [scrollbar-width:none]">
+      <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-0.5 [scrollbar-width:none]">
         {categories.map((c) => (
           <Chip key={c} on={category === c} onClick={() => setCategory(c)}>
             {CATEGORIES[c].label.toLowerCase()}
@@ -142,12 +143,12 @@ function NewEntry() {
           </Chip>
         ))}
         {kind === "parcelado" && (
-          <span className="ml-auto flex h-9 items-center gap-1 rounded-full bg-white/8 px-1">
-            <button aria-label="Menos parcelas" onClick={() => setCount((n) => Math.max(2, n - 1))} className="grid size-8 place-items-center rounded-full active:bg-white/10">
+          <span className="ml-auto flex h-11 items-center gap-1 rounded-full bg-tile px-1.5">
+            <button aria-label="Menos parcelas" onClick={() => setCount((n) => Math.max(2, n - 1))} className="grid size-8 place-items-center rounded-full active:bg-tile">
               <Minus size={14} />
             </button>
             <span className="tabular min-w-9 text-center text-label">{count}x</span>
-            <button aria-label="Mais parcelas" onClick={() => setCount((n) => Math.min(24, n + 1))} className="grid size-8 place-items-center rounded-full active:bg-white/10">
+            <button aria-label="Mais parcelas" onClick={() => setCount((n) => Math.min(24, n + 1))} className="grid size-8 place-items-center rounded-full active:bg-tile">
               <Plus size={14} />
             </button>
           </span>
@@ -155,18 +156,17 @@ function NewEntry() {
       </div>
 
       <div
-        className="mt-4 flex min-h-[56px] items-center gap-3 rounded-card px-4 py-3 text-label leading-normal"
-        style={{ background: "linear-gradient(90deg, rgb(217 70 106 / .22), rgb(255 154 92 / .12))" }}
+        className="glow mt-4 flex min-h-[56px] items-center gap-3 rounded-card px-4 py-3 text-label leading-normal"
         aria-live="polite"
       >
-        <span className="size-2 shrink-0 rounded-full bg-glow" />
+        <span className="size-2 shrink-0 rounded-full bg-ink" />
         <span className="text-ink-soft">
           {!after ? (
             "digite um valor pra ver como ele muda o que dá pra investir."
           ) : (
             <>
               em {data.settings.horizon} meses você investe{" "}
-              <b className={cx("m font-semibold", diff < 0 ? "text-ink" : "text-positive")}>{money(after.totalInvestable, { compact: true })}</b>
+              <b className="m font-semibold text-ink">{money(after.totalInvestable, { compact: true })}</b>
               {diff !== 0 && <span className="m">, {money(Math.abs(diff), { compact: true })} a {diff < 0 ? "menos" : "mais"}</span>}
               {after.firstInvestMonth && before.firstInvestMonth && after.firstInvestMonth.month !== before.firstInvestMonth.month
                 ? `. o primeiro mês pra investir passa a ser ${monthLong(after.firstInvestMonth.month)}`
@@ -177,13 +177,13 @@ function NewEntry() {
         </span>
       </div>
 
-      <div className="mt-auto grid grid-cols-3 gap-1.5 pt-4">
+      <div className="mt-auto grid grid-cols-3 gap-2 pt-4">
         {KEYS.map((k) => (
           <button
             key={k}
             onClick={() => press(k)}
             aria-label={k === "del" ? "Apagar" : k}
-            className="grid h-[52px] place-items-center rounded-field text-[24px] transition active:scale-[0.92] active:bg-white/10"
+            className="grid h-[52px] place-items-center rounded-full bg-tile font-display text-[24px] transition active:scale-[0.92]"
           >
             {k === "del" ? <Delete size={22} /> : k}
           </button>
@@ -194,7 +194,7 @@ function NewEntry() {
         disabled={!amount || saved}
         onClick={save}
         className={cx(
-          "mt-3 flex h-14 w-full items-center justify-center gap-1.5 rounded-full text-body-lg font-medium text-page transition active:scale-[0.96] disabled:opacity-35",
+          "mt-3 flex h-14 w-full items-center justify-center gap-1.5 rounded-full text-body-lg font-medium text-on-ink transition active:scale-[0.96] disabled:opacity-35",
           saved ? "bg-positive disabled:opacity-100" : "bg-ink",
         )}
       >
@@ -206,6 +206,7 @@ function NewEntry() {
           saveLabel
         )}
       </button>
+      </section>
     </div>
   );
 }

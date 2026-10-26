@@ -36,7 +36,7 @@ export default function Transactions() {
           onChange={setFilter}
         />
       </div>
-      {groups.length === 0 && <p className="mt-8 text-center text-body-sm text-muted">Nenhum lançamento.</p>}
+      {groups.length === 0 && <p className="mt-8 text-center text-body-sm text-muted">nenhum lançamento.</p>}
       <div className="mt-6 space-y-6">
         {groups.map(([date, items]) => (
           <section key={date}>

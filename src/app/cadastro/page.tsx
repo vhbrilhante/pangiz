@@ -28,29 +28,29 @@ export default function SignUp() {
           router.push("/verificacao");
         }}
       >
-        <h1 className="font-display text-heading">Crie sua conta e comece a planejar</h1>
-        <p className="mt-3 text-body text-ink-soft">Leva menos de um minuto.</p>
+        <h1 className="font-display text-heading">crie sua conta e comece a planejar</h1>
+        <p className="mt-3 text-body text-ink-soft">leva menos de um minuto.</p>
 
         <div className="mt-9 space-y-5">
-          <Field label="Nome" autoComplete="given-name" placeholder="Como podemos te chamar?" value={name} onChange={(e) => setName(e.target.value)} />
+          <Field label="nome" autoComplete="given-name" placeholder="como podemos te chamar?" value={name} onChange={(e) => setName(e.target.value)} />
           <Field label="E-mail" type="email" autoComplete="email" placeholder="voce@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <PasswordField label="Senha" autoComplete="new-password" placeholder="Crie uma senha" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <PasswordField label="senha" autoComplete="new-password" placeholder="crie uma senha" value={password} onChange={(e) => setPassword(e.target.value)} />
           <p className={cx("flex items-center gap-2 text-label transition-colors", longEnough ? "text-positive" : "text-muted")}>
             <Check size={12} />
-            Pelo menos 8 caracteres
+            pelo menos 8 caracteres
           </p>
         </div>
 
         <p className="mt-6 text-label leading-[1.4] text-muted">
-          Ao continuar você concorda com os Termos de uso e a Política de privacidade do pangiz.
+          ao continuar você concorda com os Termos de uso e a Política de privacidade do pangiz.
         </p>
 
         <div className="mt-auto space-y-4 pt-8 text-center">
           <Button type="submit" disabled={!valid}>
-            Criar conta
+            criar conta
           </Button>
           <Link href="/login" className="block text-body text-ink-soft">
-            Já tenho uma conta
+            já tenho uma conta
           </Link>
         </div>
       </form>

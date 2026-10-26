@@ -35,7 +35,7 @@ export default function Login() {
   const [error, setError] = useState("");
 
   function enter(withEmail = email) {
-    if (!withEmail.includes("@")) return setError("Digite um e-mail válido.");
+    if (!withEmail.includes("@")) return setError("digite um e-mail válido.");
     signIn(withEmail);
     // O estado é salvo de forma síncrona no localStorage; calculamos o destino com o usuário já logado.
     const user = data.user && data.user.email === withEmail ? data.user : { name: "", email: withEmail, verified: true };
@@ -46,29 +46,29 @@ export default function Login() {
     <Screen>
       <TopBar back="/boas-vindas" />
       <div className="animate-rise mt-12 flex flex-1 flex-col">
-        <h1 className="font-display text-heading leading-none">Que bom te ver de novo</h1>
-        <p className="mt-3 text-body text-ink-soft">Entre para ver como está o seu futuro.</p>
+        <h1 className="font-display text-heading leading-none">que bom te ver de novo</h1>
+        <p className="mt-3 text-body text-ink-soft">entre para ver como está o seu futuro.</p>
 
         <form
           className="mt-9 space-y-5"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!password) return setError("Digite sua senha.");
+            if (!password) return setError("digite sua senha.");
             enter();
           }}
         >
           <Field label="E-mail" type="email" autoComplete="email" placeholder="voce@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <PasswordField label="Senha" autoComplete="current-password" placeholder="Sua senha" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <PasswordField label="senha" autoComplete="current-password" placeholder="sua senha" value={password} onChange={(e) => setPassword(e.target.value)} />
           <div className="flex items-center justify-between text-body-sm">
             <span className="text-negative">{error}</span>
             <button type="button" className="text-ink-soft underline-offset-2 hover:underline">
-              Esqueci minha senha
+              esqueci minha senha
             </button>
           </div>
           <div className="space-y-3 pt-2">
-            <Button type="submit">Entrar</Button>
-            <Button type="button" variant="glass" icon={ScanFace} onClick={() => (data.user ? enter(data.user.email) : setError("Entre com e-mail uma vez para ativar o Face ID."))}>
-              Entrar com Face ID
+            <Button type="submit">entrar</Button>
+            <Button type="button" variant="glass" icon={ScanFace} onClick={() => (data.user ? enter(data.user.email) : setError("entre com e-mail uma vez para ativar o Face ID."))}>
+              entrar com Face ID
             </Button>
           </div>
         </form>
@@ -80,18 +80,18 @@ export default function Login() {
         </div>
 
         <div className="space-y-3">
-          <Button variant="glass" leading={<AppleLogo />} onClick={() => setError("Login com Apple chega depois do MVP.")}>
-            Continuar com Apple
+          <Button variant="glass" leading={<AppleLogo />} onClick={() => setError("login com Apple chega depois do MVP.")}>
+            continuar com Apple
           </Button>
-          <Button variant="glass" leading={<GoogleLogo />} onClick={() => setError("Login com Google chega depois do MVP.")}>
-            Continuar com Google
+          <Button variant="glass" leading={<GoogleLogo />} onClick={() => setError("login com Google chega depois do MVP.")}>
+            continuar com Google
           </Button>
         </div>
 
         <p className="mt-auto pt-8 text-center text-body text-ink-soft">
-          Ainda não tem conta?{" "}
+          ainda não tem conta?{" "}
           <Link href="/cadastro" className="font-semibold text-ink">
-            Criar conta
+            criar conta
           </Link>
         </p>
       </div>

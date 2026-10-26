@@ -4,7 +4,7 @@ import { RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Puxar para atualizar. Funciona com o dedo (no topo da página) e com o mouse (para demonstrar no desktop).
+ * Puxar para atualizar. funciona com o dedo (no topo da página) e com o mouse (para demonstrar no desktop).
  * O conteúdo desce junto, o ícone gira conforme puxa e, passando do limite, chama `onRefresh`.
  */
 export function Pullable({ onRefresh, children }: { onRefresh: () => Promise<void>; children: React.ReactNode }) {

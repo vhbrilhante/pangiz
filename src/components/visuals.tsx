@@ -64,7 +64,7 @@ export function Card3D({ className, children }: { className?: string; children?:
   );
 }
 
-/** Curva suave (linha + área). A linha se desenha ao entrar. Usa a cor do texto em volta. */
+/** Curva suave (linha + área). A linha se desenha ao entrar. usa a cor do texto em volta. */
 export function Sparkline({ values, height = 52, className }: { values: number[]; height?: number; className?: string }) {
   const id = useId();
   const w = 300;
@@ -123,7 +123,7 @@ export function ProjectionScrub({
   const min = Math.min(0, ...months.map((m) => m.end));
   const span = max - min || 1;
   const w = 100 / months.length;
-  const gap = months.length > 6 ? 1.2 : 2.5;
+  const gap = months.length > 6 ? 2 : 4;
   const sel = months[selected];
 
   function pick(clientX: number) {
@@ -164,35 +164,23 @@ export function ProjectionScrub({
       >
         <span className="absolute inset-x-0 border-t border-dashed border-ink/25" style={{ bottom: ((reserve - min) / span) * H }} />
         {months.map((m, i) => {
-          const bh = Math.max(2, ((Math.max(m.end, 0) - min) / span) * H);
-          const ih = (m.investable / span) * H;
+          // Uma barra redonda por mês: o saldo que fica mais o que dá pra investir. O mês escolhido acende em branco.
+          const bh = Math.max(10, ((Math.max(m.end, 0) + m.investable - min) / span) * H);
           return (
-            <span key={m.month}>
-              <span
-                className="absolute bottom-0 rounded-[8px] transition-[height,background] duration-700 ease-[var(--ease)]"
-                style={{
-                  left: `${i * w + gap / 2}%`,
-                  width: `${w - gap}%`,
-                  height: bh,
-                  background:
-                    m.end < 0
-                      ? "var(--negative)"
-                      : i === selected
-                        ? "linear-gradient(180deg, var(--glow-2), var(--glow-3))"
-                        : "linear-gradient(180deg, rgb(255 154 92 / .4), rgb(217 70 106 / .18))",
-                }}
-              />
-              {m.investable > 0 && m.end >= 0 && (
-                <span
-                  className="absolute rounded-[8px] bg-gradient-to-b from-glow-light to-glow transition-[height,bottom] duration-700 ease-[var(--ease)]"
-                  style={{ left: `${i * w + gap / 2}%`, width: `${w - gap}%`, bottom: bh + 2, height: Math.max(3, ih) }}
-                />
-              )}
-            </span>
+            <span
+              key={m.month}
+              className="absolute bottom-0 rounded-full transition-[height,background-color] duration-700 ease-[var(--ease)]"
+              style={{
+                left: `${i * w + gap / 2}%`,
+                width: `${w - gap}%`,
+                height: bh,
+                background: m.end < 0 ? "var(--negative)" : i === selected ? "var(--ink)" : m.investable > 0 ? "rgb(198 242 90 / .7)" : "rgb(255 255 255 / .2)",
+              }}
+            />
           );
         })}
         <span
-          className="pointer-events-none absolute whitespace-nowrap rounded-full bg-ink px-[9px] py-[5px] text-caption font-medium text-page transition-[left] duration-200"
+          className="pointer-events-none absolute whitespace-nowrap rounded-full bg-ink px-[9px] py-[5px] text-caption font-medium text-on-ink transition-[left] duration-200"
           style={{ left: `${(selected + 0.5) * w}%`, bottom: tipBottom, transform: `translate(${tipShift}, 0)` }}
         >
           {sel.label} · {sel.investable ? `investir ${money(sel.investable, { compact: true })}` : "nada"}
@@ -233,35 +221,31 @@ const TABS = [
   { href: "/perfil", label: "perfil", icon: UserRound },
 ];
 
-/** Navegação: pílula escura só com ícones, um destaque que desliza e o botão + creme. */
+/** Navegação: barra escura com botões redondos (o ativo é claro) e o + no verde. */
 export function BottomNav() {
   const path = usePathname();
   const active = Math.max(0, TABS.findIndex((t) => path.startsWith(t.href)));
   return (
-    <nav aria-label="Navegação" className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-4 pb-[max(var(--safe-bottom),20px)]">
-      <div className="flex items-center gap-2.5">
-        <div className="glass-strong relative flex h-16 flex-1 rounded-full p-2">
-          <span
-            aria-hidden
-            className="absolute inset-y-2 left-2 w-[calc((100%-16px)/4)] rounded-full bg-white/12 transition-transform duration-[550ms] ease-[var(--spring)]"
-            style={{ transform: `translateX(${active * 100}%)` }}
-          />
-          {TABS.map(({ href, label, icon: Icon }, i) => (
-            <Link
-              key={href}
-              href={href}
-              aria-label={label}
-              aria-current={i === active ? "page" : undefined}
-              className={cx("relative grid flex-1 place-items-center rounded-full transition-colors", i === active ? "text-ink" : "text-muted")}
-            >
-              <Icon size={20} strokeWidth={1.7} />
-            </Link>
-          ))}
-        </div>
+    <nav aria-label="Navegação" className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-2.5 pb-[max(var(--safe-bottom),12px)]">
+      <div className="glass-strong flex items-center justify-between rounded-full p-2">
+        {TABS.map(({ href, label, icon: Icon }, i) => (
+          <Link
+            key={href}
+            href={href}
+            aria-label={label}
+            aria-current={i === active ? "page" : undefined}
+            className={cx(
+              "grid size-14 place-items-center rounded-full transition duration-300 active:scale-95",
+              i === active ? "bg-ink text-on-ink" : "bg-tile text-ink-soft",
+            )}
+          >
+            <Icon size={20} strokeWidth={1.6} />
+          </Link>
+        ))}
         <Link
           href="/lancar"
           aria-label="Novo lançamento"
-          className="group grid size-16 shrink-0 place-items-center rounded-full bg-ink text-page shadow-float transition active:scale-95"
+          className="group grid size-14 place-items-center rounded-full bg-lime text-[var(--on-green)] transition active:scale-95"
         >
           <Plus size={22} className="transition-transform duration-[450ms] ease-[var(--spring)] group-active:rotate-90" />
         </Link>

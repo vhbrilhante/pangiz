@@ -1,33 +1,41 @@
 @import "tailwindcss";
 
 /*
- * Direção A · horizonte. Um preto quase puro e uma luz que nasce no horizonte (âmbar → coral → magenta → violeta).
- * A luz é o único acento: mostra quanto dá pra investir. Geist em tudo, números pesados e apertados.
+ * pangiz · bento verde. Base preta e blocos grandes e redondos empilhados:
+ * um claro (visão geral), um no degradê verde (quanto investir) e um verde-floresta (projeção).
+ * Serifa (Hedvig Letters Serif) para números e títulos, Instrument Sans para o resto, tudo em minúsculas.
  */
 :root {
   color-scheme: dark;
-  --page: #09090c;
-  --ink: #f4f1ea;
-  --ink-soft: #d8d2c6;
-  --muted: #a9a49a;
-  --line: rgb(244 241 234 / 0.1);
-  --glass: rgb(255 255 255 / 0.07);
-  --glass-strong: rgb(12 10 16 / 0.72);
-  --glass-border: rgb(255 255 255 / 0.1);
-  --positive: #9fdcb0;
-  --negative: #ff8a8a;
-  --warning: #ffc98a;
-  /* "graphite" é a cor sólida de ação e seleção: o creme claro. */
-  --graphite: #f4f1ea;
-  /* A luz do horizonte, do centro para a borda. */
-  --glow-1: #ffe2b8;
-  --glow-2: #ff9a5c;
-  --glow-3: #d9466a;
-  --glow-4: #5a2a7a;
-  --glow-ink: #1a0f14;
-  --glow-wash: rgb(255 154 92 / 0.14);
-  /* Superfície elevada opaca: folhas e menus. */
-  --raised: #121117;
+  --page: #0b0c0b;
+  --ink: #f4f3ee;
+  --ink-soft: #d3d5cd;
+  --muted: #9a9d95;
+  --line: rgb(244 243 238 / 0.1);
+  --glass: rgb(255 255 255 / 0.08);
+  --glass-strong: #1a1c1a;
+  --glass-border: rgb(255 255 255 / 0.08);
+  --positive: #9fe39a;
+  --negative: #ff8f84;
+  --warning: #ffcf7a;
+  /* "graphite" é a cor sólida de ação e seleção. */
+  --graphite: #f4f3ee;
+  /* Degradê verde: lima clara → lima → verde → verde-água. */
+  --g1: #eafc9a;
+  --g2: #c6f25a;
+  --g3: #7fdd8c;
+  --g4: #2fb07a;
+  --on-green: #0f1f0d;
+  /* Bloco claro e bloco verde-floresta. */
+  --paper: #f5f4ee;
+  --paper-tile: #e7e6df;
+  --paper-ink: #121411;
+  --paper-muted: #6c6f68;
+  --forest-1: #1d5a3e;
+  --forest-2: #0e2e21;
+  --raised: #151715;
+  /* Texto sobre a cor de ação (ink). Cada bloco redefine. */
+  --on-ink: var(--page);
   --spring: cubic-bezier(0.2, 0.9, 0.25, 1.15);
   --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
   /* Áreas seguras do aparelho. Em variável para o /simulador poder fixar as de um iPhone. */
@@ -35,30 +43,27 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/*
- * Escala do design system (ver docs/design-system.md).
- * Números grandes em Geist 600 com tracking bem apertado; quanto maior, mais apertado.
- */
+/* Escala do design system (ver docs/design-system.md). Números e títulos em serifa, mais apertados quanto maiores. */
 @theme {
-  --text-hero: 72px;
+  --text-hero: 64px;
   --text-hero--line-height: 0.95;
-  --text-hero--letter-spacing: -0.05em;
-  --text-display-xl: 64px;
-  --text-display-xl--line-height: 0.95;
-  --text-display-xl--letter-spacing: -0.05em;
-  --text-display: 56px;
+  --text-hero--letter-spacing: -0.035em;
+  --text-display-xl: 56px;
+  --text-display-xl--line-height: 1;
+  --text-display-xl--letter-spacing: -0.03em;
+  --text-display: 46px;
   --text-display--line-height: 1;
-  --text-display--letter-spacing: -0.045em;
-  --text-display-sm: 40px;
+  --text-display--letter-spacing: -0.03em;
+  --text-display-sm: 38px;
   --text-display-sm--line-height: 1;
-  --text-display-sm--letter-spacing: -0.04em;
-  --text-heading: 30px;
-  --text-heading--line-height: 1.08;
-  --text-heading--letter-spacing: -0.03em;
-  --text-value: 22px;
+  --text-display-sm--letter-spacing: -0.025em;
+  --text-heading: 32px;
+  --text-heading--line-height: 1.05;
+  --text-heading--letter-spacing: -0.02em;
+  --text-value: 24px;
   --text-value--line-height: 1;
-  --text-value--letter-spacing: -0.03em;
-  --text-title: 17px;
+  --text-value--letter-spacing: -0.015em;
+  --text-title: 18px;
   --text-title--line-height: 1.2;
   --text-title--letter-spacing: -0.01em;
   --text-body-lg: 16px;
@@ -74,13 +79,12 @@
   --text-micro: 11px;
   --text-micro--line-height: 1.2;
 
-  /* Raios: tudo que se toca é pílula (rounded-full); campos 16, cartões 22, cartões grandes 28, folhas 34. */
-  --radius-field: 16px;
-  --radius-card: 22px;
-  --radius-card-lg: 28px;
-  --radius-sheet: 34px;
+  /* Raios: tudo que se toca é pílula; campos 20, cartões 28, blocos 32, folhas 36. */
+  --radius-field: 20px;
+  --radius-card: 28px;
+  --radius-card-lg: 32px;
+  --radius-sheet: 36px;
 
-  /* Sombras: plano por padrão. Só o que flutua ganha sombra. */
   --shadow-float: 0 14px 30px -10px rgb(0 0 0 / 0.9);
   --shadow-sheen: inset 0 1px 0 rgb(255 255 255 / 0.08);
 }
@@ -98,17 +102,21 @@
   --color-negative: var(--negative);
   --color-warning: var(--warning);
   --color-graphite: var(--graphite);
-  --color-glow: var(--glow-2);
-  --color-glow-light: var(--glow-1);
-  --color-glow-wash: var(--glow-wash);
+  --color-glow: var(--g2);
+  --color-glow-light: var(--g1);
+  --color-glow-wash: rgb(198 242 90 / 0.16);
+  --color-lime: var(--g2);
+  --color-tile: var(--tile, rgb(255 255 255 / 0.08));
   --color-raised: var(--raised);
-  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --color-on-ink: var(--on-ink);
+  --font-sans: var(--font-ui-sans), system-ui, sans-serif;
+  --font-serif: var(--font-ui-serif), Georgia, serif;
 }
 
-/* Títulos e números: Geist pesado. */
+/* Títulos e números: a serifa. */
 @utility font-display {
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
-  font-weight: 600;
+  font-family: var(--font-ui-serif), Georgia, serif;
+  font-weight: 400;
 }
 
 html {
@@ -116,10 +124,10 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Sem fundo no body: a luz do horizonte (z negativo) ficaria escondida atrás dele. */
+/* Sem fundo no body: o fundo (z negativo) ficaria escondido atrás dele. */
 body {
   color: var(--ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-ui-sans), system-ui, sans-serif;
   min-height: 100dvh;
   overflow-x: clip;
   -webkit-font-smoothing: antialiased;
@@ -130,7 +138,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid rgb(244 241 234 / 0.6);
+  outline: 2px solid var(--g2);
   outline-offset: 2px;
 }
 
@@ -138,59 +146,65 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-/* Valores: algarismos alinhados para o odômetro não pular. Tamanho e tracking vêm de text-hero/display*. */
+/* Valores em serifa: algarismos alinhados para o odômetro não pular. Tamanho e tracking vêm de text-hero/display*. */
 .big {
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-ui-serif), Georgia, serif;
+  font-weight: 400;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
-/* Vidro escuro sobre a luz. */
+/* Vidro escuro: pílulas e botões sobre a base preta. */
 .glass {
   background: var(--glass);
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
 }
 
+/* Superfície escura opaca: navegação e cartão de detalhe. */
 .glass-strong {
   background: var(--glass-strong);
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 }
 
-/* Superfície acesa: a luz do horizonte num cartão. Dentro dela o texto vira escuro. */
+/* Bloco claro. Dentro dele o texto vira escuro e os "tiles" ficam cinza-quente. */
+.paper {
+  --ink: var(--paper-ink);
+  --ink-soft: rgb(18 20 17 / 0.78);
+  --muted: var(--paper-muted);
+  --line: rgb(18 20 17 / 0.08);
+  --graphite: var(--paper-ink);
+  --tile: var(--paper-tile);
+  --on-ink: var(--paper);
+  --glass: var(--paper-tile);
+  --glass-border: transparent;
+  color: var(--paper-ink);
+  background: var(--paper);
+}
+
+/* Bloco no degradê verde: quanto dá pra investir. Texto escuro por dentro. */
 .glow {
-  --ink: var(--glow-ink);
-  --ink-soft: rgb(26 15 20 / 0.78);
-  --muted: rgb(26 15 20 / 0.66);
-  --line: rgb(26 15 20 / 0.14);
-  --graphite: var(--glow-ink);
-  color: var(--glow-ink);
+  --ink: var(--on-green);
+  --ink-soft: rgb(15 31 13 / 0.78);
+  --muted: rgb(15 31 13 / 0.62);
+  --line: rgb(15 31 13 / 0.12);
+  --graphite: var(--on-green);
+  --tile: rgb(255 255 255 / 0.55);
+  --on-ink: var(--g1);
+  --glass: rgb(255 255 255 / 0.55);
+  --glass-border: transparent;
+  color: var(--on-green);
   background:
-    radial-gradient(80% 120% at var(--sx, 85%) -10%, rgb(255 255 255 / 0.55), transparent 55%),
-    linear-gradient(135deg, var(--glow-1) 0%, var(--glow-2) 42%, var(--glow-3) 100%);
-  box-shadow: 0 30px 60px -30px rgb(217 70 106 / 0.7);
+    radial-gradient(70% 90% at var(--sx, 85%) 0%, rgb(255 255 255 / 0.5), transparent 60%),
+    linear-gradient(135deg, var(--g1) 0%, var(--g2) 38%, var(--g3) 74%, var(--g4) 100%);
 }
 
-/* A luz do horizonte: elipse desfocada que respira devagar. `--rise` (0 a 1) sobe a luz. */
-@keyframes horizon-breathe {
-  0%,
-  100% {
-    transform: translate(-50%, 0) scale(1);
-  }
-  50% {
-    transform: translate(-50%, -14px) scale(1.04);
-  }
-}
-.horizon-light {
-  position: absolute;
-  left: 50%;
-  border-radius: 50%;
-  filter: blur(28px);
-  background: radial-gradient(closest-side, var(--glow-1) 0%, var(--glow-2) 22%, var(--glow-3) 44%, var(--glow-4) 66%, rgb(20 16 40 / 0) 100%);
-  animation: horizon-breathe 14s ease-in-out infinite;
-  transition: bottom 1.2s var(--ease), opacity 1.2s var(--ease);
+/* Bloco verde-floresta: a projeção. Texto claro por dentro. */
+.forest {
+  --tile: rgb(255 255 255 / 0.1);
+  --glass: rgb(255 255 255 / 0.1);
+  color: var(--ink);
+  background:
+    radial-gradient(80% 60% at 100% 0%, rgb(127 221 140 / 0.25), transparent 60%),
+    linear-gradient(160deg, var(--forest-1) 0%, var(--forest-2) 100%);
 }
 
 /* Valores escondidos: desfoque em vez de bolinhas. */
@@ -356,12 +370,12 @@ input[type="range"].reserve {
 input[type="range"].reserve::-webkit-slider-runnable-track {
   height: 6px;
   border-radius: 6px;
-  background: linear-gradient(90deg, var(--glow-3) 0%, var(--glow-2) var(--p, 30%), rgb(255 255 255 / 0.12) var(--p, 30%));
+  background: linear-gradient(90deg, var(--g4) 0%, var(--g2) var(--p, 30%), var(--tile, rgb(255 255 255 / 0.12)) var(--p, 30%));
 }
 input[type="range"].reserve::-moz-range-track {
   height: 6px;
   border-radius: 6px;
-  background: linear-gradient(90deg, var(--glow-3) 0%, var(--glow-2) var(--p, 30%), rgb(255 255 255 / 0.12) var(--p, 30%));
+  background: linear-gradient(90deg, var(--g4) 0%, var(--g2) var(--p, 30%), var(--tile, rgb(255 255 255 / 0.12)) var(--p, 30%));
 }
 input[type="range"].reserve::-webkit-slider-thumb {
   -webkit-appearance: none;

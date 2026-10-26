@@ -26,20 +26,20 @@ export default function ManualSetup() {
           router.push("/inicio");
         }}
       >
-        <h1 className="font-display text-heading">Só dois números para começar</h1>
-        <p className="mt-3 text-body text-ink-soft">Com o seu saldo e a sua renda já dá para ver a primeira projeção. Parcelas e contas você adiciona depois.</p>
+        <h1 className="font-display text-heading">só dois números para começar</h1>
+        <p className="mt-3 text-body text-ink-soft">com o seu saldo e a sua renda já dá para ver a primeira projeção. parcelas e contas você adiciona depois.</p>
 
         <div className="mt-9 space-y-5">
-          <Field label="Quanto você tem hoje nas contas?" inputMode="decimal" placeholder="R$ 0,00" value={balance} onChange={(e) => setBalance(e.target.value)} />
+          <Field label="quanto você tem hoje nas contas?" inputMode="decimal" placeholder="R$ 0,00" value={balance} onChange={(e) => setBalance(e.target.value)} />
           <div className="grid grid-cols-[1fr_96px] gap-3">
-            <Field label="Renda por mês" inputMode="decimal" placeholder="R$ 0,00" value={salary} onChange={(e) => setSalary(e.target.value)} />
-            <Field label="Cai no dia" inputMode="numeric" value={day} onChange={(e) => setDay(e.target.value.replace(/\D/g, "").slice(0, 2))} />
+            <Field label="renda por mês" inputMode="decimal" placeholder="R$ 0,00" value={salary} onChange={(e) => setSalary(e.target.value)} />
+            <Field label="cai no dia" inputMode="numeric" value={day} onChange={(e) => setDay(e.target.value.replace(/\D/g, "").slice(0, 2))} />
           </div>
         </div>
 
         <div className="mt-auto pt-8 pb-2">
           <Button type="submit" disabled={!balance}>
-            Ver minha projeção
+            ver minha projeção
           </Button>
         </div>
       </form>

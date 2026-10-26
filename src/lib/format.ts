@@ -8,9 +8,10 @@ const brlCompact = new Intl.NumberFormat("pt-BR", {
 export function money(value: number, opts: { hide?: boolean; compact?: boolean; sign?: boolean } = {}): string {
   if (opts.hide) return "R$ •••••";
   const f = opts.compact ? brlCompact : brl;
-  const text = f.format(Math.abs(value)).replace(/ /g, " ");
-  if (value < 0) return `− ${text}`; // sinal de menos tipográfico (U+2212)
-  if (opts.sign && value > 0) return `+ ${text}`;
+  // Espaço inseparável entre "R$" e o número, para o valor nunca quebrar em duas linhas.
+  const text = f.format(Math.abs(value)).replace(/\s/g, " ");
+  if (value < 0) return `− ${text}`; // sinal de menos tipográfico (U+2212)
+  if (opts.sign && value > 0) return `+ ${text}`;
   return text;
 }
 

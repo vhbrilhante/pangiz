@@ -140,7 +140,7 @@ export default function Simulator() {
   }
 
   const btn = (on: boolean) =>
-    cx("h-8 rounded-full px-3 text-left text-label transition", on ? "bg-ink text-page" : "text-ink-soft hover:bg-white/8");
+    cx("h-8 rounded-full px-3 text-left text-label transition", on ? "bg-ink text-on-ink" : "text-ink-soft hover:bg-tile");
 
   return (
     <div

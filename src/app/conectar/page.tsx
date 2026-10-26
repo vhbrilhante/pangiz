@@ -59,8 +59,8 @@ export default function Connect() {
             <span className="animate-spin-slow absolute inset-0 rounded-full border-[3px] border-line border-t-graphite" />
             <Landmark size={32} />
           </div>
-          <h1 className="mt-8 font-display text-heading leading-none">Conectando suas contas</h1>
-          <p className="mt-3 max-w-[300px] text-body text-ink-soft">Estamos buscando saldos, cartões e parcelas. Isso leva só alguns segundos.</p>
+          <h1 className="mt-8 font-display text-heading leading-none">conectando suas contas</h1>
+          <p className="mt-3 max-w-[300px] text-body text-ink-soft">estamos buscando saldos, cartões e parcelas. isso leva só alguns segundos.</p>
 
           <div className="glow mt-9 w-full rounded-card p-5 text-left">
             {selected.map((id, i) => (
@@ -73,10 +73,10 @@ export default function Connect() {
                   </span>
                   {i < synced ? (
                     <span className="flex items-center gap-1 text-label text-positive">
-                      <Check size={14} /> Conectado
+                      <Check size={14} /> conectado
                     </span>
                   ) : (
-                    <span className="text-label text-muted">{i === synced ? "Sincronizando…" : "Na fila"}</span>
+                    <span className="text-label text-muted">{i === synced ? "sincronizando…" : "na fila"}</span>
                   )}
                 </div>
               </div>
@@ -91,9 +91,9 @@ export default function Connect() {
         </div>
         <div className="mx-auto max-w-[329px] pb-2 text-center">
           <p className="flex items-center justify-center gap-1.5 text-label font-medium text-ink-soft">
-            <ShieldCheck size={14} /> Conexão protegida pelo Open Finance
+            <ShieldCheck size={14} /> conexão protegida pelo Open Finance
           </p>
-          <p className="mt-2 text-label leading-[1.4] text-muted">O pangiz só lê seus dados. Nunca movimenta dinheiro.</p>
+          <p className="mt-2 text-label leading-[1.4] text-muted">o pangiz só lê seus dados. nunca movimenta dinheiro.</p>
         </div>
       </Screen>
     );
@@ -104,14 +104,14 @@ export default function Connect() {
       <Screen>
         <TopBar />
         <div className="animate-rise mt-12 flex flex-1 flex-col items-center text-center">
-          <div className="grid size-[92px] place-items-center rounded-full bg-ink text-page shadow-float">
+          <div className="grid size-[92px] place-items-center rounded-full bg-ink text-on-ink shadow-float">
             <Check size={34} />
           </div>
-          <h1 className="mt-8 font-display text-heading">Tudo pronto! Suas contas estão conectadas</h1>
-          <p className="mt-3 max-w-[300px] text-body text-ink-soft">Já calculamos a sua primeira projeção dos próximos 12 meses.</p>
+          <h1 className="mt-8 font-display text-heading">tudo pronto! suas contas estão conectadas</h1>
+          <p className="mt-3 max-w-[300px] text-body text-ink-soft">já calculamos a sua primeira projeção dos próximos 12 meses.</p>
 
           <div className="glow relative mt-8 w-full overflow-hidden rounded-card p-5 text-left">
-            <p className="text-body-sm text-muted">Saldo total conectado</p>
+            <p className="text-body-sm text-muted">saldo total conectado</p>
             <p className="mt-1 font-display text-display leading-none">
               <Money value={total} />
             </p>
@@ -126,7 +126,7 @@ export default function Connect() {
                 </div>
               ))}
             </div>
-            <p className="mt-4 text-label text-muted">Atualizado agora</p>
+            <p className="mt-4 text-label text-muted">atualizado agora</p>
           </div>
         </div>
         <div className="space-y-3 pb-2 text-center">
@@ -136,9 +136,9 @@ export default function Connect() {
               router.push("/inicio");
             }}
           >
-            Ver minha projeção
+            ver minha projeção
           </Button>
-          <p className="text-label text-muted">Você pode conectar outras contas depois, no Perfil.</p>
+          <p className="text-label text-muted">você pode conectar outras contas depois, no perfil.</p>
         </div>
       </Screen>
     );
@@ -148,20 +148,20 @@ export default function Connect() {
     <Screen>
       <TopBar back="/verificacao" />
       <div className="animate-rise mt-10 flex flex-1 flex-col">
-        <h1 className="font-display text-heading">Conecte suas contas e cartões</h1>
-        <p className="mt-3 text-body text-ink-soft">Escolha seus bancos. Quanto mais contas, mais certeira fica a projeção.</p>
+        <h1 className="font-display text-heading">conecte suas contas e cartões</h1>
+        <p className="mt-3 text-body text-ink-soft">escolha seus bancos. quanto mais contas, mais certeira fica a projeção.</p>
 
-        <label className="glass mt-7 flex h-[42px] items-center gap-2.5 rounded-full px-4">
+        <label className="mt-7 flex h-12 items-center gap-2.5 rounded-full bg-tile px-4">
           <Search size={15} className="text-muted" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar banco ou corretora"
+            placeholder="buscar banco ou corretora"
             className="flex-1 bg-transparent text-body outline-none placeholder:text-muted"
           />
         </label>
 
-        <div className="glass mt-4 divide-y divide-line rounded-card px-4">
+        <div className="paper mt-4 divide-y divide-line rounded-card-lg px-4">
           {banks.map((b) => {
             const on = selected.includes(b.id);
             return (
@@ -171,7 +171,7 @@ export default function Connect() {
                 <span
                   className={cx(
                     "grid size-5 place-items-center rounded-full transition",
-                    on ? "bg-ink text-page" : "ring-1 ring-graphite/25",
+                    on ? "bg-ink text-on-ink" : "ring-1 ring-graphite/25",
                   )}
                 >
                   {on && <Check size={13} />}
@@ -179,11 +179,11 @@ export default function Connect() {
               </button>
             );
           })}
-          {banks.length === 0 && <p className="py-5 text-center text-body-sm text-muted">Nenhum banco encontrado.</p>}
+          {banks.length === 0 && <p className="py-5 text-center text-body-sm text-muted">nenhum banco encontrado.</p>}
         </div>
 
         <p className="mt-4 flex items-center justify-center gap-1.5 text-label text-ink-soft">
-          <ShieldCheck size={14} /> Conexão segura, somente leitura
+          <ShieldCheck size={14} /> conexão segura, somente leitura
         </p>
       </div>
 
@@ -195,10 +195,10 @@ export default function Connect() {
             setPhase("carregando");
           }}
         >
-          Conectar {selected.length > 0 ? `${selected.length} ${selected.length === 1 ? "conta" : "contas"}` : ""}
+          conectar {selected.length > 0 ? `${selected.length} ${selected.length === 1 ? "conta" : "contas"}` : ""}
         </Button>
         <Link href="/saldo-inicial" className="block text-body-sm text-ink-soft">
-          Prefiro informar meu saldo manualmente
+          prefiro informar meu saldo manualmente
         </Link>
       </div>
     </Screen>
