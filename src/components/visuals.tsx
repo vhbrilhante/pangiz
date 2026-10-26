@@ -3,66 +3,108 @@
 import { ChartNoAxesCombined, CreditCard, House, Plus, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useId } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { money } from "@/lib/format";
 import { cx, Wordmark } from "./ui";
 
-/** O "Cartão Pangiz" inclinado do onboarding. */
-export function SilverCard3D({ className, children }: { className?: string; children?: React.ReactNode }) {
+/** Inclina o elemento seguindo o dedo (ou o mouse) e move o reflexo do champanhe junto. */
+export function useTilt<T extends HTMLElement>(strength = 1) {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const move = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      el.style.transition = "transform .08s linear";
+      el.style.setProperty("--rx", `${-y * 14 * strength}deg`);
+      el.style.setProperty("--ry", `${x * 18 * strength}deg`);
+      el.style.setProperty("--sx", `${50 + x * 90}%`);
+    };
+    const leave = () => {
+      el.style.transition = "transform .6s var(--ease)";
+      el.style.setProperty("--rx", "0deg");
+      el.style.setProperty("--ry", "0deg");
+      el.style.removeProperty("--sx");
+    };
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerleave", leave);
+    el.addEventListener("pointerup", leave);
+    el.addEventListener("pointercancel", leave);
+    return () => {
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerleave", leave);
+      el.removeEventListener("pointerup", leave);
+      el.removeEventListener("pointercancel", leave);
+    };
+  }, [strength]);
+  return ref;
+}
+
+/** O cartão pangiz inclinado do onboarding. */
+export function Card3D({ className, children }: { className?: string; children?: React.ReactNode }) {
+  const tilt = useTilt<HTMLDivElement>();
   return (
-    <div className={cx("relative [perspective:1200px]", className)}>
+    <div ref={tilt} className={cx("relative h-[300px] touch-pan-y [perspective:1100px]", className)}>
       <div
-        className="pearl relative mx-auto aspect-[1.586] w-[300px] rounded-[28px] [transform:rotateX(18deg)_rotateY(-16deg)_rotateZ(-9deg)] [transform-style:preserve-3d]"
+        className="champagne absolute left-1/2 top-5 h-[240px] w-[380px] -translate-x-[46%] rounded-[26px]"
+        style={{
+          transform: "rotateX(calc(28deg + var(--rx, 0deg))) rotateY(calc(-12deg + var(--ry, 0deg))) rotateZ(-12deg)",
+          transition: "inherit",
+        }}
       >
-        <div className="absolute inset-0 overflow-hidden rounded-[28px]">
-          <div className="absolute -right-10 -top-24 h-[260px] w-[120px] rotate-[28deg] rounded-full bg-white/70 blur-2xl" />
-          <div className="absolute -left-16 top-10 h-[240px] w-[110px] rotate-[28deg] rounded-full bg-[#b8c2d1]/50 blur-2xl" />
-        </div>
-        <div className="absolute left-6 top-5">
-          <Wordmark className="text-[26px] text-ink/80" />
-        </div>
-        <div className="absolute left-6 top-[46%] h-7 w-10 rounded-md bg-gradient-to-br from-[#e8e1c8] via-[#c8bf9f] to-[#efe8d2] ring-1 ring-black/10" />
-        <div className="absolute bottom-5 left-6 font-mono text-[13px] tracking-[0.2em] text-ink/55">•••• 2026</div>
+        <span className="absolute right-8 top-6 text-[9px] tracking-[0.14em] opacity-50">PANGIZ / 2026</span>
+        <span className="absolute left-[34px] top-[74px] h-[34px] w-[46px] rounded-lg bg-gradient-to-br from-[#e8cf8a] via-[#b99447] to-[#f1dc9f]" />
+        <Wordmark className="absolute right-[30px] top-[120px] text-[18px] opacity-60" />
+        <span className="absolute bottom-[34px] left-[34px] text-[13px] tracking-[0.2em] opacity-55">•••• 8707</span>
       </div>
       {children}
     </div>
   );
 }
 
-/** Curva simples (linha + área) usada no onboarding e na home. */
-export function Sparkline({ values, height = 52, className, showDots = true }: { values: number[]; height?: number; className?: string; showDots?: boolean }) {
+/** Curva suave (linha + área). A linha se desenha ao entrar. Usa a cor do texto em volta. */
+export function Sparkline({ values, height = 52, className }: { values: number[]; height?: number; className?: string }) {
   const id = useId();
-  const w = 320;
+  const w = 300;
   const h = height;
   if (values.length < 2) return <div style={{ height }} />;
   const min = Math.min(...values);
   const max = Math.max(...values);
   const span = max - min || 1;
-  const pts = values.map((v, i) => [(i / (values.length - 1)) * w, h - 4 - ((v - min) / span) * (h - 8)] as const);
-  const line = pts.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
-  const area = `${line} L${w},${h} L0,${h} Z`;
+  const pts = values.map((v, i) => [(i / (values.length - 1)) * w, 6 + (h - 12) * (1 - (v - min) / span)] as const);
+  const line = pts
+    .map(([x, y], i) => {
+      if (!i) return `M${x},${y}`;
+      const [qx, qy] = pts[i - 1];
+      const cx_ = (qx + x) / 2;
+      return `C${cx_},${qy} ${cx_},${y} ${x},${y}`;
+    })
+    .join(" ");
   const last = pts[pts.length - 1];
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className={cx("block w-full overflow-visible", className)} style={{ height }}>
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className={cx("block w-full overflow-visible", className)} style={{ height }} aria-hidden>
       <defs>
         <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stopColor="#17191d" stopOpacity="0.16" />
-          <stop offset="1" stopColor="#17191d" stopOpacity="0" />
+          <stop offset="0" stopColor="currentColor" stopOpacity="0.16" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={area} fill={`url(#${id})`} />
-      <path d={line} fill="none" stroke="#17191d" strokeWidth="1.6" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round" />
-      {showDots && (
-        <>
-          <circle cx={pts[0][0]} cy={pts[0][1]} r="3" fill="#17191d" />
-          <circle cx={last[0]} cy={last[1]} r="3.5" fill="white" stroke="#17191d" strokeWidth="1.6" />
-        </>
-      )}
+      <path d={`${line} L${w},${h} L0,${h} Z`} fill={`url(#${id})`} />
+      <path className="draw" pathLength={1} d={line} fill="none" stroke="currentColor" strokeWidth="1.6" vectorEffect="non-scaling-stroke" />
+      <circle cx={last[0]} cy={last[1]} r="3.5" fill="currentColor" />
     </svg>
   );
 }
 
-/** Barras do saldo de fim de mês, com a parte que dá para investir destacada. */
-export function ProjectionBars({
+const MONTH_INITIAL = (label: string) => label.slice(0, 1);
+
+/**
+ * Saldo de fim de mês em barras, com o que dá para investir em champanhe por cima.
+ * Arraste (ou use as setas) para escolher o mês.
+ */
+export function ProjectionScrub({
   months,
   reserve,
   selected,
@@ -74,49 +116,87 @@ export function ProjectionBars({
   selected: number;
   onSelect: (i: number) => void;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const H = 130;
   const max = Math.max(reserve, ...months.map((m) => m.end + m.investable), 1);
   const min = Math.min(0, ...months.map((m) => m.end));
-  const span = max - min;
-  const h = 150;
-  const zero = (max / span) * h;
-  const reserveY = ((max - reserve) / span) * h;
+  const span = max - min || 1;
+  const w = 100 / months.length;
+  const gap = months.length > 6 ? 1.2 : 2.5;
+  const sel = months[selected];
+
+  function pick(clientX: number) {
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return;
+    const i = Math.max(0, Math.min(months.length - 1, Math.floor(((clientX - r.left) / r.width) * months.length)));
+    if (i !== selected) onSelect(i);
+  }
+
+  const tipBottom = Math.min(H, ((Math.max(sel.end, 0) - min) / span) * H + (sel.investable / span) * H) + 14;
+  const tipShift = selected < 2 ? "-12%" : selected > months.length - 3 ? "-88%" : "-50%";
+
   return (
-    <div className="relative">
-      <div className="relative flex items-end gap-1.5" style={{ height: h }}>
-        <div className="pointer-events-none absolute inset-x-0 border-t border-dashed border-graphite/30" style={{ top: reserveY }}>
-          <span className="absolute -top-4 right-0 text-[10px] text-muted">reserva</span>
-        </div>
+    <div>
+      <div
+        ref={ref}
+        role="slider"
+        tabIndex={0}
+        aria-label="Mês selecionado"
+        aria-valuemin={0}
+        aria-valuemax={months.length - 1}
+        aria-valuenow={selected}
+        aria-valuetext={sel.label}
+        className="relative mt-11 cursor-ew-resize touch-none select-none"
+        style={{ height: H }}
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          setDragging(true);
+          pick(e.clientX);
+        }}
+        onPointerMove={(e) => dragging && pick(e.clientX)}
+        onPointerUp={() => setDragging(false)}
+        onPointerCancel={() => setDragging(false)}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowLeft") onSelect(Math.max(0, selected - 1));
+          if (e.key === "ArrowRight") onSelect(Math.min(months.length - 1, selected + 1));
+        }}
+      >
+        <span className="absolute inset-x-0 border-t border-dashed border-ink/22" style={{ bottom: ((reserve - min) / span) * H }} />
         {months.map((m, i) => {
-          const barH = (Math.abs(m.end) / span) * h;
-          const negative = m.end < 0;
+          const bh = Math.max(2, ((Math.max(m.end, 0) - min) / span) * H);
+          const ih = (m.investable / span) * H;
           return (
-            <button
-              key={m.month}
-              onClick={() => onSelect(i)}
-              aria-label={m.label}
-              className="relative h-full flex-1"
-            >
+            <span key={m.month}>
               <span
-                className={cx(
-                  "absolute inset-x-0 rounded-[6px] transition",
-                  negative ? "bg-negative/70" : i === selected ? "bg-graphite" : "bg-graphite/25",
-                )}
-                style={negative ? { top: zero, height: Math.max(barH, 2) } : { top: zero - barH, height: Math.max(barH, 2) }}
+                className="absolute bottom-0 rounded-[6px] transition-[height,background-color] duration-700 ease-[var(--ease)]"
+                style={{
+                  left: `${i * w + gap / 2}%`,
+                  width: `${w - gap}%`,
+                  height: bh,
+                  background: m.end < 0 ? "var(--negative)" : i === selected ? "var(--ink)" : "rgb(239 236 227 / .16)",
+                }}
               />
-              {m.investable > 0 && !negative && (
+              {m.investable > 0 && m.end >= 0 && (
                 <span
-                  className="absolute inset-x-0 rounded-t-[6px] bg-positive"
-                  style={{ top: zero - barH - (m.investable / span) * h, height: Math.max((m.investable / span) * h, 3) }}
+                  className="absolute rounded-[6px] bg-champagne transition-[height,bottom] duration-700 ease-[var(--ease)]"
+                  style={{ left: `${i * w + gap / 2}%`, width: `${w - gap}%`, bottom: bh + 2, height: Math.max(3, ih) }}
                 />
               )}
-            </button>
+            </span>
           );
         })}
+        <span
+          className="pointer-events-none absolute whitespace-nowrap rounded-full bg-ink px-[9px] py-[5px] text-[11px] font-medium text-page transition-[left] duration-200"
+          style={{ left: `${(selected + 0.5) * w}%`, bottom: tipBottom, transform: `translate(${tipShift}, 0)` }}
+        >
+          {sel.label} · {sel.investable ? `investir ${money(sel.investable, { compact: true })}` : "nada"}
+        </span>
       </div>
-      <div className="mt-2 flex gap-1.5">
+      <div className="mt-2 flex">
         {months.map((m, i) => (
-          <span key={m.month} className={cx("flex-1 text-center text-[10px]", i === selected ? "font-semibold text-ink" : "text-muted")}>
-            {m.label}
+          <span key={m.month} className={cx("flex-1 text-center text-[9.5px]", i === selected ? "text-ink" : "text-muted")}>
+            {MONTH_INITIAL(m.label)}
           </span>
         ))}
       </div>
@@ -124,44 +204,64 @@ export function ProjectionBars({
   );
 }
 
+/** Aviso que sai do topo da tela, como a Dynamic Island do iPhone. */
+export function Island({ children, open }: { children: React.ReactNode; open: boolean }) {
+  return (
+    <div
+      aria-live="polite"
+      className={cx(
+        "fixed left-1/2 top-[max(env(safe-area-inset-top),10px)] z-[90] flex -translate-x-1/2 items-center justify-between gap-3 overflow-hidden rounded-[20px] bg-black px-3.5 text-[12px] text-ink transition-all duration-500 ease-[var(--spring)]",
+        open ? "h-10 w-[250px] opacity-100" : "pointer-events-none h-[35px] w-[122px] opacity-0",
+      )}
+    >
+      <span className={cx("flex w-full items-center justify-between gap-3 whitespace-nowrap transition-opacity", open ? "opacity-100 delay-200" : "opacity-0")}>
+        {children}
+      </span>
+    </div>
+  );
+}
+
 const TABS = [
-  { href: "/inicio", label: "Início", icon: House },
-  { href: "/cartoes", label: "Cartões", icon: CreditCard },
-  { href: "/projecao", label: "Projeção", icon: ChartNoAxesCombined },
-  { href: "/perfil", label: "Perfil", icon: UserRound },
+  { href: "/inicio", label: "início", icon: House },
+  { href: "/projecao", label: "projeção", icon: ChartNoAxesCombined },
+  { href: "/cartoes", label: "cartões", icon: CreditCard },
+  { href: "/perfil", label: "perfil", icon: UserRound },
 ];
 
-/** Navegação principal: pílula de vidro com 4 abas e o botão de lançar. */
+/** Navegação: pílula de vidro com 4 abas, um destaque que desliza e o botão + creme. */
 export function BottomNav() {
   const path = usePathname();
+  const active = Math.max(0, TABS.findIndex((t) => path.startsWith(t.href)));
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-[22px] pb-[max(env(safe-area-inset-bottom),14px)]">
+    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-4 pb-[max(env(safe-area-inset-bottom),18px)]">
       <div className="flex items-center gap-2.5">
-        <div className="glass-strong flex h-[58px] flex-1 items-center rounded-full px-1.5">
-          {TABS.map(({ href, label, icon: Icon }) => {
-            const active = path.startsWith(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                aria-current={active ? "page" : undefined}
-                className={cx(
-                  "flex h-[46px] flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[11px] transition",
-                  active ? "bg-graphite text-white" : "text-ink-soft",
-                )}
-              >
-                <Icon size={17} />
-                {label}
-              </Link>
-            );
-          })}
+        <div className="glass-strong relative flex h-[62px] flex-1 rounded-full p-[5px]">
+          <span
+            aria-hidden
+            className="absolute inset-y-[5px] left-[5px] w-[calc((100%-10px)/4)] rounded-full bg-white/11 transition-transform duration-[550ms] ease-[var(--spring)]"
+            style={{ transform: `translateX(${active * 100}%)` }}
+          />
+          {TABS.map(({ href, label, icon: Icon }, i) => (
+            <Link
+              key={href}
+              href={href}
+              aria-current={i === active ? "page" : undefined}
+              className={cx(
+                "relative flex flex-1 flex-col items-center justify-center gap-[3px] rounded-full text-[10.5px] transition-colors",
+                i === active ? "text-ink" : "text-muted",
+              )}
+            >
+              <Icon size={18} strokeWidth={1.7} />
+              {label}
+            </Link>
+          ))}
         </div>
         <Link
           href="/lancar"
           aria-label="Novo lançamento"
-          className="grid size-[58px] shrink-0 place-items-center rounded-full bg-graphite text-white shadow-[0_14px_30px_-12px_rgba(18,20,23,0.8)] active:scale-95"
+          className="group grid size-[62px] shrink-0 place-items-center rounded-full bg-ink text-page shadow-[0_14px_30px_-10px_rgb(0_0_0/0.9)] transition active:scale-95"
         >
-          <Plus size={22} />
+          <Plus size={22} className="transition-transform duration-[450ms] ease-[var(--spring)] group-active:rotate-90" />
         </Link>
       </div>
     </nav>

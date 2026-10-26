@@ -56,7 +56,7 @@ export default function Connect() {
         <TopBar />
         <div className="animate-rise mt-16 flex flex-1 flex-col items-center text-center">
           <div className="relative grid size-[100px] place-items-center">
-            <span className="animate-spin-slow absolute inset-0 rounded-full border-[3px] border-graphite/10 border-t-graphite" />
+            <span className="animate-spin-slow absolute inset-0 rounded-full border-[3px] border-line border-t-graphite" />
             <Landmark size={32} />
           </div>
           <h1 className="mt-8 font-serif text-[32px] leading-none">Conectando suas contas</h1>
@@ -104,7 +104,7 @@ export default function Connect() {
       <Screen>
         <TopBar />
         <div className="animate-rise mt-12 flex flex-1 flex-col items-center text-center">
-          <div className="grid size-[92px] place-items-center rounded-full bg-graphite text-white shadow-[0_18px_40px_-16px_rgba(18,20,23,0.8)]">
+          <div className="grid size-[92px] place-items-center rounded-full bg-ink text-page shadow-[0_18px_40px_-16px_rgba(18,20,23,0.8)]">
             <Check size={34} />
           </div>
           <h1 className="mt-8 font-serif text-[34px] leading-[1.05]">Tudo pronto! Suas contas estão conectadas</h1>
@@ -161,7 +161,7 @@ export default function Connect() {
           />
         </label>
 
-        <div className="glass mt-4 divide-y divide-graphite/8 rounded-[24px] px-4">
+        <div className="glass mt-4 divide-y divide-line rounded-[24px] px-4">
           {banks.map((b) => {
             const on = selected.includes(b.id);
             return (
@@ -171,7 +171,7 @@ export default function Connect() {
                 <span
                   className={cx(
                     "grid size-5 place-items-center rounded-full transition",
-                    on ? "bg-graphite text-white" : "ring-1 ring-graphite/25",
+                    on ? "bg-ink text-page" : "ring-1 ring-graphite/25",
                   )}
                 >
                   {on && <Check size={13} />}

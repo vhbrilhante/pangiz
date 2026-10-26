@@ -2,23 +2,23 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Button, Screen, Steps, Wordmark } from "@/components/ui";
-import { SilverCard3D, Sparkline } from "@/components/visuals";
+import { useRef, useState } from "react";
+import { Button, Rise, Roll, Screen, Steps, Wordmark } from "@/components/ui";
+import { Card3D, Sparkline } from "@/components/visuals";
 import { useStore } from "@/lib/store";
 
 const STEPS = [
   {
-    title: "Seu dinheiro, de olho no futuro.",
-    text: "Contas, cartões e parcelas em um só lugar, sem planilha e sem complicação.",
+    title: "seu dinheiro, de olho no futuro.",
+    text: "contas, cartões e parcelas em um só lugar, sem planilha e sem complicação.",
   },
   {
-    title: "Visão total do seu saldo",
-    text: "Junte todas as suas contas e veja quanto você tem de verdade, num número só.",
+    title: "visão total do seu saldo",
+    text: "suas contas reunidas em um só lugar. saiba exatamente o que você tem, agora.",
   },
   {
-    title: "Projeções inteligentes para o seu futuro",
-    text: "Veja mês a mês quanto sobra e quanto você pode investir, já contando as parcelas.",
+    title: "projeções inteligentes para seu futuro",
+    text: "veja mês a mês quanto sobra e quanto dá para investir, já contando as parcelas.",
   },
 ];
 
@@ -26,66 +26,86 @@ export default function Onboarding() {
   const [step, setStep] = useState(0);
   const router = useRouter();
   const { finishOnboarding } = useStore();
+  const swipe = useRef<{ x: number; y: number } | null>(null);
 
   function done() {
     finishOnboarding();
     router.push("/cadastro");
   }
+  const next = () => (step < 2 ? setStep(step + 1) : done());
 
   const s = STEPS[step];
   return (
-    <Screen className="overflow-hidden">
-      <div className="flex h-9 items-center justify-between">
-        <Wordmark />
-        <Steps total={3} current={step} />
-        <button onClick={done} className="text-[13px] text-muted">
-          Pular
-        </button>
-      </div>
+    <Screen className="overflow-hidden text-center">
+      <div
+        className="flex flex-1 flex-col"
+        onPointerDown={(e) => (swipe.current = { x: e.clientX, y: e.clientY })}
+        onPointerUp={(e) => {
+          const start = swipe.current;
+          swipe.current = null;
+          if (!start) return;
+          const dx = e.clientX - start.x;
+          if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(e.clientY - start.y)) return;
+          if (dx < 0) next();
+          else if (step > 0) setStep(step - 1);
+        }}
+      >
+        <div className="flex h-9 items-center justify-between">
+          <Wordmark />
+          <Steps total={3} current={step} />
+          <button onClick={done} className="text-[11px] text-ink-soft">
+            pular
+          </button>
+        </div>
 
-      <div key={step} className="relative mt-10 flex flex-1 flex-col items-center justify-center">
-        <SilverCard3D className="animate-rise -mt-6" />
-        {step === 1 && (
-          <div className="glass-strong animate-rise absolute top-[52%] w-[309px] rounded-[26px] p-5 [animation-delay:120ms]">
-            <p className="text-[13px] text-muted">Saldo em todas as contas</p>
-            <p className="tabular mt-1 font-serif text-[40px] leading-none">R$ 4.851,45</p>
-            <div className="mt-4 flex justify-between text-[12px] text-ink-soft">
-              <span>Nubank · R$ 2.340,50</span>
-              <span>Itaú · R$ 1.180,20</span>
+        <div className="relative mx-[-40px] mt-[18px]">
+          <Card3D />
+          {step === 1 && (
+            <div key="a" className="glass-strong animate-rise delay-2 absolute inset-x-10 top-[150px] rounded-[22px] p-[18px] text-left">
+              <p className="text-[11px] text-muted">saldo disponível · 2 contas</p>
+              <p className="big mt-2 text-[34px]">
+                <Roll value={12450} />
+              </p>
+              <div className="mt-2.5 flex justify-between text-[11px] text-muted">
+                <span>Itaú R$ 8.200,00</span>
+                <span>Nubank R$ 4.250,00</span>
+              </div>
             </div>
-          </div>
-        )}
-        {step === 2 && (
-          <div className="glass-strong animate-rise absolute top-[48%] w-[309px] rounded-[26px] p-5 [animation-delay:120ms]">
-            <p className="text-[13px] text-muted">Saldo previsto em março</p>
-            <p className="tabular mt-1 font-serif text-[38px] leading-none">R$ 9.320,00</p>
-            <Sparkline values={[4.8, 4.1, 5.2, 4.9, 6.3, 7.1, 6.8, 8.2, 9.3]} className="mt-4" />
-            <div className="mt-2 flex justify-between text-[11px] text-muted">
-              <span>hoje</span>
-              <span>março de 2027</span>
+          )}
+          {step === 2 && (
+            <div key="b" className="champagne animate-rise delay-2 absolute inset-x-10 top-[140px] rounded-[22px] p-[18px] text-left">
+              <p className="text-[11px] text-muted">saldo previsto · fim do mês</p>
+              <p className="big mt-2 text-[32px]">
+                <Roll value={10320} />
+              </p>
+              <div className="mt-2.5">
+                <Sparkline values={[10, 9.2, 9.6, 8.7, 9.9, 10.8, 10.1, 10.6]} height={46} />
+              </div>
+              <div className="mt-1.5 flex justify-between text-[11px] text-muted">
+                <span>hoje</span>
+                <span>próximos 30 dias</span>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      <div key={`m${step}`} className="animate-rise mt-6">
-        <h1 className="font-serif text-[34px] leading-[1.05] tracking-[-0.01em]">{s.title}</h1>
-        <p className="mt-3 max-w-[290px] text-[14px] leading-[1.45] text-ink-soft">{s.text}</p>
-      </div>
+        <div key={step} className="mt-auto">
+          <Rise text={s.title} className="text-[33px]" />
+          <p className="animate-rise delay-3 mx-auto mt-2.5 max-w-[270px] text-[13px] leading-[1.45] text-ink-soft">{s.text}</p>
+        </div>
 
-      <div className="mt-8 flex items-center justify-between pb-2">
+        <div className="mb-2 mt-[34px] flex justify-center">
+          <Button size="sm" onClick={next}>
+            {step < 2 ? "próximo" : "começar"}
+          </Button>
+        </div>
         {step === 0 ? (
-          <Link href="/login" className="text-[14px] text-ink-soft">
-            Já tenho conta
+          <Link href="/login" className="block pb-1 text-[12px] text-muted">
+            já tenho conta
           </Link>
         ) : (
-          <button onClick={() => setStep(step - 1)} className="text-[14px] text-ink-soft">
-            Voltar
-          </button>
+          <p className="pb-1 text-[11px] text-muted">arraste para os lados</p>
         )}
-        <Button size="sm" onClick={() => (step < 2 ? setStep(step + 1) : done())}>
-          {step < 2 ? "próximo" : "começar"}
-        </Button>
       </div>
     </Screen>
   );

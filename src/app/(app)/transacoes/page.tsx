@@ -24,7 +24,7 @@ export default function Transactions() {
   return (
     <Screen className="pb-32">
       <TopBar back="/inicio" />
-      <h1 className="mt-6 font-serif text-[34px] leading-none">Transações</h1>
+      <h1 className="mt-6 font-serif text-[32px] leading-none">transações</h1>
       <div className="mt-5">
         <Segmented
           options={[

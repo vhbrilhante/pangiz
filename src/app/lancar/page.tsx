@@ -1,74 +1,72 @@
 "use client";
 
-import { X } from "lucide-react";
+import { Check, Delete, Minus, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Gate } from "@/components/Gate";
-import { Button, cx, Field, Money, Screen, Segmented } from "@/components/ui";
+import { Backdrop, Chip, cx, Roll, Segmented } from "@/components/ui";
 import { CATEGORIES, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
 import { addMonths, monthLong, monthOf, todayISO } from "@/lib/dates";
-import { parseMoney, uid } from "@/lib/format";
+import { money, uid } from "@/lib/format";
 import { project } from "@/lib/projection";
 import { useStore } from "@/lib/store";
 import type { AppData, CategoryId } from "@/lib/types";
 
-type Kind = "gasto" | "receita" | "parcelado" | "fixo";
+type Kind = "gasto" | "parcelado" | "fixo" | "receita";
 
 const KINDS: { value: Kind; label: string }[] = [
-  { value: "gasto", label: "Gasto" },
-  { value: "receita", label: "Receita" },
-  { value: "parcelado", label: "Parcelado" },
-  { value: "fixo", label: "Fixo" },
+  { value: "gasto", label: "gasto" },
+  { value: "parcelado", label: "parcelado" },
+  { value: "fixo", label: "todo mês" },
+  { value: "receita", label: "receita" },
 ];
 
-function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cx("h-8 shrink-0 rounded-full px-3 text-[12px] font-medium transition", on ? "bg-graphite text-white" : "bg-white/60 text-ink-soft ring-1 ring-black/5")}
-    >
-      {children}
-    </button>
-  );
-}
+const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "del"];
 
+// Folha de lançamento: escolhe o tipo, digita o valor no teclado próprio e vê o impacto na projeção antes de salvar.
 function NewEntry() {
   const router = useRouter();
-  const store = useStore();
-  const { data } = store;
+  const { data, update } = useStore();
   const today = todayISO();
   const month = monthOf(today);
+  const day = Number(today.slice(8, 10));
 
   const [kind, setKind] = useState<Kind>("gasto");
-  const [value, setValue] = useState("");
-  const [description, setDescription] = useState("");
+  const [cents, setCents] = useState(0);
   const [category, setCategory] = useState<CategoryId>("mercado");
-  const [date, setDate] = useState(today);
   const [source, setSource] = useState<string>(data.cards[0]?.id ?? data.accounts[0]?.id ?? "");
-  const [count, setCount] = useState("10");
-  const [firstOffset, setFirstOffset] = useState(1);
-  const [day, setDay] = useState("10");
-  const [isIncome, setIsIncome] = useState(false);
+  const [count, setCount] = useState(10);
+  const [saved, setSaved] = useState(false);
 
-  const amount = parseMoney(value);
-  const isCard = data.cards.some((c) => c.id === source);
-  const income = kind === "receita" || (kind === "fixo" && isIncome);
+  const amount = cents / 100;
+  const income = kind === "receita";
   const categories = income ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
-  const n = Math.max(1, Math.min(48, Number(count) || 1));
+  const sources = [
+    ...(income ? [] : data.cards.map((c) => ({ id: c.id, label: "cartão" }))),
+    ...data.accounts.map((a) => ({ id: a.id, label: a.name })),
+  ];
+  const isCard = data.cards.some((c) => c.id === source);
 
-  // Constrói os dados como ficariam depois de salvar, para mostrar o impacto antes.
+  function pickKind(k: Kind) {
+    setKind(k);
+    if (k === "receita") {
+      setCategory("salario");
+      if (isCard) setSource(data.accounts[0]?.id ?? "");
+    } else if (!EXPENSE_CATEGORIES.includes(category)) {
+      setCategory(k === "fixo" ? "contas" : "mercado");
+    }
+  }
+
+  // Os dados como ficariam depois de salvar, para mostrar o impacto antes.
   function apply(d: AppData): AppData {
-    const desc = description.trim() || CATEGORIES[category].label;
-    const ids = isCard ? { cardId: source } : { accountId: source || undefined };
+    const description = CATEGORIES[category].label;
+    const on = isCard ? { cardId: source } : { accountId: source || undefined };
     if (kind === "gasto" || kind === "receita") {
-      const signed = kind === "gasto" ? -amount : amount;
-      const t = { id: uid(), date, description: desc, amount: signed, category, ...(kind === "receita" ? { accountId: source } : ids) };
-      const touchesBalance = !t.cardId && t.date <= today;
+      const signed = income ? amount : -amount;
       return {
         ...d,
-        transactions: [t, ...d.transactions],
-        accounts: touchesBalance ? d.accounts.map((a) => (a.id === t.accountId ? { ...a, balance: a.balance + signed } : a)) : d.accounts,
+        transactions: [{ id: uid(), date: today, description, amount: signed, category, ...on }, ...d.transactions],
+        accounts: isCard ? d.accounts : d.accounts.map((a) => (a.id === source ? { ...a, balance: a.balance + signed } : a)),
       };
     }
     if (kind === "parcelado") {
@@ -77,154 +75,137 @@ function NewEntry() {
         installments: [
           ...d.installments,
           {
-            id: uid(), description: desc, installmentAmount: Math.round((amount / n) * 100) / 100, count: n,
-            firstMonth: addMonths(month, firstOffset), category,
-            ...(isCard ? { cardId: source } : { day: Number(day) || 10 }),
+            id: uid(), description, installmentAmount: Math.round((amount / count) * 100) / 100, count,
+            firstMonth: addMonths(month, 1), category, ...(isCard ? { cardId: source } : { day: 10 }),
           },
         ],
       };
     }
-    return {
-      ...d,
-      recurring: [
-        ...d.recurring,
-        { id: uid(), description: desc, amount: income ? amount : -amount, day: Math.min(31, Math.max(1, Number(day) || 1)), category, startMonth: month, ...ids },
-      ],
-    };
+    return { ...d, recurring: [...d.recurring, { id: uid(), description, amount: -amount, day, category, startMonth: month, ...on }] };
   }
 
   const before = useMemo(() => project(data), [data]);
-  const after = useMemo(() => (amount > 0 ? project(apply(data)) : null), [data, amount, kind, source, count, firstOffset, day, isIncome, date, category]); // eslint-disable-line react-hooks/exhaustive-deps
+  const after = useMemo(() => (amount > 0 ? project(apply(data)) : null), [data, amount, kind, source, count, category]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function save() {
-    store.update(apply);
-    router.push(kind === "gasto" || kind === "receita" ? "/inicio" : "/projecao");
+  function press(k: string) {
+    setCents((c) => (k === "del" ? Math.floor(c / 10) : Math.min(99999999, Number(String(c) + k))));
   }
 
-  const sources = [
-    ...(kind === "receita" || (kind === "fixo" && isIncome) ? [] : data.cards.map((c) => ({ id: c.id, label: `Cartão ${c.name}` }))),
-    ...data.accounts.map((a) => ({ id: a.id, label: a.name })),
-  ];
-  if (kind === "parcelado") sources.push({ id: "", label: "Boleto / carnê" });
+  function save() {
+    setSaved(true);
+    setTimeout(() => {
+      update(apply);
+      router.push(kind === "gasto" || kind === "receita" ? "/inicio" : "/projecao");
+    }, 450);
+  }
+
+  const diff = after ? after.totalInvestable - before.totalInvestable : 0;
 
   return (
-    <Screen>
-      <div className="flex h-9 items-center justify-between">
-        <h1 className="font-serif text-[28px] leading-none">Novo lançamento</h1>
-        <button aria-label="Fechar" onClick={() => router.back()} className="glass grid size-9 place-items-center rounded-full">
-          <X size={16} />
+    <div className={cx("mx-auto min-h-dvh max-w-[430px]", data.settings.hideValues && "hide-values")}>
+      <Backdrop />
+      <button aria-label="Fechar" onClick={() => router.back()} className="animate-fade fixed inset-0 bg-black/55" />
+      <div
+        role="dialog"
+        aria-label="Novo lançamento"
+        className="animate-sheet fixed inset-x-0 bottom-0 mx-auto max-h-[94dvh] max-w-[430px] overflow-y-auto rounded-t-[34px] border-t border-glass-border bg-[#191917] px-[22px] pb-[max(env(safe-area-inset-bottom),22px)] pt-3"
+      >
+        <div className="mx-auto mb-3.5 h-[5px] w-[38px] rounded-full bg-ink/20" />
+        <div className="flex items-center justify-between">
+          <h1 className="font-serif text-[24px] leading-none">novo lançamento</h1>
+          <button aria-label="Fechar" onClick={() => router.back()} className="glass grid size-9 place-items-center rounded-full text-ink-soft">
+            <X size={15} />
+          </button>
+        </div>
+
+        <div className="mt-3.5">
+          <Segmented options={KINDS} value={kind} onChange={pickKind} />
+        </div>
+
+        <div className="mt-5 text-center">
+          <p className="big text-[52px]">
+            <Roll value={amount} />
+          </p>
+          <p className="mt-2 min-h-4 text-[11px] text-muted">
+            {kind === "parcelado" && amount > 0 && `${count}x de ${money(amount / count)} a partir de ${monthLong(addMonths(month, 1))}`}
+            {kind === "fixo" && amount > 0 && `todo dia ${day}`}
+          </p>
+        </div>
+
+        <div className="-mx-[22px] mt-3 flex gap-2 overflow-x-auto px-[22px] pb-0.5 [scrollbar-width:none]">
+          {categories.map((c) => (
+            <Chip key={c} on={category === c} onClick={() => setCategory(c)}>
+              {CATEGORIES[c].label.toLowerCase()}
+            </Chip>
+          ))}
+        </div>
+
+        <div className="mt-2.5 flex flex-wrap items-center gap-2">
+          {sources.map((s) => (
+            <Chip key={s.id} on={source === s.id} onClick={() => setSource(s.id)}>
+              {s.label}
+            </Chip>
+          ))}
+          {kind === "parcelado" && (
+            <span className="glass ml-auto flex items-center gap-1 rounded-full p-1">
+              <button aria-label="Menos parcelas" onClick={() => setCount((n) => Math.max(2, n - 1))} className="grid size-8 place-items-center rounded-full active:bg-white/10">
+                <Minus size={14} />
+              </button>
+              <span className="tabular min-w-11 text-center text-[14px]">{count}x</span>
+              <button aria-label="Mais parcelas" onClick={() => setCount((n) => Math.min(24, n + 1))} className="grid size-8 place-items-center rounded-full active:bg-white/10">
+                <Plus size={14} />
+              </button>
+            </span>
+          )}
+        </div>
+
+        <div className="glass mt-3.5 min-h-[62px] rounded-[18px] px-3.5 py-3 text-[12.5px] leading-normal text-ink-soft" aria-live="polite">
+          {!after ? (
+            "digite um valor para ver como ele muda o que você pode investir."
+          ) : (
+            <>
+              em {data.settings.horizon} meses você investe{" "}
+              <b className={cx("m font-medium", diff < 0 ? "text-negative" : diff > 0 && "text-positive")}>{money(after.totalInvestable, { compact: true })}</b>
+              {diff !== 0 && <span className="m"> ({money(diff, { compact: true, sign: true })})</span>}
+              {after.firstInvestMonth && before.firstInvestMonth && after.firstInvestMonth.month !== before.firstInvestMonth.month
+                ? `. o primeiro mês para investir passa a ser ${monthLong(after.firstInvestMonth.month)}`
+                : ""}
+              .{after.goesNegative && !before.goesNegative && <span className="text-negative"> o saldo fica negativo em algum momento.</span>}
+            </>
+          )}
+        </div>
+
+        <div className="mt-3.5 grid grid-cols-3 gap-1.5">
+          {KEYS.map((k) => (
+            <button
+              key={k}
+              onClick={() => press(k)}
+              aria-label={k === "del" ? "Apagar" : k}
+              className="grid h-[50px] place-items-center rounded-2xl font-serif text-[22px] transition active:scale-[0.92] active:bg-white/10"
+            >
+              {k === "del" ? <Delete size={20} /> : k}
+            </button>
+          ))}
+        </div>
+
+        <button
+          disabled={!amount || saved}
+          onClick={save}
+          className={cx(
+            "mt-3 flex h-[52px] w-full items-center justify-center gap-1.5 rounded-full text-[15px] font-medium text-page transition active:scale-[0.96] disabled:opacity-35",
+            saved ? "bg-positive disabled:opacity-100" : "bg-ink",
+          )}
+        >
+          {saved ? (
+            <>
+              <Check size={16} /> salvo
+            </>
+          ) : (
+            "salvar"
+          )}
         </button>
       </div>
-
-      <div className="mt-5">
-        <Segmented
-          options={KINDS}
-          value={kind}
-          onChange={(k) => {
-            setKind(k);
-            setCategory(k === "receita" ? "salario" : "mercado");
-            setIsIncome(false);
-            if (k === "receita") setSource(data.accounts[0]?.id ?? "");
-          }}
-        />
-      </div>
-
-      <label className="mt-6 block text-center">
-        <span className="text-[13px] text-muted">{kind === "parcelado" ? "Valor total" : kind === "fixo" ? "Valor por mês" : "Valor"}</span>
-        <input
-          autoFocus
-          inputMode="decimal"
-          placeholder="R$ 0,00"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="tabular mt-1 w-full bg-transparent text-center font-serif text-[48px] leading-none outline-none placeholder:text-ink/25"
-        />
-        {kind === "parcelado" && amount > 0 && (
-          <span className="text-[13px] text-ink-soft">
-            {n}x de <Money value={amount / n} />
-          </span>
-        )}
-      </label>
-
-      <div className="mt-6 space-y-5">
-        <Field label="Descrição" placeholder={CATEGORIES[category].label} value={description} onChange={(e) => setDescription(e.target.value)} />
-
-        {kind === "fixo" && (
-          <div className="flex gap-2">
-            <Chip on={!isIncome} onClick={() => { setIsIncome(false); setCategory("contas"); }}>É uma saída</Chip>
-            <Chip on={isIncome} onClick={() => { setIsIncome(true); setCategory("salario"); setSource(data.accounts[0]?.id ?? ""); }}>É uma entrada</Chip>
-          </div>
-        )}
-
-        <div>
-          <p className="mb-2 text-[13px] font-medium text-ink-soft">Categoria</p>
-          <div className="-mx-[22px] flex gap-2 overflow-x-auto px-[22px] pb-1">
-            {categories.map((c) => (
-              <Chip key={c} on={category === c} onClick={() => setCategory(c)}>
-                {CATEGORIES[c].label}
-              </Chip>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="mb-2 text-[13px] font-medium text-ink-soft">{income ? "Entra em" : "Pago com"}</p>
-          <div className="flex flex-wrap gap-2">
-            {sources.map((s) => (
-              <Chip key={s.id || "boleto"} on={source === s.id} onClick={() => setSource(s.id)}>
-                {s.label}
-              </Chip>
-            ))}
-          </div>
-        </div>
-
-        {(kind === "gasto" || kind === "receita") && (
-          <Field label="Data" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-        )}
-
-        {kind === "parcelado" && (
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Parcelas" inputMode="numeric" value={count} onChange={(e) => setCount(e.target.value.replace(/\D/g, "").slice(0, 2))} />
-            {isCard ? (
-              <div>
-                <p className="mb-2 text-[13px] font-medium text-ink-soft">1ª parcela</p>
-                <div className="flex gap-2">
-                  <Chip on={firstOffset === 0} onClick={() => setFirstOffset(0)}>{monthLong(month).slice(0, 3)}</Chip>
-                  <Chip on={firstOffset === 1} onClick={() => setFirstOffset(1)}>{monthLong(addMonths(month, 1)).slice(0, 3)}</Chip>
-                </div>
-              </div>
-            ) : (
-              <Field label="Vence no dia" inputMode="numeric" value={day} onChange={(e) => setDay(e.target.value.replace(/\D/g, "").slice(0, 2))} />
-            )}
-          </div>
-        )}
-
-        {kind === "fixo" && (
-          <Field label="Todo dia" inputMode="numeric" value={day} onChange={(e) => setDay(e.target.value.replace(/\D/g, "").slice(0, 2))} />
-        )}
-      </div>
-
-      {after && (
-        <div className="glass mt-6 rounded-[20px] p-4 text-[13px] leading-[1.45]">
-          <p className="font-semibold">Impacto na projeção</p>
-          <p className="mt-1 text-ink-soft">
-            O que dá para investir nos próximos {data.settings.horizon} meses vai de <Money value={before.totalInvestable} /> para{" "}
-            <Money
-              value={after.totalInvestable}
-              className={cx("font-semibold", after.totalInvestable < before.totalInvestable ? "text-negative" : after.totalInvestable > before.totalInvestable && "text-positive")}
-            />
-            .
-          </p>
-          {after.goesNegative && !before.goesNegative && <p className="mt-1 text-negative">Com isso o saldo fica negativo em algum momento.</p>}
-        </div>
-      )}
-
-      <div className="mt-6 pb-4">
-        <Button disabled={amount <= 0} onClick={save}>
-          Salvar
-        </Button>
-      </div>
-    </Screen>
+    </div>
   );
 }
 

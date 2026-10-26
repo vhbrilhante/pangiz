@@ -47,10 +47,10 @@ function AccountRow({ a }: { a: Account }) {
             inputMode="decimal"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="tabular h-10 flex-1 rounded-xl bg-white/70 px-3 text-[14px] outline-none ring-1 ring-black/5"
+            className="tabular h-10 flex-1 rounded-xl bg-white/8 px-3 text-[14px] outline-none ring-1 ring-white/10"
             aria-label="Saldo real da conta"
           />
-          <button className="grid size-10 place-items-center rounded-xl bg-graphite text-white" aria-label="Salvar saldo">
+          <button className="grid size-10 place-items-center rounded-xl bg-ink text-page" aria-label="Salvar saldo">
             <Check size={16} />
           </button>
         </form>
@@ -67,7 +67,7 @@ export default function Profile() {
 
   return (
     <Screen className="pb-32">
-      <h1 className="font-serif text-[34px] leading-none">Perfil</h1>
+      <h1 className="font-serif text-[32px] leading-none">perfil</h1>
 
       <Card className="mt-5 flex items-center gap-3">
         <span className="pearl grid size-12 place-items-center rounded-full font-serif text-[22px]">
@@ -80,9 +80,9 @@ export default function Profile() {
       </Card>
 
       <section id="contas" className="mt-6 scroll-mt-6">
-        <SectionHeader title="Contas" />
+        <SectionHeader title="contas" />
         <p className="-mt-1 mb-2 text-[12px] text-muted">Toque no saldo para corrigir com o valor que aparece no seu banco.</p>
-        <div className="glass divide-y divide-graphite/8 rounded-[24px] px-4">
+        <div className="glass divide-y divide-line rounded-[24px] px-4">
           {data.accounts.map((a) => (
             <AccountRow key={a.id} a={a} />
           ))}
@@ -108,7 +108,7 @@ export default function Profile() {
       </section>
 
       <section className="mt-6">
-        <SectionHeader title="Contas fixas e renda" />
+        <SectionHeader title="todo mês" />
         {fixed.length === 0 && <p className="text-[13px] text-muted">Nada cadastrado. Use o + para adicionar salário, aluguel, assinaturas.</p>}
         <div className="space-y-3">
           {fixed.map((r) => (

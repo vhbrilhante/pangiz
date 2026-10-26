@@ -3,54 +3,62 @@
 import { LockKeyhole } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button, OtpInput, Screen, TopBar } from "@/components/ui";
+import { Button, OtpInput, Rise, Screen, TopBar } from "@/components/ui";
+import { Island } from "@/components/visuals";
 import { useStore } from "@/lib/store";
+
+// Código de exemplo: chega "por SMS" pela ilha do topo e preenche sozinho, como o autopreenchimento do iPhone.
+const DEMO_CODE = "284619";
 
 export default function Verify() {
   const router = useRouter();
   const { data, verify } = useStore();
   const [code, setCode] = useState("");
-  const [seconds, setSeconds] = useState(30);
+  const [island, setIsland] = useState(false);
+  const [auto, setAuto] = useState(false);
 
   useEffect(() => {
-    if (seconds <= 0) return;
-    const t = setTimeout(() => setSeconds(seconds - 1), 1000);
-    return () => clearTimeout(t);
-  }, [seconds]);
+    const timers = [
+      setTimeout(() => setIsland(true), 500),
+      setTimeout(() => setIsland(false), 2900),
+      ...[...DEMO_CODE].map((_, i) =>
+        setTimeout(() => {
+          setCode((c) => (c.length === i ? DEMO_CODE.slice(0, i + 1) : c));
+          if (i === DEMO_CODE.length - 1) setAuto(true);
+        }, 1300 + i * 110),
+      ),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
 
   const complete = code.replace(/\s/g, "").length === 6;
 
   return (
     <Screen>
+      <Island open={island}>
+        <span className="text-muted">mensagem</span>
+        <span>código pangiz: {DEMO_CODE}</span>
+      </Island>
       <TopBar back="/cadastro" />
-      <div className="animate-rise mt-12 flex flex-1 flex-col">
-        <h1 className="font-serif text-[34px] leading-[1.05]">Confirme o seu e-mail</h1>
-        <p className="mt-3 text-[14px] text-ink-soft">Enviamos um código de 6 dígitos para</p>
-        <p className="mt-0.5 text-[14px] font-semibold">{data.user?.email ?? "seu e-mail"}</p>
+      <div className="mt-[34px] flex flex-1 flex-col">
+        <Rise text="só falta confirmar que é você." className="text-[33px]" />
+        <p className="animate-rise delay-2 mt-2.5 text-[13px] leading-[1.45] text-ink-soft">
+          enviamos um código de 6 dígitos para <span className="text-ink">{data.user?.email ?? "seu e-mail"}</span>
+        </p>
 
-        <div className="mt-9">
+        <div className="animate-rise delay-3 mt-7">
           <OtpInput value={code} onChange={setCode} />
         </div>
+        <p className="mt-[18px] text-center text-[11px] text-muted">
+          {auto && complete ? "código preenchido automaticamente" : <span className="shimmer">aguardando o código...</span>}
+        </p>
 
-        <div className="mt-6 text-center text-[13px]">
-          <p className="text-muted">Não recebeu?</p>
-          {seconds > 0 ? (
-            <p className="mt-1 text-ink-soft">Reenviar código em 0:{String(seconds).padStart(2, "0")}</p>
-          ) : (
-            <button onClick={() => setSeconds(30)} className="mt-1 font-semibold text-ink">
-              Reenviar código
-            </button>
-          )}
+        <div className="mx-auto mt-auto flex max-w-[240px] flex-col items-center gap-2 pt-10 text-center text-ink-soft">
+          <LockKeyhole size={20} />
+          <p className="text-[11px] leading-normal text-muted">uma camada de cuidado para manter seu dinheiro e seus dados seguros.</p>
         </div>
 
-        <div className="mx-auto mt-auto flex max-w-[263px] flex-col items-center gap-2 pt-10 text-center">
-          <LockKeyhole size={20} className="text-ink-soft" />
-          <p className="text-[12px] leading-[1.4] text-muted">
-            Seus dados financeiros ficam protegidos e só você tem acesso a eles.
-          </p>
-        </div>
-
-        <div className="mt-6 space-y-3 text-center">
+        <div className="mt-6">
           <Button
             disabled={!complete}
             onClick={() => {
@@ -58,9 +66,11 @@ export default function Verify() {
               router.push("/conectar");
             }}
           >
-            Verificar
+            verificar e continuar
           </Button>
-          <p className="text-[12px] text-muted">No MVP qualquer código de 6 dígitos funciona.</p>
+          <button onClick={() => router.push("/cadastro")} className="block w-full pt-3 text-center text-[13px] text-ink-soft">
+            alterar e-mail
+          </button>
         </div>
       </div>
     </Screen>

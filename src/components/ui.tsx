@@ -3,7 +3,7 @@
 import { ArrowLeft, ArrowUpRight, Eye, EyeOff, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { forwardRef, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { money } from "@/lib/format";
 import { useStore } from "@/lib/store";
 
@@ -11,24 +11,35 @@ export function cx(...c: (string | false | null | undefined)[]) {
   return c.filter(Boolean).join(" ");
 }
 
-/** Fundo difuso + luzes + acabamento fosco, como nos frames do Figma. */
+/** Fundo esfumaçado: três manchas difusas sobre o preto quente. */
 export function Backdrop() {
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      <div className="absolute left-1/2 top-0 h-full w-full max-w-[430px] -translate-x-1/2">
-        <div className="absolute left-[30%] top-[17%] h-[390px] w-[350px] rounded-full bg-white/80 blur-[70px]" />
-        <div className="absolute -left-[48%] top-[39%] h-[230px] w-[440px] rounded-full bg-[#9aa1aa]/45 blur-[70px]" />
-        <div className="absolute left-[51%] top-[66%] h-[330px] w-[250px] rounded-full bg-white/70 blur-[60px]" />
-      </div>
-      <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px]" />
-    </div>
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 -z-10"
+      style={{
+        background: [
+          "radial-gradient(55% 40% at 78% 22%, rgb(120 118 108 / 0.32), transparent 70%)",
+          "radial-gradient(60% 35% at 10% 55%, rgb(70 68 62 / 0.45), transparent 70%)",
+          "radial-gradient(50% 45% at 70% 88%, rgb(95 92 84 / 0.30), transparent 70%)",
+          "linear-gradient(180deg, #121210 0%, #0b0b0a 100%)",
+        ].join(","),
+      }}
+    />
   );
 }
 
 /** Container de celular: ocupa a tela no telefone e fica centralizado no desktop. */
 export function Screen({ children, className }: { children: React.ReactNode; className?: string }) {
+  const { data } = useStore();
   return (
-    <div className={cx("relative mx-auto flex min-h-dvh w-full max-w-[430px] flex-col px-[22px] pt-[max(env(safe-area-inset-top),20px)] pb-[max(env(safe-area-inset-bottom),16px)]", className)}>
+    <div
+      className={cx(
+        "relative mx-auto flex min-h-dvh w-full max-w-[430px] flex-col px-[22px] pt-[max(env(safe-area-inset-top),20px)] pb-[max(env(safe-area-inset-bottom),16px)]",
+        data.settings.hideValues && "hide-values",
+        className,
+      )}
+    >
       <Backdrop />
       {children}
     </div>
@@ -36,7 +47,24 @@ export function Screen({ children, className }: { children: React.ReactNode; cla
 }
 
 export function Wordmark({ className }: { className?: string }) {
-  return <span className={cx("font-serif text-[30px] leading-none tracking-[-0.02em] text-ink", className)}>pangiz</span>;
+  return <span className={cx("font-serif text-[26px] leading-none tracking-[-0.01em] text-ink", className)}>pangiz</span>;
+}
+
+/** Título que entra palavra por palavra, com desfoque. */
+export function Rise({ text, className, as: Tag = "h1" }: { text: string; className?: string; as?: "h1" | "h2" | "p" }) {
+  const words = text.split(" ");
+  return (
+    <Tag className={cx("font-serif font-normal leading-[1.06] tracking-[-0.015em] text-balance", className)}>
+      {words.map((w, i) => (
+        <span key={i}>
+          <span className="word" style={{ animationDelay: `${i * 55}ms` }}>
+            {w}
+          </span>
+          {i < words.length - 1 && " "}
+        </span>
+      ))}
+    </Tag>
+  );
 }
 
 export function TopBar({ back, right }: { back?: string | true; right?: React.ReactNode }) {
@@ -47,7 +75,7 @@ export function TopBar({ back, right }: { back?: string | true; right?: React.Re
         <button
           aria-label="Voltar"
           onClick={() => (back === true ? router.back() : router.push(back))}
-          className="-ml-1 grid size-9 place-items-center rounded-full text-ink active:bg-white/40"
+          className="-ml-1 grid size-9 place-items-center rounded-full text-ink-soft transition active:scale-95"
         >
           <ArrowLeft size={18} />
         </button>
@@ -68,33 +96,22 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   href?: string;
 };
 
-/** Botão do Figma: texto à esquerda e um quadradinho com seta à direita. */
+/** Pílula: creme sólido (principal), vidro ou só texto. Seta pequena depois do rótulo. */
 export function Button({ variant = "primary", icon = ArrowUpRight, leading, size = "md", className, children, href, ...rest }: ButtonProps) {
   const Icon = icon;
   const base = cx(
-    "group relative flex items-center gap-3 rounded-full font-medium transition active:scale-[0.98] disabled:opacity-45 disabled:active:scale-100",
-    size === "md" ? "h-12 w-full pl-5 pr-1.5 text-[15px]" : "h-[37px] pl-4 pr-1 text-[14px]",
-    variant === "primary" && "bg-graphite text-white shadow-[0_10px_24px_-12px_rgba(18,20,23,0.7)]",
-    variant === "glass" && "glass text-ink",
-    variant === "ghost" && "text-ink",
-    Boolean(leading) && "justify-center px-5",
+    "flex items-center justify-center gap-1.5 rounded-full font-medium transition duration-200 active:scale-[0.96] disabled:opacity-35 disabled:active:scale-100",
+    size === "md" ? "h-[52px] w-full px-5 text-[15px]" : "h-10 px-5 text-[14px]",
+    variant === "primary" && "bg-ink text-page",
+    variant === "glass" && "border border-white/14 bg-white/9 text-ink shadow-[inset_0_1px_0_rgb(255_255_255/0.08)]",
+    variant === "ghost" && "text-ink-soft",
     className,
   );
   const inner = (
     <>
       {leading}
-      <span className={cx(!leading && "flex-1 text-left")}>{children}</span>
-      {Icon && !leading && (
-        <span
-          className={cx(
-            "grid place-items-center rounded-full",
-            size === "md" ? "size-9" : "size-[29px]",
-            variant === "primary" ? "bg-white/12 ring-1 ring-white/15" : "bg-white/70 ring-1 ring-black/5",
-          )}
-        >
-          <Icon size={size === "md" ? 16 : 14} />
-        </span>
-      )}
+      <span>{children}</span>
+      {Icon && !leading && <Icon size={size === "md" ? 14 : 13} />}
     </>
   );
   if (href) {
@@ -113,8 +130,8 @@ export function Button({ variant = "primary", icon = ArrowUpRight, leading, size
 
 export function IconButton({ icon: Icon, label, onClick, className }: { icon: LucideIcon; label: string; onClick?: () => void; className?: string }) {
   return (
-    <button aria-label={label} onClick={onClick} className={cx("glass grid size-8 place-items-center rounded-full text-ink active:scale-95", className)}>
-      <Icon size={14} />
+    <button aria-label={label} onClick={onClick} className={cx("glass grid size-9 place-items-center rounded-full text-ink-soft transition active:scale-95", className)}>
+      <Icon size={16} />
     </button>
   );
 }
@@ -125,12 +142,12 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field({ l
   const fid = id ?? `f-${label.replace(/\s+/g, "-").toLowerCase()}`;
   return (
     <label htmlFor={fid} className={cx("block", className)}>
-      <span className="mb-2 block text-[13px] font-medium text-ink-soft">{label}</span>
-      <span className="glass flex h-[52px] items-center gap-2 rounded-2xl px-4 focus-within:ring-2 focus-within:ring-graphite/15">
+      <span className="mb-[7px] block text-[12px] text-muted">{label}</span>
+      <span className="glass flex h-[50px] items-center gap-2 rounded-2xl px-4 transition focus-within:border-white/30 focus-within:bg-white/8">
         <input
           ref={ref}
           id={fid}
-          className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-ink outline-none placeholder:text-muted/70"
+          className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink/30"
           {...rest}
         />
         {trailing}
@@ -155,7 +172,7 @@ export function PasswordField(props: Omit<FieldProps, "type" | "trailing">) {
   );
 }
 
-/** 6 caixinhas para o código de verificação. */
+/** 6 caixinhas para o código de verificação. Cada dígito entra com um "pop". */
 export function OtpInput({ value, onChange, length = 6 }: { value: string; onChange: (v: string) => void; length?: number }) {
   const refs = useRef<(HTMLInputElement | null)[]>([]);
   const digits = value.padEnd(length, " ").slice(0, length).split("");
@@ -167,32 +184,38 @@ export function OtpInput({ value, onChange, length = 6 }: { value: string; onCha
   }
 
   return (
-    <div className="flex justify-between gap-2">
+    <div className="grid grid-cols-6 gap-2">
       {digits.map((d, i) => (
-        <input
-          key={i}
-          ref={(el) => {
-            refs.current[i] = el;
-          }}
-          inputMode="numeric"
-          autoComplete={i === 0 ? "one-time-code" : "off"}
-          aria-label={`Dígito ${i + 1}`}
-          value={d.trim()}
-          onChange={(e) => {
-            const v = e.target.value.replace(/\D/g, "");
-            if (v.length > 1) {
-              onChange(v.slice(0, length));
-              refs.current[Math.min(v.length, length) - 1]?.focus();
-              return;
-            }
-            set(i, v);
-            if (v && i < length - 1) refs.current[i + 1]?.focus();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Backspace" && !d.trim() && i > 0) refs.current[i - 1]?.focus();
-          }}
-          className="glass h-[62px] w-full min-w-0 rounded-2xl text-center font-serif text-[30px] text-ink outline-none focus:ring-2 focus:ring-graphite/20"
-        />
+        <span key={i} className={cx("glass relative h-[62px] rounded-2xl transition", d.trim() && "border-white/30 bg-white/9")}>
+          <input
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
+            inputMode="numeric"
+            autoComplete={i === 0 ? "one-time-code" : "off"}
+            aria-label={`Dígito ${i + 1}`}
+            value={d.trim()}
+            onChange={(e) => {
+              const v = e.target.value.replace(/\D/g, "");
+              if (v.length > 1) {
+                onChange(v.slice(0, length));
+                refs.current[Math.min(v.length, length) - 1]?.focus();
+                return;
+              }
+              set(i, v);
+              if (v && i < length - 1) refs.current[i + 1]?.focus();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Backspace" && !d.trim() && i > 0) refs.current[i - 1]?.focus();
+            }}
+            className="absolute inset-0 w-full rounded-2xl bg-transparent text-center text-transparent caret-ink outline-none"
+          />
+          {d.trim() && (
+            <span key={d} aria-hidden className="animate-pop pointer-events-none absolute inset-0 grid place-items-center font-serif text-[30px]">
+              {d}
+            </span>
+          )}
+        </span>
       ))}
     </div>
   );
@@ -200,26 +223,67 @@ export function OtpInput({ value, onChange, length = 6 }: { value: string; onCha
 
 export function Steps({ total, current }: { total: number; current: number }) {
   return (
-    <div className="flex gap-[10px]" aria-label={`Etapa ${current + 1} de ${total}`}>
+    <div className="flex gap-2" aria-label={`Etapa ${current + 1} de ${total}`}>
       {Array.from({ length: total }, (_, i) => (
-        <span key={i} className={cx("h-1 w-10 rounded-full transition-colors", i <= current ? "bg-graphite" : "bg-graphite/15")} />
+        <span key={i} className="relative h-0.5 w-[34px] overflow-hidden rounded-full bg-ink/20">
+          <span
+            className="absolute inset-0 origin-left bg-ink transition-transform duration-[600ms] ease-[var(--ease)]"
+            style={{ transform: `scaleX(${i <= current ? 1 : 0})` }}
+          />
+        </span>
       ))}
     </div>
   );
 }
 
+/** Valor em reais. Com "ocultar valores" ligado, desfoca em vez de trocar por bolinhas. */
 export function Money({ value, className, sign, compact }: { value: number; className?: string; sign?: boolean; compact?: boolean }) {
-  const { data } = useStore();
-  return <span className={cx("tabular", className)}>{money(value, { hide: data.settings.hideValues, sign, compact })}</span>;
+  return <span className={cx("m tabular", className)}>{money(value, { sign, compact })}</span>;
+}
+
+const DIGITS = Array.from({ length: 10 }, (_, i) => i);
+
+/** Odômetro: cada dígito rola até o valor novo, da direita para a esquerda. */
+export function Roll({ value, className, sign, compact }: { value: number; className?: string; sign?: boolean; compact?: boolean }) {
+  const text = money(value, { sign, compact });
+  const [shown, setShown] = useState(() => text.replace(/\d/g, "0"));
+  useEffect(() => {
+    const id = setTimeout(() => setShown(text), 30);
+    return () => clearTimeout(id);
+  }, [text]);
+  const sameShape = shown.length === text.length;
+  return (
+    <span className={cx("m roll", className)} aria-label={text} role="img">
+      {[...text].map((c, i) => {
+        if (!/\d/.test(c)) {
+          return (
+            <span key={i} className="c" aria-hidden style={/\s/.test(c) ? { width: "0.26em" } : undefined}>
+              {/\s/.test(c) ? "" : c}
+            </span>
+          );
+        }
+        const d = sameShape && /\d/.test(shown[i]) ? Number(shown[i]) : 0;
+        return (
+          <span key={i} className="d" aria-hidden>
+            <span className="s" style={{ transform: `translateY(-${d}em)`, transitionDelay: `${(text.length - i) * 22}ms` }}>
+              {DIGITS.map((n) => (
+                <i key={n}>{n}</i>
+              ))}
+            </span>
+          </span>
+        );
+      })}
+    </span>
+  );
 }
 
 export function SectionHeader({ title, href, action }: { title: string; href?: string; action?: string }) {
   return (
-    <div className="mb-3 flex items-center justify-between">
-      <h2 className="text-[14px] font-semibold text-ink">{title}</h2>
+    <div className="mb-2.5 flex items-center justify-between">
+      <h2 className="text-[11px] text-muted">{title}</h2>
       {href && (
-        <Link href={href} className="text-[13px] text-muted">
-          {action ?? "Ver todas"}
+        <Link href={href} className="text-[12px] text-ink-soft">
+          {action ?? "ver todas"}
         </Link>
       )}
     </div>
@@ -227,40 +291,75 @@ export function SectionHeader({ title, href, action }: { title: string; href?: s
 }
 
 export function Card({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <section className={cx("glass rounded-[24px] p-4", className)}>{children}</section>;
+  return <section className={cx("glass rounded-[24px] p-[18px]", className)}>{children}</section>;
 }
 
 export function IconBubble({ icon: Icon, tone = "neutral" }: { icon: LucideIcon; tone?: "neutral" | "positive" | "dark" }) {
   return (
     <span
       className={cx(
-        "grid size-9 shrink-0 place-items-center rounded-full",
-        tone === "neutral" && "bg-white/70 text-ink ring-1 ring-black/5",
-        tone === "positive" && "bg-positive/12 text-positive",
-        tone === "dark" && "bg-graphite text-white",
+        "grid size-8 shrink-0 place-items-center rounded-full",
+        tone === "neutral" && "bg-white/9 text-ink",
+        tone === "positive" && "bg-positive/14 text-positive",
+        tone === "dark" && "bg-ink text-page",
       )}
     >
-      <Icon size={15} />
+      <Icon size={14} strokeWidth={1.7} />
     </span>
   );
 }
 
+/** Controle segmentado com um botão creme que desliza entre as opções. */
 export function Segmented<T extends string>({ options, value, onChange }: { options: { value: T; label: string }[]; value: T; onChange: (v: T) => void }) {
+  const idx = Math.max(0, options.findIndex((o) => o.value === value));
   return (
-    <div className="glass flex rounded-full p-1">
+    <div className="glass relative flex rounded-full p-1">
+      <span
+        aria-hidden
+        className="absolute inset-y-1 left-1 rounded-full bg-ink transition-transform duration-500 ease-[var(--spring)]"
+        style={{ width: `calc((100% - 8px) / ${options.length})`, transform: `translateX(${idx * 100}%)` }}
+      />
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
-          className={cx(
-            "h-9 flex-1 rounded-full text-[13px] font-medium transition",
-            value === o.value ? "bg-graphite text-white shadow" : "text-ink-soft",
-          )}
+          aria-pressed={value === o.value}
+          className={cx("relative h-8 flex-1 rounded-full text-[12.5px] transition-colors", value === o.value ? "text-page" : "text-ink-soft")}
         >
           {o.label}
         </button>
       ))}
+    </div>
+  );
+}
+
+export function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={on}
+      className={cx(
+        "h-[34px] shrink-0 whitespace-nowrap rounded-full px-3.5 text-[12.5px] transition active:scale-95",
+        on ? "bg-ink text-page" : "glass text-ink-soft",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Aviso curto no rodapé da tela, que some sozinho. */
+export function Toast({ message }: { message: string | null }) {
+  if (!message) return null;
+  return (
+    <div
+      role="status"
+      key={message}
+      className="animate-toast fixed bottom-[108px] left-1/2 z-50 whitespace-nowrap rounded-full bg-ink px-4 py-2.5 text-[13px] font-medium text-page"
+    >
+      {message}
     </div>
   );
 }

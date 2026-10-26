@@ -9,7 +9,7 @@ export function money(value: number, opts: { hide?: boolean; compact?: boolean; 
   if (opts.hide) return "R$ •••••";
   const f = opts.compact ? brlCompact : brl;
   const text = f.format(Math.abs(value)).replace(/ /g, " ");
-  if (value < 0) return `- ${text}`;
+  if (value < 0) return `− ${text}`; // sinal de menos tipográfico (U+2212)
   if (opts.sign && value > 0) return `+ ${text}`;
   return text;
 }
