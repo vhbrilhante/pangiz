@@ -108,7 +108,7 @@ function NewEntry() {
       <div
         role="dialog"
         aria-label="Novo lançamento"
-        className="animate-sheet fixed inset-x-0 bottom-0 mx-auto max-h-[94dvh] max-w-[430px] overflow-y-auto rounded-t-sheet border-t border-glass-border bg-raised px-[22px] pb-[max(env(safe-area-inset-bottom),22px)] pt-3"
+        className="animate-sheet fixed inset-x-0 bottom-0 mx-auto max-h-[94dvh] max-w-[430px] overflow-y-auto rounded-t-sheet border-t border-glass-border bg-raised px-[22px] pb-[max(var(--safe-bottom),22px)] pt-3"
       >
         <div className="mx-auto mb-3.5 h-[5px] w-[38px] rounded-full bg-ink/20" />
         <div className="flex items-center justify-between">

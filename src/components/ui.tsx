@@ -35,7 +35,7 @@ export function Screen({ children, className }: { children: React.ReactNode; cla
   return (
     <div
       className={cx(
-        "relative mx-auto flex min-h-dvh w-full max-w-[430px] flex-col px-[22px] pt-[max(env(safe-area-inset-top),20px)] pb-[max(env(safe-area-inset-bottom),16px)]",
+        "relative mx-auto flex min-h-dvh w-full max-w-[430px] flex-col px-[22px] pt-[max(var(--safe-top),20px)] pb-[max(var(--safe-bottom),16px)]",
         data.settings.hideValues && "hide-values",
         className,
       )}

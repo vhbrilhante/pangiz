@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // O "N" do modo dev ficava por cima da navegação, inclusive dentro do /simulador.
+  devIndicators: false,
 };
 
 export default nextConfig;

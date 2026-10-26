@@ -78,7 +78,7 @@ export function Pullable({ onRefresh, children }: { onRefresh: () => Promise<voi
 
   return (
     <>
-      <div ref={icon} aria-hidden className="pointer-events-none absolute left-1/2 top-[max(env(safe-area-inset-top),20px)] z-10 text-ink-soft opacity-0" style={{ transform: "translate(-50%, -40px)" }}>
+      <div ref={icon} aria-hidden className="pointer-events-none absolute left-1/2 top-[max(var(--safe-top),20px)] z-10 text-ink-soft opacity-0" style={{ transform: "translate(-50%, -40px)" }}>
         <RefreshCw size={18} className={busy ? "animate-spin-slow" : undefined} />
       </div>
       <div ref={content}>{children}</div>

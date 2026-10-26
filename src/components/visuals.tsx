@@ -210,7 +210,7 @@ export function Island({ children, open }: { children: React.ReactNode; open: bo
     <div
       aria-live="polite"
       className={cx(
-        "fixed left-1/2 top-[max(env(safe-area-inset-top),10px)] z-[90] flex -translate-x-1/2 items-center justify-between gap-3 overflow-hidden rounded-card bg-black px-3.5 text-label text-ink transition-all duration-500 ease-[var(--spring)]",
+        "fixed left-1/2 top-[max(calc(var(--safe-top)_-_48px),10px)] z-[90] flex -translate-x-1/2 items-center justify-between gap-3 overflow-hidden rounded-card bg-black px-3.5 text-label text-ink transition-all duration-500 ease-[var(--spring)]",
         open ? "h-10 w-[250px] opacity-100" : "pointer-events-none h-[35px] w-[122px] opacity-0",
       )}
     >
@@ -233,7 +233,7 @@ export function BottomNav() {
   const path = usePathname();
   const active = Math.max(0, TABS.findIndex((t) => path.startsWith(t.href)));
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-4 pb-[max(env(safe-area-inset-bottom),18px)]">
+    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-4 pb-[max(var(--safe-bottom),18px)]">
       <div className="flex items-center gap-2.5">
         <div className="glass-strong relative flex h-[62px] flex-1 rounded-full p-[5px]">
           <span

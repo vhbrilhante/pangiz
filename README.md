@@ -15,6 +15,9 @@ npm run build && npm start
 
 No celular, abra o endereço (por exemplo via Tailscale) e use "Adicionar à tela de início".
 
+No desktop, abra `/simulador` (http://localhost:3000/simulador): o app roda dentro de uma moldura de iPhone 15,
+com atalhos para cada tela e para recomeçar com dados de exemplo ou do zero.
+
 ## Fluxo (segue o Figma)
 
 1. `/boas-vindas`: 3 telas de onboarding (cartão prateado, visão total do saldo, projeções)
