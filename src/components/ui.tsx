@@ -47,14 +47,14 @@ export function Screen({ children, className }: { children: React.ReactNode; cla
 }
 
 export function Wordmark({ className }: { className?: string }) {
-  return <span className={cx("font-serif text-[26px] leading-none tracking-[-0.01em] text-ink", className)}>pangiz</span>;
+  return <span className={cx("font-serif text-title leading-none text-ink", className)}>pangiz</span>;
 }
 
 /** Título que entra palavra por palavra, com desfoque. */
 export function Rise({ text, className, as: Tag = "h1" }: { text: string; className?: string; as?: "h1" | "h2" | "p" }) {
   const words = text.split(" ");
   return (
-    <Tag className={cx("font-serif font-normal leading-[1.06] tracking-[-0.015em] text-balance", className)}>
+    <Tag className={cx("font-serif font-normal text-balance", className)}>
       {words.map((w, i) => (
         <span key={i}>
           <span className="word" style={{ animationDelay: `${i * 55}ms` }}>
@@ -89,22 +89,26 @@ export function TopBar({ back, right }: { back?: string | true; right?: React.Re
 }
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "glass" | "ghost";
+  variant?: "primary" | "glass" | "ghost" | "link";
   icon?: LucideIcon | null;
   leading?: React.ReactNode;
   size?: "md" | "sm";
   href?: string;
 };
 
-/** Pílula: creme sólido (principal), vidro ou só texto. Seta pequena depois do rótulo. */
+/**
+ * Pílula: creme sólido (principal), vidro ou só texto. Seta pequena depois do rótulo.
+ * Uma ação principal por tela; a segunda vira `link` (texto sublinhado), nunca outro botão cheio ao lado.
+ */
 export function Button({ variant = "primary", icon = ArrowUpRight, leading, size = "md", className, children, href, ...rest }: ButtonProps) {
-  const Icon = icon;
+  const Icon = variant === "link" ? null : icon;
   const base = cx(
     "flex items-center justify-center gap-1.5 rounded-full font-medium transition duration-200 active:scale-[0.96] disabled:opacity-35 disabled:active:scale-100",
-    size === "md" ? "h-[52px] w-full px-5 text-[15px]" : "h-10 px-5 text-[14px]",
+    variant === "link" ? "h-11 w-full text-body-sm" : size === "md" ? "h-[52px] w-full px-5 text-body-lg" : "h-10 px-5 text-body",
     variant === "primary" && "bg-ink text-page",
-    variant === "glass" && "border border-white/14 bg-white/9 text-ink shadow-[inset_0_1px_0_rgb(255_255_255/0.08)]",
+    variant === "glass" && "border border-white/14 bg-white/9 text-ink shadow-sheen",
     variant === "ghost" && "text-ink-soft",
+    variant === "link" && "text-ink-soft underline decoration-ink/30 underline-offset-4",
     className,
   );
   const inner = (
@@ -142,17 +146,17 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field({ l
   const fid = id ?? `f-${label.replace(/\s+/g, "-").toLowerCase()}`;
   return (
     <label htmlFor={fid} className={cx("block", className)}>
-      <span className="mb-[7px] block text-[12px] text-muted">{label}</span>
-      <span className="glass flex h-[50px] items-center gap-2 rounded-2xl px-4 transition focus-within:border-white/30 focus-within:bg-white/8">
+      <span className="mb-[7px] block text-label text-muted">{label}</span>
+      <span className="glass flex h-[50px] items-center gap-2 rounded-field px-4 transition focus-within:border-white/30 focus-within:bg-white/8">
         <input
           ref={ref}
           id={fid}
-          className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink/30"
+          className="h-full min-w-0 flex-1 bg-transparent text-body-lg text-ink outline-none placeholder:text-ink/30"
           {...rest}
         />
         {trailing}
       </span>
-      {hint && <span className="mt-1.5 block text-[12px] text-muted">{hint}</span>}
+      {hint && <span className="mt-1.5 block text-label text-muted">{hint}</span>}
     </label>
   );
 });
@@ -186,7 +190,7 @@ export function OtpInput({ value, onChange, length = 6 }: { value: string; onCha
   return (
     <div className="grid grid-cols-6 gap-2">
       {digits.map((d, i) => (
-        <span key={i} className={cx("glass relative h-[62px] rounded-2xl transition", d.trim() && "border-white/30 bg-white/9")}>
+        <span key={i} className={cx("glass relative h-[62px] rounded-field transition", d.trim() && "border-white/30 bg-white/9")}>
           <input
             ref={(el) => {
               refs.current[i] = el;
@@ -208,10 +212,10 @@ export function OtpInput({ value, onChange, length = 6 }: { value: string; onCha
             onKeyDown={(e) => {
               if (e.key === "Backspace" && !d.trim() && i > 0) refs.current[i - 1]?.focus();
             }}
-            className="absolute inset-0 w-full rounded-2xl bg-transparent text-center text-transparent caret-ink outline-none"
+            className="absolute inset-0 w-full rounded-field bg-transparent text-center text-transparent caret-ink outline-none"
           />
           {d.trim() && (
-            <span key={d} aria-hidden className="animate-pop pointer-events-none absolute inset-0 grid place-items-center font-serif text-[30px]">
+            <span key={d} aria-hidden className="animate-pop pointer-events-none absolute inset-0 grid place-items-center font-serif text-heading">
               {d}
             </span>
           )}
@@ -280,9 +284,9 @@ export function Roll({ value, className, sign, compact }: { value: number; class
 export function SectionHeader({ title, href, action }: { title: string; href?: string; action?: string }) {
   return (
     <div className="mb-2.5 flex items-center justify-between">
-      <h2 className="text-[11px] text-muted">{title}</h2>
+      <h2 className="text-caption text-muted">{title}</h2>
       {href && (
-        <Link href={href} className="text-[12px] text-ink-soft">
+        <Link href={href} className="text-label text-ink-soft">
           {action ?? "ver todas"}
         </Link>
       )}
@@ -291,7 +295,7 @@ export function SectionHeader({ title, href, action }: { title: string; href?: s
 }
 
 export function Card({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <section className={cx("glass rounded-[24px] p-[18px]", className)}>{children}</section>;
+  return <section className={cx("glass rounded-card p-[18px]", className)}>{children}</section>;
 }
 
 export function IconBubble({ icon: Icon, tone = "neutral" }: { icon: LucideIcon; tone?: "neutral" | "positive" | "dark" }) {
@@ -325,12 +329,33 @@ export function Segmented<T extends string>({ options, value, onChange }: { opti
           type="button"
           onClick={() => onChange(o.value)}
           aria-pressed={value === o.value}
-          className={cx("relative h-8 flex-1 rounded-full text-[12.5px] transition-colors", value === o.value ? "text-page" : "text-ink-soft")}
+          className={cx("relative h-8 flex-1 rounded-full text-label transition-colors", value === o.value ? "text-page" : "text-ink-soft")}
         >
           {o.label}
         </button>
       ))}
     </div>
+  );
+}
+
+/**
+ * Etiqueta pequena de status. `accent` é a lavagem de champanhe (o destaque fraco);
+ * as outras são neutra, positiva e negativa. Sempre pílula.
+ */
+export function Tag({ tone = "neutral", children, className }: { tone?: "neutral" | "accent" | "positive" | "negative"; children: React.ReactNode; className?: string }) {
+  return (
+    <span
+      className={cx(
+        "inline-flex h-6 items-center gap-1 whitespace-nowrap rounded-full px-2.5 text-caption font-medium",
+        tone === "neutral" && "bg-white/8 text-ink-soft",
+        tone === "accent" && "bg-champagne-wash text-champagne-light",
+        tone === "positive" && "bg-positive/14 text-positive",
+        tone === "negative" && "bg-negative/14 text-negative",
+        className,
+      )}
+    >
+      {children}
+    </span>
   );
 }
 
@@ -341,7 +366,7 @@ export function Chip({ on, onClick, children }: { on: boolean; onClick: () => vo
       onClick={onClick}
       aria-pressed={on}
       className={cx(
-        "h-[34px] shrink-0 whitespace-nowrap rounded-full px-3.5 text-[12.5px] transition active:scale-95",
+        "h-[34px] shrink-0 whitespace-nowrap rounded-full px-3.5 text-label transition active:scale-95",
         on ? "bg-ink text-page" : "glass text-ink-soft",
       )}
     >
@@ -357,7 +382,7 @@ export function Toast({ message }: { message: string | null }) {
     <div
       role="status"
       key={message}
-      className="animate-toast fixed bottom-[108px] left-1/2 z-50 whitespace-nowrap rounded-full bg-ink px-4 py-2.5 text-[13px] font-medium text-page"
+      className="animate-toast fixed bottom-[108px] left-1/2 z-50 whitespace-nowrap rounded-full bg-ink px-4 py-2.5 text-body-sm font-medium text-page"
     >
       {message}
     </div>

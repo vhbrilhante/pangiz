@@ -16,7 +16,7 @@ export default function Root() {
 
   return (
     <Screen className="items-center justify-center">
-      <Wordmark className="text-[44px]" />
+      <Wordmark className="text-display" />
     </Screen>
   );
 }

@@ -18,12 +18,12 @@ export function TransactionRow({ t, onDelete }: { t: Transaction; onDelete?: () 
     <div className="flex items-center gap-3">
       <IconBubble icon={cat.icon} tone={t.amount > 0 ? "positive" : "neutral"} />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[14px] font-medium">{t.description}</p>
-        <p className="truncate text-[12px] text-muted">
+        <p className="truncate text-body font-medium">{t.description}</p>
+        <p className="truncate text-label text-muted">
           {cat.label} · {relativeDay(t.date)} {where && `· ${where}`}
         </p>
       </div>
-      <Money value={t.amount} sign className={cx("text-[14px] font-medium", t.amount > 0 && "text-positive")} />
+      <Money value={t.amount} sign className={cx("text-body font-medium", t.amount > 0 && "text-positive")} />
       {onDelete && (
         <button aria-label="Apagar lançamento" onClick={onDelete} className="grid size-7 place-items-center text-muted">
           <Trash2 size={14} />

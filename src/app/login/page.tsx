@@ -46,8 +46,8 @@ export default function Login() {
     <Screen>
       <TopBar back="/boas-vindas" />
       <div className="animate-rise mt-12 flex flex-1 flex-col">
-        <h1 className="font-serif text-[34px] leading-none">Que bom te ver de novo</h1>
-        <p className="mt-3 text-[14px] text-ink-soft">Entre para ver como está o seu futuro.</p>
+        <h1 className="font-serif text-heading leading-none">Que bom te ver de novo</h1>
+        <p className="mt-3 text-body text-ink-soft">Entre para ver como está o seu futuro.</p>
 
         <form
           className="mt-9 space-y-5"
@@ -59,7 +59,7 @@ export default function Login() {
         >
           <Field label="E-mail" type="email" autoComplete="email" placeholder="voce@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
           <PasswordField label="Senha" autoComplete="current-password" placeholder="Sua senha" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <div className="flex items-center justify-between text-[13px]">
+          <div className="flex items-center justify-between text-body-sm">
             <span className="text-negative">{error}</span>
             <button type="button" className="text-ink-soft underline-offset-2 hover:underline">
               Esqueci minha senha
@@ -73,7 +73,7 @@ export default function Login() {
           </div>
         </form>
 
-        <div className="my-7 flex items-center gap-3 text-[12px] text-muted">
+        <div className="my-7 flex items-center gap-3 text-label text-muted">
           <span className="h-px flex-1 bg-graphite/12" />
           ou
           <span className="h-px flex-1 bg-graphite/12" />
@@ -88,7 +88,7 @@ export default function Login() {
           </Button>
         </div>
 
-        <p className="mt-auto pt-8 text-center text-[14px] text-ink-soft">
+        <p className="mt-auto pt-8 text-center text-body text-ink-soft">
           Ainda não tem conta?{" "}
           <Link href="/cadastro" className="font-semibold text-ink">
             Criar conta

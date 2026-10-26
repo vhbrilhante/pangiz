@@ -24,7 +24,7 @@ export default function Transactions() {
   return (
     <Screen className="pb-32">
       <TopBar back="/inicio" />
-      <h1 className="mt-6 font-serif text-[32px] leading-none">transações</h1>
+      <h1 className="mt-6 font-serif text-heading leading-none">transações</h1>
       <div className="mt-5">
         <Segmented
           options={[
@@ -36,11 +36,11 @@ export default function Transactions() {
           onChange={setFilter}
         />
       </div>
-      {groups.length === 0 && <p className="mt-8 text-center text-[13px] text-muted">Nenhum lançamento.</p>}
+      {groups.length === 0 && <p className="mt-8 text-center text-body-sm text-muted">Nenhum lançamento.</p>}
       <div className="mt-6 space-y-6">
         {groups.map(([date, items]) => (
           <section key={date}>
-            <h2 className="mb-3 text-[12px] font-semibold uppercase tracking-wide text-muted">{relativeDay(date)}</h2>
+            <h2 className="mb-3 text-label font-semibold uppercase tracking-wide text-muted">{relativeDay(date)}</h2>
             <div className="space-y-3.5">
               {items.map((t) => (
                 <TransactionRow key={t.id} t={t} onDelete={() => removeTransaction(t.id)} />

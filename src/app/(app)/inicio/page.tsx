@@ -52,7 +52,7 @@ export default function Home() {
       </Island>
       <Pullable onRefresh={refresh}>
         <header className="flex h-9 items-center justify-between">
-          <h1 className="font-serif text-[26px] leading-none">
+          <h1 className="font-serif text-title leading-none">
             {greeting()}, {data.user?.name.split(" ")[0].toLowerCase() ?? "você"}
           </h1>
           <button
@@ -65,11 +65,11 @@ export default function Home() {
         </header>
 
         <section className="mt-10">
-          <p className="animate-rise text-[11px] text-muted">saldo disponível agora</p>
-          <p className="big mt-2.5 text-[54px]">
+          <p className="animate-rise text-caption text-muted">saldo disponível agora</p>
+          <p className="big mt-2.5 text-display-xl">
             <Roll value={balance} />
           </p>
-          <p className="animate-rise delay-1 mt-3 text-[11px] text-muted">
+          <p className="animate-rise delay-1 mt-3 text-caption text-muted">
             {data.accounts.map((a) => a.name).join(" · ")} · {syncedNow ? "atualizado agora" : "puxe para atualizar"}
           </p>
         </section>
@@ -77,18 +77,18 @@ export default function Home() {
         <Link
           ref={tilt}
           href="/projecao"
-          className="champagne animate-rise delay-2 mt-[34px] block rounded-[24px] p-[18px] [transform:perspective(900px)_rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))]"
+          className="champagne animate-rise delay-2 mt-[34px] block rounded-card p-[18px] [transform:perspective(900px)_rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))]"
         >
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-[11px] text-muted">
+            <span className="flex items-center gap-1.5 text-caption text-muted">
               <Sparkles size={12} /> {first ? `pode investir em ${monthLong(first.month)}` : "ainda não sobra para investir"}
             </span>
             <ArrowUpRight size={14} className="opacity-55" />
           </div>
-          <p className="big mt-2.5 text-[40px]">
+          <p className="big mt-2.5 text-display-sm">
             <Roll value={first?.investable ?? 0} />
           </p>
-          <p className="mt-2 text-[11px] text-muted">
+          <p className="mt-2 text-caption text-muted">
             {first
               ? `e ainda sobram ${money(data.settings.reserve, { compact: true })} na conta`
               : p.goesNegative
@@ -98,7 +98,7 @@ export default function Home() {
           <div className="mt-[18px]">
             <Sparkline values={[balance, ...six.map((m) => m.endBalance)]} height={48} />
           </div>
-          <div className="mt-2 flex justify-between text-[11px] text-muted">
+          <div className="mt-2 flex justify-between text-caption text-muted">
             <span>hoje</span>
             <span>
               {monthShort(six[six.length - 1].month)} · <Money value={six[six.length - 1].endBalance} compact />
@@ -107,16 +107,16 @@ export default function Home() {
         </Link>
 
         {next && (
-          <Link href="/projecao" className="glass animate-rise delay-3 mt-3 flex min-h-[62px] items-center gap-3 rounded-[20px] px-3.5">
+          <Link href="/projecao" className="glass animate-rise delay-3 mt-3 flex min-h-[62px] items-center gap-3 rounded-card px-3.5">
             <IconBubble icon={CATEGORIES[next.category].icon} />
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[14px]">
+              <span className="block truncate text-body">
                 {next.description}
                 {next.detail && <span className="text-muted"> · {next.detail}</span>}
               </span>
-              <span className="text-[11px] text-muted">próximo pagamento · {relativeDay(next.date)}</span>
+              <span className="text-caption text-muted">próximo pagamento · {relativeDay(next.date)}</span>
             </span>
-            <Money value={-next.amount} className="text-[14px]" />
+            <Money value={-next.amount} className="text-body" />
           </Link>
         )}
 

@@ -41,21 +41,21 @@ export default function Verify() {
       </Island>
       <TopBar back="/cadastro" />
       <div className="mt-[34px] flex flex-1 flex-col">
-        <Rise text="só falta confirmar que é você." className="text-[33px]" />
-        <p className="animate-rise delay-2 mt-2.5 text-[13px] leading-[1.45] text-ink-soft">
+        <Rise text="só falta confirmar que é você." className="text-heading" />
+        <p className="animate-rise delay-2 mt-2.5 text-body-sm leading-[1.45] text-ink-soft">
           enviamos um código de 6 dígitos para <span className="text-ink">{data.user?.email ?? "seu e-mail"}</span>
         </p>
 
         <div className="animate-rise delay-3 mt-7">
           <OtpInput value={code} onChange={setCode} />
         </div>
-        <p className="mt-[18px] text-center text-[11px] text-muted">
+        <p className="mt-[18px] text-center text-caption text-muted">
           {auto && complete ? "código preenchido automaticamente" : <span className="shimmer">aguardando o código...</span>}
         </p>
 
         <div className="mx-auto mt-auto flex max-w-[240px] flex-col items-center gap-2 pt-10 text-center text-ink-soft">
           <LockKeyhole size={20} />
-          <p className="text-[11px] leading-normal text-muted">uma camada de cuidado para manter seu dinheiro e seus dados seguros.</p>
+          <p className="text-caption leading-normal text-muted">uma camada de cuidado para manter seu dinheiro e seus dados seguros.</p>
         </div>
 
         <div className="mt-6">
@@ -68,7 +68,7 @@ export default function Verify() {
           >
             verificar e continuar
           </Button>
-          <button onClick={() => router.push("/cadastro")} className="block w-full pt-3 text-center text-[13px] text-ink-soft">
+          <button onClick={() => router.push("/cadastro")} className="block w-full pt-3 text-center text-body-sm text-ink-soft">
             alterar e-mail
           </button>
         </div>

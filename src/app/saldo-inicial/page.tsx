@@ -26,8 +26,8 @@ export default function ManualSetup() {
           router.push("/inicio");
         }}
       >
-        <h1 className="font-serif text-[34px] leading-[1.05]">Só dois números para começar</h1>
-        <p className="mt-3 text-[14px] text-ink-soft">Com o seu saldo e a sua renda já dá para ver a primeira projeção. Parcelas e contas você adiciona depois.</p>
+        <h1 className="font-serif text-heading">Só dois números para começar</h1>
+        <p className="mt-3 text-body text-ink-soft">Com o seu saldo e a sua renda já dá para ver a primeira projeção. Parcelas e contas você adiciona depois.</p>
 
         <div className="mt-9 space-y-5">
           <Field label="Quanto você tem hoje nas contas?" inputMode="decimal" placeholder="R$ 0,00" value={balance} onChange={(e) => setBalance(e.target.value)} />

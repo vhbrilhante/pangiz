@@ -28,20 +28,20 @@ export default function SignUp() {
           router.push("/verificacao");
         }}
       >
-        <h1 className="font-serif text-[34px] leading-[1.05]">Crie sua conta e comece a planejar</h1>
-        <p className="mt-3 text-[14px] text-ink-soft">Leva menos de um minuto.</p>
+        <h1 className="font-serif text-heading">Crie sua conta e comece a planejar</h1>
+        <p className="mt-3 text-body text-ink-soft">Leva menos de um minuto.</p>
 
         <div className="mt-9 space-y-5">
           <Field label="Nome" autoComplete="given-name" placeholder="Como podemos te chamar?" value={name} onChange={(e) => setName(e.target.value)} />
           <Field label="E-mail" type="email" autoComplete="email" placeholder="voce@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
           <PasswordField label="Senha" autoComplete="new-password" placeholder="Crie uma senha" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <p className={cx("flex items-center gap-2 text-[12px] transition-colors", longEnough ? "text-positive" : "text-muted")}>
+          <p className={cx("flex items-center gap-2 text-label transition-colors", longEnough ? "text-positive" : "text-muted")}>
             <Check size={12} />
             Pelo menos 8 caracteres
           </p>
         </div>
 
-        <p className="mt-6 text-[12px] leading-[1.4] text-muted">
+        <p className="mt-6 text-label leading-[1.4] text-muted">
           Ao continuar você concorda com os Termos de uso e a Política de privacidade do pangiz.
         </p>
 
@@ -49,7 +49,7 @@ export default function SignUp() {
           <Button type="submit" disabled={!valid}>
             Criar conta
           </Button>
-          <Link href="/login" className="block text-[14px] text-ink-soft">
+          <Link href="/login" className="block text-body text-ink-soft">
             Já tenho uma conta
           </Link>
         </div>

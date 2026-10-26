@@ -108,11 +108,11 @@ function NewEntry() {
       <div
         role="dialog"
         aria-label="Novo lançamento"
-        className="animate-sheet fixed inset-x-0 bottom-0 mx-auto max-h-[94dvh] max-w-[430px] overflow-y-auto rounded-t-[34px] border-t border-glass-border bg-[#191917] px-[22px] pb-[max(env(safe-area-inset-bottom),22px)] pt-3"
+        className="animate-sheet fixed inset-x-0 bottom-0 mx-auto max-h-[94dvh] max-w-[430px] overflow-y-auto rounded-t-sheet border-t border-glass-border bg-raised px-[22px] pb-[max(env(safe-area-inset-bottom),22px)] pt-3"
       >
         <div className="mx-auto mb-3.5 h-[5px] w-[38px] rounded-full bg-ink/20" />
         <div className="flex items-center justify-between">
-          <h1 className="font-serif text-[24px] leading-none">novo lançamento</h1>
+          <h1 className="font-serif text-title leading-none">novo lançamento</h1>
           <button aria-label="Fechar" onClick={() => router.back()} className="glass grid size-9 place-items-center rounded-full text-ink-soft">
             <X size={15} />
           </button>
@@ -123,10 +123,10 @@ function NewEntry() {
         </div>
 
         <div className="mt-5 text-center">
-          <p className="big text-[52px]">
+          <p className="big text-display-xl">
             <Roll value={amount} />
           </p>
-          <p className="mt-2 min-h-4 text-[11px] text-muted">
+          <p className="mt-2 min-h-4 text-caption text-muted">
             {kind === "parcelado" && amount > 0 && `${count}x de ${money(amount / count)} a partir de ${monthLong(addMonths(month, 1))}`}
             {kind === "fixo" && amount > 0 && `todo dia ${day}`}
           </p>
@@ -151,7 +151,7 @@ function NewEntry() {
               <button aria-label="Menos parcelas" onClick={() => setCount((n) => Math.max(2, n - 1))} className="grid size-8 place-items-center rounded-full active:bg-white/10">
                 <Minus size={14} />
               </button>
-              <span className="tabular min-w-11 text-center text-[14px]">{count}x</span>
+              <span className="tabular min-w-11 text-center text-body">{count}x</span>
               <button aria-label="Mais parcelas" onClick={() => setCount((n) => Math.min(24, n + 1))} className="grid size-8 place-items-center rounded-full active:bg-white/10">
                 <Plus size={14} />
               </button>
@@ -159,7 +159,7 @@ function NewEntry() {
           )}
         </div>
 
-        <div className="glass mt-3.5 min-h-[62px] rounded-[18px] px-3.5 py-3 text-[12.5px] leading-normal text-ink-soft" aria-live="polite">
+        <div className="glass mt-3.5 min-h-[62px] rounded-field px-3.5 py-3 text-label leading-normal text-ink-soft" aria-live="polite">
           {!after ? (
             "digite um valor para ver como ele muda o que você pode investir."
           ) : (
@@ -181,7 +181,7 @@ function NewEntry() {
               key={k}
               onClick={() => press(k)}
               aria-label={k === "del" ? "Apagar" : k}
-              className="grid h-[50px] place-items-center rounded-2xl font-serif text-[22px] transition active:scale-[0.92] active:bg-white/10"
+              className="grid h-[50px] place-items-center rounded-field font-serif text-value transition active:scale-[0.92] active:bg-white/10"
             >
               {k === "del" ? <Delete size={20} /> : k}
             </button>
@@ -192,7 +192,7 @@ function NewEntry() {
           disabled={!amount || saved}
           onClick={save}
           className={cx(
-            "mt-3 flex h-[52px] w-full items-center justify-center gap-1.5 rounded-full text-[15px] font-medium text-page transition active:scale-[0.96] disabled:opacity-35",
+            "mt-3 flex h-[52px] w-full items-center justify-center gap-1.5 rounded-full text-body-lg font-medium text-page transition active:scale-[0.96] disabled:opacity-35",
             saved ? "bg-positive disabled:opacity-100" : "bg-ink",
           )}
         >

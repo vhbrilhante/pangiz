@@ -48,7 +48,7 @@ export function Card3D({ className, children }: { className?: string; children?:
   return (
     <div ref={tilt} className={cx("relative h-[300px] touch-pan-y [perspective:1100px]", className)}>
       <div
-        className="champagne absolute left-1/2 top-5 h-[240px] w-[380px] -translate-x-[46%] rounded-[26px]"
+        className="champagne absolute left-1/2 top-5 h-[240px] w-[380px] -translate-x-[46%] rounded-card-lg"
         style={{
           transform: "rotateX(calc(28deg + var(--rx, 0deg))) rotateY(calc(-12deg + var(--ry, 0deg))) rotateZ(-12deg)",
           transition: "inherit",
@@ -57,7 +57,7 @@ export function Card3D({ className, children }: { className?: string; children?:
         <span className="absolute right-8 top-6 text-[9px] tracking-[0.14em] opacity-50">PANGIZ / 2026</span>
         <span className="absolute left-[34px] top-[74px] h-[34px] w-[46px] rounded-lg bg-gradient-to-br from-[#e8cf8a] via-[#b99447] to-[#f1dc9f]" />
         <Wordmark className="absolute right-[30px] top-[120px] text-[18px] opacity-60" />
-        <span className="absolute bottom-[34px] left-[34px] text-[13px] tracking-[0.2em] opacity-55">•••• 8707</span>
+        <span className="absolute bottom-[34px] left-[34px] text-body-sm tracking-[0.2em] opacity-55">•••• 8707</span>
       </div>
       {children}
     </div>
@@ -187,7 +187,7 @@ export function ProjectionScrub({
           );
         })}
         <span
-          className="pointer-events-none absolute whitespace-nowrap rounded-full bg-ink px-[9px] py-[5px] text-[11px] font-medium text-page transition-[left] duration-200"
+          className="pointer-events-none absolute whitespace-nowrap rounded-full bg-ink px-[9px] py-[5px] text-caption font-medium text-page transition-[left] duration-200"
           style={{ left: `${(selected + 0.5) * w}%`, bottom: tipBottom, transform: `translate(${tipShift}, 0)` }}
         >
           {sel.label} · {sel.investable ? `investir ${money(sel.investable, { compact: true })}` : "nada"}
@@ -195,7 +195,7 @@ export function ProjectionScrub({
       </div>
       <div className="mt-2 flex">
         {months.map((m, i) => (
-          <span key={m.month} className={cx("flex-1 text-center text-[9.5px]", i === selected ? "text-ink" : "text-muted")}>
+          <span key={m.month} className={cx("flex-1 text-center text-micro", i === selected ? "text-ink" : "text-muted")}>
             {MONTH_INITIAL(m.label)}
           </span>
         ))}
@@ -210,7 +210,7 @@ export function Island({ children, open }: { children: React.ReactNode; open: bo
     <div
       aria-live="polite"
       className={cx(
-        "fixed left-1/2 top-[max(env(safe-area-inset-top),10px)] z-[90] flex -translate-x-1/2 items-center justify-between gap-3 overflow-hidden rounded-[20px] bg-black px-3.5 text-[12px] text-ink transition-all duration-500 ease-[var(--spring)]",
+        "fixed left-1/2 top-[max(env(safe-area-inset-top),10px)] z-[90] flex -translate-x-1/2 items-center justify-between gap-3 overflow-hidden rounded-card bg-black px-3.5 text-label text-ink transition-all duration-500 ease-[var(--spring)]",
         open ? "h-10 w-[250px] opacity-100" : "pointer-events-none h-[35px] w-[122px] opacity-0",
       )}
     >
@@ -247,7 +247,7 @@ export function BottomNav() {
               href={href}
               aria-current={i === active ? "page" : undefined}
               className={cx(
-                "relative flex flex-1 flex-col items-center justify-center gap-[3px] rounded-full text-[10.5px] transition-colors",
+                "relative flex flex-1 flex-col items-center justify-center gap-[3px] rounded-full text-micro transition-colors",
                 i === active ? "text-ink" : "text-muted",
               )}
             >
@@ -259,7 +259,7 @@ export function BottomNav() {
         <Link
           href="/lancar"
           aria-label="Novo lançamento"
-          className="group grid size-[62px] shrink-0 place-items-center rounded-full bg-ink text-page shadow-[0_14px_30px_-10px_rgb(0_0_0/0.9)] transition active:scale-95"
+          className="group grid size-[62px] shrink-0 place-items-center rounded-full bg-ink text-page shadow-float transition active:scale-95"
         >
           <Plus size={22} className="transition-transform duration-[450ms] ease-[var(--spring)] group-active:rotate-90" />
         </Link>

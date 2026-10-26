@@ -19,8 +19,60 @@
   --champagne-1: #e4e1cb;
   --champagne-2: #bdbb9d;
   --champagne-ink: #1d1d17;
+  /* Lavagem de champanhe: fundo de etiquetas e destaques fracos (o "Linen Mist" da Wise). */
+  --champagne-wash: rgb(228 225 203 / 0.12);
+  /* Superfície elevada opaca: folhas e menus. */
+  --raised: #191917;
   --spring: cubic-bezier(0.2, 0.9, 0.25, 1.15);
   --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+/*
+ * Escala do design system (ver docs/design-system.md).
+ * Tipo: a serifa é a voz (display, títulos, valores), com tracking mais apertado quanto maior.
+ * Geist faz o trabalho quieto (corpo, rótulos, botões).
+ */
+@theme {
+  --text-display-xl: 54px;
+  --text-display-xl--line-height: 1;
+  --text-display-xl--letter-spacing: -0.03em;
+  --text-display: 44px;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.025em;
+  --text-display-sm: 40px;
+  --text-display-sm--line-height: 1;
+  --text-display-sm--letter-spacing: -0.02em;
+  --text-heading: 32px;
+  --text-heading--line-height: 1.06;
+  --text-heading--letter-spacing: -0.015em;
+  --text-title: 26px;
+  --text-title--line-height: 1;
+  --text-title--letter-spacing: -0.01em;
+  --text-value: 22px;
+  --text-value--line-height: 1;
+  --text-value--letter-spacing: -0.01em;
+  --text-body-lg: 15px;
+  --text-body-lg--line-height: 1.4;
+  --text-body: 14px;
+  --text-body--line-height: 1.45;
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 1.45;
+  --text-label: 12px;
+  --text-label--line-height: 1.35;
+  --text-caption: 11px;
+  --text-caption--line-height: 1.4;
+  --text-micro: 10px;
+  --text-micro--line-height: 1.2;
+
+  /* Raios: tudo que se toca é pílula (rounded-full); campos 16, cartões 24, cartões grandes 28, folhas 34. */
+  --radius-field: 16px;
+  --radius-card: 24px;
+  --radius-card-lg: 28px;
+  --radius-sheet: 34px;
+
+  /* Sombras: plano por padrão. Só o que flutua ganha sombra; o resto usa a borda fina do vidro. */
+  --shadow-float: 0 14px 30px -10px rgb(0 0 0 / 0.9);
+  --shadow-sheen: inset 0 1px 0 rgb(255 255 255 / 0.08);
 }
 
 @theme inline {
@@ -37,6 +89,9 @@
   --color-warning: var(--warning);
   --color-graphite: var(--graphite);
   --color-champagne: var(--champagne-2);
+  --color-champagne-light: var(--champagne-1);
+  --color-champagne-wash: var(--champagne-wash);
+  --color-raised: var(--raised);
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-serif: var(--font-serif-display), Georgia, "Times New Roman", serif;
 }
@@ -68,12 +123,10 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-/* Valores em serifa: algarismos alinhados para o odômetro não pular. */
+/* Valores em serifa: algarismos alinhados para o odômetro não pular. Tamanho e tracking vêm de text-display*. */
 .big {
   font-family: var(--font-serif-display), Georgia, serif;
   font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
 }
 

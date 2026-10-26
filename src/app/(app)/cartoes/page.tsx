@@ -2,7 +2,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Button, Card, Chip, Field, IconBubble, Money, Rise, Roll, Screen, SectionHeader, Wordmark } from "@/components/ui";
+import { Button, Card, Chip, Field, IconBubble, Money, Rise, Roll, Screen, SectionHeader, Tag, Wordmark } from "@/components/ui";
 import { useTilt } from "@/components/visuals";
 import { CATEGORIES } from "@/lib/categories";
 import { addMonths, dayLabel, monthDiff, monthLong, monthOf, todayISO } from "@/lib/dates";
@@ -20,17 +20,17 @@ function BillCard({ card }: { card: CardT }) {
     <div className="animate-rise delay-1 mt-5 touch-pan-y [perspective:1100px]">
       <div
         ref={tilt}
-        className="champagne flex aspect-[1.586] flex-col justify-between rounded-[24px] p-[22px] [transform:rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))]"
+        className="champagne flex aspect-[1.586] flex-col justify-between rounded-card p-[22px] [transform:rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))]"
       >
         <div className="flex items-center justify-between">
-          <Wordmark className="text-[22px] opacity-75" />
-          <span className="text-[11px] text-muted">{card.name}</span>
+          <Wordmark className="text-value opacity-75" />
+          <span className="text-caption text-muted">{card.name}</span>
         </div>
         <div>
-          <p className="text-[11px] text-muted">
+          <p className="text-caption text-muted">
             fatura de {monthLong(bill.payMonth)} · vence {dayLabel(bill.dueDate)}
           </p>
-          <p className="big mt-2 text-[40px]">
+          <p className="big mt-2 text-display-sm">
             <Roll value={bill.total} />
           </p>
         </div>
@@ -38,7 +38,7 @@ function BillCard({ card }: { card: CardT }) {
           <div className="h-[3px] overflow-hidden rounded-full bg-black/15">
             <div className="h-full rounded-full bg-current transition-[width] duration-900" style={{ width: `${pct}%` }} />
           </div>
-          <div className="mt-2 flex justify-between text-[11px] text-muted">
+          <div className="mt-2 flex justify-between text-caption text-muted">
             <span>•••• {card.last4}</span>
             <span className="m">
               {Math.round(pct)}% de {money(card.limit, { compact: true })}
@@ -86,7 +86,7 @@ export default function Cards() {
   return (
     <Screen className="pb-36">
       <div className="flex items-center justify-between">
-        <Rise text="cartões" className="text-[32px]" />
+        <Rise text="cartões" className="text-heading" />
         <button aria-label="Adicionar cartão" onClick={() => setAdding(!adding)} className="glass grid size-9 place-items-center rounded-full text-ink-soft">
           <Plus size={16} />
         </button>
@@ -109,23 +109,23 @@ export default function Cards() {
       {data.installments.length > 0 && (
         <section className="animate-rise delay-2 mt-6">
           <SectionHeader title="parcelamentos" />
-          <div className="glass divide-y divide-line overflow-hidden rounded-[22px]">
+          <div className="glass divide-y divide-line overflow-hidden rounded-card">
             {data.installments.map((p) => {
               const paid = Math.min(p.count, Math.max(0, monthDiff(p.firstMonth, month) + (p.cardId ? 0 : 1)));
               return (
                 <div key={p.id} className="flex items-center gap-3 px-3.5 py-3">
                   <IconBubble icon={CATEGORIES[p.category].icon} />
                   <div className="min-w-0 flex-1">
-                    <div className="flex justify-between gap-2 text-[14px]">
+                    <div className="flex justify-between gap-2 text-body">
                       <span className="truncate">{p.description}</span>
                       <Money value={p.installmentAmount} />
                     </div>
                     <div className="mt-[9px] h-[3px] overflow-hidden rounded-full bg-white/8">
                       <div className="h-full rounded-full bg-ink" style={{ width: `${(paid / p.count) * 100}%` }} />
                     </div>
-                    <p className="mt-1.5 text-[11px] text-muted">
+                    <p className="mt-1.5 flex items-center gap-2 text-caption text-muted">
                       {paid} de {p.count} · até {monthLong(addMonths(p.firstMonth, p.count - 1))}
-                      {p.cardId ? "" : " · boleto"}
+                      {!p.cardId && <Tag>boleto</Tag>}
                     </p>
                   </div>
                   <button aria-label="Apagar parcelamento" onClick={() => removeInstallment(p.id)} className="text-muted">
