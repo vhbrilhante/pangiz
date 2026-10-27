@@ -73,6 +73,8 @@ function StatusBar() {
   );
 }
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export default function Simulator() {
   const router = useRouter();
   const frame = useRef<HTMLIFrameElement>(null);
@@ -99,7 +101,8 @@ export default function Simulator() {
     const id = setInterval(() => {
       try {
         const p = frame.current?.contentWindow?.location.pathname;
-        if (p) setPath(p);
+        // No GitHub Pages o app mora em /pangiz/ e as rotas terminam em "/".
+        if (p) setPath(p.slice(BASE.length).replace(/(.)\/$/, "$1") || "/");
       } catch {
         // iframe ainda carregando
       }
@@ -195,7 +198,7 @@ export default function Simulator() {
             <iframe
               key={reloads}
               ref={frame}
-              src={src}
+              src={BASE + src}
               onLoad={onLoad}
               title="pangiz no iPhone"
               className="absolute inset-0 border-0"
