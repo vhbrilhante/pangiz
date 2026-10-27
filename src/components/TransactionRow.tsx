@@ -12,6 +12,7 @@ const REVEAL = 76;
 
 /**
  * Uma linha da lista: categoria, onde foi pago e o valor com sinal.
+ * Entradas não ficam verdes: o verde é só do que dá pra investir; o sinal + já diz o que é entrada.
  * Com `onDelete`, arrastar para a esquerda revela o apagar (em vez de uma lixeira em cada linha).
  */
 export function TransactionRow({ t, onDelete }: { t: Transaction; onDelete?: () => void }) {
@@ -26,14 +27,14 @@ export function TransactionRow({ t, onDelete }: { t: Transaction; onDelete?: () 
 
   const row = (
     <div className="flex items-center gap-3 py-2.5">
-      <IconBubble icon={cat.icon} tone={t.amount > 0 ? "positive" : "neutral"} />
+      <IconBubble icon={cat.icon} />
       <div className="min-w-0 flex-1">
         <p className="truncate text-body font-medium">{t.description.toLowerCase()}</p>
         <p className="truncate text-label text-muted">
           {cat.label.toLowerCase()} {where && `· ${where.toLowerCase()}`}
         </p>
       </div>
-      <Money value={t.amount} sign className={cx("shrink-0 text-body font-medium", t.amount > 0 && "text-positive")} />
+      <Money value={t.amount} sign className="shrink-0 text-body font-medium" />
     </div>
   );
   if (!onDelete) return row;

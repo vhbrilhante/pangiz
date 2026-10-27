@@ -113,14 +113,14 @@ export default function Profile() {
         <div className="space-y-3">
           {fixed.map((r) => (
             <div key={r.id} className="flex items-center gap-3">
-              <IconBubble icon={CATEGORIES[r.category].icon} tone={r.amount > 0 ? "positive" : "neutral"} />
+              <IconBubble icon={CATEGORIES[r.category].icon} />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-body font-medium">{r.description}</p>
                 <p className="text-label text-muted">
                   todo dia {r.day} {r.cardId ? "· no cartão" : ""}
                 </p>
               </div>
-              <Money value={r.amount} sign className={r.amount > 0 ? "text-body text-positive" : "text-body"} />
+              <Money value={r.amount} sign className="text-body" />
               <button aria-label="Apagar" onClick={() => removeRecurring(r.id)} className="text-muted">
                 <Trash2 size={14} />
               </button>

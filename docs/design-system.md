@@ -26,6 +26,8 @@ Os tokens estão em `src/app/globals.css`; os componentes em `src/components/ui.
 - **Cada bloco redefine as cores de dentro.** `ink`, `muted`, `line`, `tile` e `on-ink` mudam por bloco, então
   `bg-tile`, `bg-ink text-on-ink` e `text-muted` funcionam igual em qualquer um deles.
 - **Ação é a cor `ink` do bloco** (`bg-ink text-on-ink`): preta no claro e no verde, clara no escuro e no floresta.
+- **O verde é só do dinheiro pra investir (e da marca).** Entradas não ficam verdes: o sinal `+` diz o que é entrada,
+  então o verde nunca disputa com o "dá pra investir". `positive` fica para confirmações (salvo, conectado).
 - **O verde é o destaque.** Um bloco verde por tela, o botão + e o "simular" da projeção. Barras com sobra pra investir em lima.
 
 ## Tipografia
