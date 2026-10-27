@@ -18,6 +18,13 @@ No celular, abra o endereço (por exemplo via Tailscale) e use "Adicionar à tel
 No desktop, abra `/simulador` (http://localhost:3000/simulador): o app roda dentro de uma moldura de iPhone 15,
 com atalhos para cada tela e para recomeçar com dados de exemplo ou do zero.
 
+## Site (GitHub Pages)
+
+https://vhbrilhante.github.io/pangiz/ abre uma entrada para escolher:
+
+- **landing page** (`public/landing/index.html`, HTML estático, cópia da landing da pasta do projeto);
+- **app mobile**: no computador abre em `/simulador` (moldura de iPhone), no celular abre `/app` em tela cheia.
+
 ## Fluxo (segue o Figma)
 
 1. `/boas-vindas`: 3 telas de onboarding (cartão prateado, visão total do saldo, projeções)

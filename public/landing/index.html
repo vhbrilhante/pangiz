@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d09">
+<meta name="description" content="pangiz: veja seu saldo mês a mês e quanto dá pra investir, e em que mês.">
+</head>
+<body>
+<title>pangiz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,ital,wght@6..72,0,300;6..72,0,400;6..72,1,300&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,700,1,0&display=block">
+<style>
+/* layout: hero com celular sobre um "nascer de luz" lima, depois um bento 4 colunas onde cada widget do app vira um tile */
+:root{
+  --ink:#0b0d09;          /* fundo, quase preto esverdeado */
+  --moss:#161d10;         /* superfícies */
+  --moss-2:#1f2916;
+  --lime:#d4f53c;         /* acento */
+  --lime-hi:#efff9a;
+  --cream:#eef0e2;        /* texto */
+  --muted:#8e9580;
+  --line:rgb(238 240 226 / .09);
+  --glass:rgb(238 240 226 / .06);
+  --positive:#b9ec6a;
+  --negative:#f0a48c;
+  --serif:"Newsreader","Iowan Old Style",Georgia,serif;
+  --sans:"Geist",-apple-system,"Segoe UI",system-ui,sans-serif;
+  --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+  --r-lg:30px; --r-md:22px;
+  --ease:cubic-bezier(.2,.75,.2,1);
+  /* gradiente "lime rise" (família first light do gradients.sh): luz subindo de um horizonte escuro */
+  --rise:
+    radial-gradient(70% 55% at 50% 108%, #f4ffb0 0%, #d4f53c 22%, #7fae17 44%, rgb(40 64 10 / .6) 64%, transparent 82%),
+    radial-gradient(120% 60% at 50% 120%, rgb(120 170 20 / .35), transparent 70%),
+    linear-gradient(180deg, #0b0d09 0%, #0e130a 55%, #142009 100%);
+  --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--ink);color:var(--cream);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.ms{font-family:"Material Symbols Rounded";font-weight:700;font-style:normal;font-size:22px;line-height:1;display:inline-block;font-variation-settings:"FILL" 1,"wght" 700,"GRAD" 0,"opsz" 24;-webkit-font-smoothing:antialiased;user-select:none}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--lime);outline-offset:3px;border-radius:10px}
+
+/* ---------- topo ---------- */
+.top{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding-block:22px}
+.logo{font-family:var(--serif);font-size:30px;font-weight:400;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo i{width:26px;height:26px;border-radius:9px;background:var(--lime);display:grid;place-items:center;font-style:normal}
+.logo i .ms{font-size:18px;color:var(--ink)}
+.top nav{display:flex;gap:6px;align-items:center}
+.top nav a{font-size:14px;color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:99px;transition:color .2s}
+.top nav a:hover{color:var(--cream)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;font:600 15px/1 var(--sans);border-radius:99px;padding:14px 20px;text-decoration:none;transition:transform .25s var(--ease),background .2s}
+.btn:active{transform:scale(.96)}
+.btn-lime{background:var(--lime);color:var(--ink)}
+.btn-lime:hover{background:var(--lime-hi)}
+.btn-ghost{background:var(--glass);color:var(--cream);box-shadow:inset 0 0 0 1px var(--line)}
+.top .btn{padding:11px 16px;font-size:14px}
+@media (max-width:720px){.top nav a{display:none}.top nav a[data-app]{display:inline-flex}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;background:var(--rise);border-radius:0 0 44px 44px;margin-top:-80px;padding-top:80px}
+.hero::after{content:"";position:absolute;inset:0;background:var(--grain);opacity:.09;mix-blend-mode:overlay;pointer-events:none}
+.hero-in{position:relative;z-index:2;display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:end;padding-block:64px 0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--cream);background:var(--glass);box-shadow:inset 0 0 0 1px var(--line);padding:7px 12px 7px 8px;border-radius:99px;backdrop-filter:blur(8px)}
+.eyebrow .dot{width:20px;height:20px;border-radius:99px;background:var(--lime);display:grid;place-items:center}
+.eyebrow .dot .ms{font-size:14px;color:var(--ink)}
+h1{font-family:var(--serif);font-weight:300;font-size:clamp(46px,7.4vw,96px);line-height:.94;letter-spacing:-.035em;margin:22px 0 22px;text-wrap:balance}
+h1 em{font-style:italic;color:var(--lime)}
+.lede{font-size:18px;color:#c9cdbb;max-width:31em;margin:0 0 30px;text-wrap:pretty}
+.cta-row{display:flex;gap:10px;flex-wrap:wrap}
+.hero-copy{padding-bottom:110px}
+.proof{display:flex;gap:8px;margin-top:38px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.proof>span{display:inline-flex;align-items:center;gap:6px;color:var(--cream);background:rgb(11 13 9 / .55);backdrop-filter:blur(8px);padding:7px 12px 7px 9px;border-radius:99px}
+.proof .ms{font-size:18px;color:var(--lime)}
+
+/* ---------- celular ---------- */
+.phone-stage{display:flex;justify-content:center;align-items:flex-end}
+.phone{width:min(340px,86vw);aspect-ratio:340/700;max-width:100%;border-radius:54px 54px 0 0;padding:12px 12px 0;background:linear-gradient(160deg,#2a3121,#0f130b 40%,#1b2214);box-shadow:0 -1px 0 1px rgb(255 255 255 / .08) inset,0 40px 90px -20px rgb(0 0 0 / .7),0 0 0 1px rgb(0 0 0 / .6);position:relative;transform:translateY(0);animation:rise 1.1s var(--ease) both}
+@keyframes rise{from{transform:translateY(40px)}to{transform:translateY(0)}}
+.screen{position:relative;height:100%;border-radius:43px 43px 0 0;overflow:hidden;background:radial-gradient(110% 50% at 20% 0%,#1c2a10 0%,transparent 60%),#0c0f09;padding:16px 18px 0}
+.island{width:108px;height:31px;border-radius:99px;background:#000;margin:0 auto 14px}
+.s-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
+.s-head p{margin:0;font-family:var(--serif);font-size:22px;letter-spacing:-.02em}
+.s-head .ic{display:flex;gap:6px}
+.s-head .ic>span{width:34px;height:34px;border-radius:99px;background:var(--glass);display:grid;place-items:center;box-shadow:inset 0 0 0 1px var(--line)}
+.s-head .ic .ms{font-size:18px}
+.s-bal small{font-size:12px;color:var(--muted)}
+.s-bal b{display:block;font-family:var(--serif);font-weight:300;font-size:40px;letter-spacing:-.03em;line-height:1.05;font-variant-numeric:tabular-nums}
+.s-bal em{font-style:normal;font-size:12px;color:var(--positive)}
+.s-proj{margin-top:26px;background:var(--lime);color:var(--ink);border-radius:26px;padding:16px 16px 10px;position:relative;overflow:hidden}
+.s-proj::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 90% at 100% 0%,var(--lime-hi),transparent 60%)}
+.s-proj>*{position:relative}
+.s-proj small{font-size:12px;font-weight:500;opacity:.7}
+.s-proj b{display:block;font-family:var(--serif);font-weight:400;font-size:30px;letter-spacing:-.03em;line-height:1.1}
+.s-proj svg{display:block;width:100%;height:52px;margin-top:4px}
+.s-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.s-w{background:var(--moss);border-radius:22px;padding:13px;box-shadow:inset 0 0 0 1px var(--line)}
+.s-w .ms{font-size:18px;color:var(--lime)}
+.s-w small{display:block;font-size:11px;color:var(--muted);margin-top:8px}
+.s-w b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+/* liquid glass só aqui */
+.lg-nav{position:absolute;left:14px;right:14px;bottom:18px;height:62px;border-radius:99px;display:flex;justify-content:space-around;align-items:center;
+  background:linear-gradient(180deg,rgb(255 255 255 / .16),rgb(255 255 255 / .05));
+  backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgb(255 255 255 / .45),inset 0 -1px 0 rgb(255 255 255 / .08),inset 0 0 0 1px rgb(255 255 255 / .12),inset 0 -12px 24px -14px rgb(212 245 60 / .35),0 18px 40px -10px rgb(0 0 0 / .6)}
+.lg-nav::before{content:"";position:absolute;inset:1px 18% auto;height:45%;border-radius:99px;background:linear-gradient(180deg,rgb(255 255 255 / .22),transparent);pointer-events:none}
+.lg-nav>span{width:46px;height:46px;border-radius:99px;display:grid;place-items:center;color:rgb(238 240 226 / .6);position:relative}
+.lg-nav>span.on{background:rgb(255 255 255 / .9);color:var(--ink);box-shadow:0 6px 16px -4px rgb(0 0 0 / .5)}
+.lg-nav>span.add{background:var(--lime);color:var(--ink)}
+.s-blob{position:absolute;left:-20%;right:-20%;bottom:-40px;height:140px;background:radial-gradient(50% 60% at 50% 100%,rgb(212 245 60 / .45),transparent 70%);pointer-events:none}
+
+/* ---------- seções ---------- */
+section{padding-block:96px 0}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:28px}
+h2{font-family:var(--serif);font-weight:300;font-size:clamp(36px,4.6vw,58px);line-height:1;letter-spacing:-.03em;margin:0;text-wrap:balance;max-width:14em}
+h2 em{color:var(--lime);font-style:italic}
+.sec-head p{color:var(--muted);max-width:26em;margin:0}
+
+/* ---------- bento ---------- */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(150px,auto);gap:14px}
+.tile{position:relative;overflow:hidden;background:var(--moss);border-radius:var(--r-lg);padding:24px;box-shadow:inset 0 0 0 1px var(--line);display:flex;flex-direction:column;gap:10px;min-width:0;transition:transform .35s var(--ease),box-shadow .3s}
+.tile:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 1px rgb(212 245 60 / .25)}
+.tile h3{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.05;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.tile p{margin:0;color:var(--muted);font-size:15px;text-wrap:pretty}
+.chip{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:6px 10px 6px 7px;border-radius:99px;background:rgb(212 245 60 / .12);color:var(--lime)}
+.chip .ms{font-size:16px}
+.badge{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:var(--moss-2);color:var(--lime)}
+.badge .ms{font-size:24px}
+.num{font-family:var(--serif);font-weight:300;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.mono{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.02em}
+
+.t-proj{grid-column:span 2;grid-row:span 2;background:var(--rise);background-size:100% 160%;background-position:50% 0}
+.t-proj::after{content:"";position:absolute;inset:0;background:var(--grain);opacity:.08;mix-blend-mode:overlay;pointer-events:none}
+.t-proj>*{position:relative;z-index:1}
+.t-proj .num{font-size:clamp(48px,6vw,76px)}
+.months{display:flex;gap:6px;margin-top:auto;align-items:flex-end;height:170px}
+.months button{flex:1;min-width:0;border:0;padding:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end;color:var(--muted);font:500 11px var(--sans)}
+.months i{display:block;width:100%;border-radius:10px 10px 6px 6px;background:rgb(238 240 226 / .14);transition:background .25s,height .5s var(--ease)}
+.months i.inv{background:linear-gradient(180deg,var(--lime-hi),var(--lime))}
+.months button[aria-pressed="true"]{color:var(--cream)}
+.months button[aria-pressed="true"] i{box-shadow:0 0 0 2px var(--cream)}
+.proj-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px;color:#c9cdbb}
+.proj-meta b{color:var(--cream);font-weight:600}
+
+.t-fat{grid-column:span 2}
+.t-fat .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.t-fat .num{font-size:44px}
+.bar{height:8px;border-radius:99px;background:rgb(238 240 226 / .1);overflow:hidden}
+.bar i{display:block;height:100%;width:65%;border-radius:inherit;background:var(--cream)}
+.lines{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.lines div{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.lines span{color:var(--muted)}
+
+.t-inv{grid-column:span 1;background:var(--lime);color:var(--ink)}
+.t-inv p{color:rgb(11 13 9 / .65)}
+.t-inv .badge{background:var(--ink);color:var(--lime)}
+.t-inv .num{font-size:40px}
+.t-inv .chip{background:rgb(11 13 9 / .1);color:var(--ink)}
+
+.t-res{grid-column:span 1}
+.t-res input[type=range]{width:100%;accent-color:var(--lime);margin:4px 0 0}
+.t-res .num{font-size:36px}
+
+.t-parc{grid-column:span 2}
+.parc{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:6px}
+.parc i{height:28px;border-radius:7px;background:rgb(238 240 226 / .08)}
+.parc i.paid{background:rgb(238 240 226 / .35)}
+.parc i.now{background:var(--lime)}
+.impact{display:flex;gap:10px;align-items:center;font-size:14px;color:#c9cdbb;background:var(--moss-2);border-radius:16px;padding:12px 14px}
+.impact .ms{color:var(--negative);font-size:20px}
+
+.t-sync{grid-column:span 1}
+.banks{display:flex;margin-top:auto}
+.banks>span{width:40px;height:40px;border-radius:99px;display:grid;place-items:center;font:700 11px var(--sans);margin-right:-8px;box-shadow:0 0 0 3px var(--moss)}
+
+.t-chat{grid-column:span 1}
+.bub{font-size:14px;padding:10px 13px;border-radius:18px;max-width:92%}
+.bub.me{align-self:flex-end;background:var(--cream);color:var(--ink);border-bottom-right-radius:6px}
+.bub.ai{background:var(--moss-2);border-bottom-left-radius:6px}
+.bub.ai b{color:var(--lime);font-weight:600}
+
+.t-learn{grid-column:span 4;flex-direction:row;align-items:center;gap:22px;flex-wrap:wrap}
+.t-learn .copy{flex:1 1 260px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.steps{display:flex;gap:8px;flex-wrap:wrap}
+.steps>span{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:8px 12px;border-radius:99px;background:var(--moss-2)}
+.steps .ms{font-size:16px;color:var(--lime)}
+
+@media (max-width:980px){
+  .hero-in{grid-template-columns:1fr;gap:10px;padding-top:36px}
+  .hero-copy{padding-bottom:30px}
+  .bento{grid-template-columns:repeat(2,1fr)}
+  .t-proj,.t-fat,.t-parc,.t-learn{grid-column:span 2}
+  .t-proj{grid-row:auto}
+}
+@media (max-width:560px){
+  .bento{grid-template-columns:1fr}
+  .tile,.t-proj,.t-fat,.t-parc,.t-learn,.t-inv,.t-res,.t-sync,.t-chat{grid-column:auto}
+  .months{height:140px;gap:4px}
+  .months button{font-size:9px}
+  section{padding-block:72px 0}
+}
+
+/* ---------- cta final ---------- */
+.end{margin-top:96px;position:relative;overflow:hidden;border-radius:44px;background:var(--rise);background-position:50% 100%}
+.end::after{content:"";position:absolute;inset:0;background:var(--grain);opacity:.09;mix-blend-mode:overlay;pointer-events:none}
+.end-in{position:relative;z-index:1;padding-block:110px 170px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
+.end h2{max-width:12em}
+.end p{color:#c9cdbb;margin:0;max-width:30em}
+form{display:flex;gap:8px;margin-top:10px;width:min(460px,100%);background:rgb(11 13 9 / .55);padding:6px;border-radius:99px;box-shadow:inset 0 0 0 1px var(--line);backdrop-filter:blur(10px)}
+form input{flex:1;min-width:0;background:none;border:0;color:var(--cream);font:16px var(--sans);padding:0 14px}
+form input::placeholder{color:var(--muted)}
+form input:focus{outline:none}
+.ok{font-size:14px;color:var(--cream);display:inline-flex;gap:6px;align-items:center}
+.ok .ms{color:var(--lime);font-size:18px}
+footer{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:26px 34px;color:var(--muted);font-size:13px;position:relative;z-index:1}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="wrap top">
+  <a class="logo" href="#topo" aria-label="pangiz"><i><span class="ms">trending_up</span></i>pangiz</a>
+  <nav aria-label="seções">
+    <a href="#como">como funciona</a>
+    <a href="#widgets">o app</a>
+    <a href="../" class="nav-back">início</a>
+    <a class="btn btn-ghost" href="../app/" data-app>abrir o app</a>
+    <a class="btn btn-lime" href="#lista">entrar na lista</a>
+  </nav>
+</header>
+
+<div class="hero" id="topo">
+  <div class="wrap hero-in">
+    <div class="hero-copy">
+      <span class="eyebrow"><span class="dot"><span class="ms">bolt</span></span>finanças pra quem tá começando</span>
+      <h1>veja seu saldo de <em>março</em> ainda em outubro.</h1>
+      <p class="lede">o pangiz junta suas contas, faturas e parcelas e projeta seu saldo mês a mês. aí te mostra quanto dá pra investir, e em que mês, sem mexer na sua reserva.</p>
+      <div class="cta-row">
+        <a class="btn btn-lime" href="../app/" data-app><span class="ms">arrow_forward</span>testar o app</a>
+        <a class="btn btn-ghost" href="#como"><span class="ms">play_circle</span>ver a projeção</a>
+      </div>
+      <div class="proof">
+        <span><span class="ms">lock</span>sem cnpj, sem planilha</span>
+        <span><span class="ms">calendar_month</span>até 24 meses à frente</span>
+        <span><span class="ms">savings</span>reserva protegida</span>
+      </div>
+    </div>
+    <div class="phone-stage" aria-hidden="true">
+      <div class="phone">
+        <div class="screen">
+          <div class="island"></div>
+          <div class="s-head"><p>boa noite, victor</p><div class="ic"><span><span class="ms">visibility</span></span><span><span class="ms">notifications</span></span></div></div>
+          <div class="s-bal"><small>saldo em contas</small><b>R$ 3.520,70</b><em>+ R$ 120,00 este mês</em></div>
+          <div class="s-proj">
+            <small>dá pra investir no fim de novembro</small>
+            <b>R$ 3.020,00</b>
+            <svg viewBox="0 0 280 52" preserveAspectRatio="none"><path d="M0 44 C40 40 60 30 90 32 S150 18 180 20 S240 6 280 4" fill="none" stroke="#0b0d09" stroke-width="2.5" stroke-linecap="round"/><path d="M0 44 C40 40 60 30 90 32 S150 18 180 20 S240 6 280 4 V52 H0Z" fill="rgb(11 13 9 / .08)"/><circle cx="180" cy="20" r="5" fill="#0b0d09"/></svg>
+          </div>
+          <div class="s-grid">
+            <div class="s-w"><span class="ms">credit_card</span><small>faturas</small><b>R$ 1.110,82</b></div>
+            <div class="s-w"><span class="ms">monitoring</span><small>investimentos</small><b>R$ 8.240,00</b></div>
+          </div>
+          <div class="s-blob"></div>
+          <div class="lg-nav">
+            <span class="on"><span class="ms">home</span></span>
+            <span><span class="ms">insights</span></span>
+            <span class="add"><span class="ms">add</span></span>
+            <span><span class="ms">credit_card</span></span>
+            <span><span class="ms">person</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section id="como">
+    <div class="sec-head">
+      <h2>uma home leve. <em>cada widget</em> abre o resto.</h2>
+      <p>na tela inicial fica só o que importa hoje. quer ver a fatura inteira? toca no widget de faturas. quer os investimentos? toca no de investimentos.</p>
+    </div>
+
+    <div class="bento" id="widgets">
+      <article class="tile t-proj">
+        <span class="chip"><span class="ms">insights</span>projeção mês a mês</span>
+        <h3>quanto sobra em cada mês, já contando as parcelas</h3>
+        <div><span class="mono" id="pmes">novembro · dá pra investir</span><div class="num" id="pval">R$ 3.020</div></div>
+        <div class="months" id="months" role="group" aria-label="escolha um mês"></div>
+        <div class="proj-meta"><span>reserva mantida <b>R$ 500</b></span><span>total em 12 meses <b>R$ 22.030</b></span></div>
+      </article>
+
+      <article class="tile t-fat">
+        <div class="row"><span class="chip"><span class="ms">credit_card</span>widget de faturas</span><span class="mono">vence 10 nov</span></div>
+        <div class="row"><h3>fatura nubank</h3><span class="num">R$ 1.110,82</span></div>
+        <div class="bar"><i></i></div>
+        <div class="lines">
+          <div><span>supermercado nova era</span>R$ 184,32</div>
+          <div><span>iphone · 5/12</span>R$ 412,50</div>
+          <div><span>passagem de férias · 1/5</span>R$ 265,00</div>
+        </div>
+      </article>
+
+      <article class="tile t-inv">
+        <span class="badge"><span class="ms">monitoring</span></span>
+        <span class="num">R$ 8.240</span>
+        <p>widget de investimentos: tesouro, cdb e corretora num lugar só.</p>
+        <span class="chip"><span class="ms">arrow_upward</span>+ 1,04% no mês</span>
+      </article>
+
+      <article class="tile t-res">
+        <span class="badge"><span class="ms">shield</span></span>
+        <h3>sua reserva</h3>
+        <span class="num" id="resv">R$ 500</span>
+        <label class="mono" for="res">arrasta pra ajustar</label>
+        <input id="res" type="range" min="0" max="3000" step="100" value="500">
+      </article>
+
+      <article class="tile t-parc">
+        <span class="chip"><span class="ms">receipt_long</span>parcelas no lugar certo</span>
+        <h3>comprou em 12x? a gente espalha nos 12 meses.</h3>
+        <div class="parc" aria-label="parcela 5 de 12"><i class="paid"></i><i class="paid"></i><i class="paid"></i><i class="paid"></i><i class="now"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="impact"><span class="ms">trending_down</span><span>esse lançamento muda o que dá pra investir em 12 meses de R$ 22.030 para R$ 19.630.</span></div>
+      </article>
+
+      <article class="tile t-sync">
+        <span class="badge"><span class="ms">sync</span></span>
+        <h3>contas e corretoras</h3>
+        <p>open finance pra conta e cartão. corrige o saldo na mão quando o banco atrasa.</p>
+        <div class="banks"><span style="background:#8a05be;color:#fff">nu</span><span style="background:#ec7000;color:#fff">itaú</span><span style="background:#ff7a00;color:#fff">inter</span><span style="background:#eef0e2;color:#0b0d09">rico</span></div>
+      </article>
+
+      <article class="tile t-chat">
+        <span class="badge"><span class="ms">forum</span></span>
+        <div class="bub me">dá pra viajar em julho?</div>
+        <div class="bub ai">dá. guardando <b>R$ 350/mês</b> desde agosto, você chega em julho com R$ 3.150 e mantém a reserva.</div>
+      </article>
+
+      <article class="tile t-learn">
+        <span class="badge"><span class="ms">school</span></span>
+        <div class="copy">
+          <h3>feito pra quem nunca investiu</h3>
+          <p>nada de jargão. o pangiz explica o próximo passo quando ele aparece na sua projeção.</p>
+          <div class="steps"><span><span class="ms">check_circle</span>monte a reserva</span><span><span class="ms">check_circle</span>veja o mês livre</span><span><span class="ms">check_circle</span>invista o que sobra</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<div class="end" id="lista">
+  <div class="wrap end-in">
+    <span class="eyebrow"><span class="dot"><span class="ms">schedule</span></span>beta fechado</span>
+    <h2>pare de adivinhar o <em>mês que vem.</em></h2>
+    <p>entra na lista e recebe o convite quando a próxima turma abrir.</p>
+    <form id="f" novalidate>
+      <input id="email" type="email" placeholder="seu@email.com" autocomplete="email" aria-label="e-mail" required>
+      <button class="btn btn-lime" type="submit">entrar</button>
+    </form>
+    <div id="msg" class="ok" hidden><span class="ms">check_circle</span><span id="msgt">você tá na lista.</span></div>
+  </div>
+</div>
+<footer class="wrap"><span>pangiz · 2026</span><span>seus dados ficam com você.</span></footer>
+
+<script>
+const base=[3020,1220,1480,1560,1500,1750,2080,2020,2130,2410,2440,2410];
+const nomes=["novembro","dezembro","janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro"];
+const curtos=["nov","dez","jan","fev","mar","abr","mai","jun","jul","ago","set","out"];
+const fmt=v=>"R$ "+Math.max(0,Math.round(v)).toLocaleString("pt-BR");
+const box=document.getElementById("months"),pv=document.getElementById("pval"),pm=document.getElementById("pmes");
+let sel=0,reserva=500;
+function render(){
+  const vals=base.map(v=>v+500-reserva),max=3600;
+  box.innerHTML=vals.map((v,i)=>`<button type="button" aria-pressed="${i===sel}" aria-label="${nomes[i]}"><i class="${v>0?"inv":""}" style="height:${Math.max(8,v/max*100)}%"></i>${curtos[i]}</button>`).join("");
+  const v=vals[sel];
+  pv.textContent=fmt(v);
+  pm.textContent=nomes[sel]+(v>0?" · dá pra investir":" · segura a reserva");
+}
+box.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sel=[...box.children].indexOf(b);render()});
+box.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"||!e.buttons)return;const r=box.getBoundingClientRect();const i=Math.min(11,Math.max(0,Math.floor((e.clientX-r.left)/r.width*12)));if(i!==sel){sel=i;render()}});
+const res=document.getElementById("res"),rv=document.getElementById("resv");
+res.addEventListener("input",()=>{reserva=+res.value;rv.textContent=fmt(reserva);render()});
+render();
+document.getElementById("f").addEventListener("submit",e=>{
+  e.preventDefault();const i=document.getElementById("email"),m=document.getElementById("msg"),t=document.getElementById("msgt");
+  m.hidden=false;
+  if(!/^\S+@\S+\.\S+$/.test(i.value)){t.textContent="confere o e-mail, faltou algo.";return}
+  t.textContent="pronto, "+i.value+" tá na lista.";i.value="";
+});
+</script>
+
+<script>
+// No computador o app abre no simulador de iPhone; no celular, em tela cheia.
+if (matchMedia("(min-width: 601px)").matches) document.querySelectorAll("[data-app]").forEach(a => a.setAttribute("href", "../simulador/"));
+</script>
+
+</body>
+</html>

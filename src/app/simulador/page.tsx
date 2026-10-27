@@ -1,6 +1,7 @@
 "use client";
 
-import { RotateCcw, Trash2 } from "@/components/icons";
+import { ArrowLeft, RotateCcw, Trash2 } from "@/components/icons";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cx } from "@/components/ui";
@@ -10,7 +11,7 @@ import type { AppData } from "@/lib/types";
 
 // Simulador de iPhone para testar no desktop: o app roda num iframe de 393×852 dentro de uma moldura,
 // com barra de status, Dynamic Island e as áreas seguras de um iPhone 15.
-// No celular a rota manda direto para o app.
+// No celular a rota manda direto para o app (/app).
 
 const W = 393;
 const H = 852;
@@ -80,12 +81,12 @@ export default function Simulator() {
   const frame = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState(1);
   const [path, setPath] = useState("/");
-  const [src, setSrc] = useState("/");
+  const [src, setSrc] = useState("/app");
   const [reloads, setReloads] = useState(0);
 
   // No celular não faz sentido simular um celular.
   useEffect(() => {
-    if (window.matchMedia("(max-width: 600px)").matches) router.replace("/");
+    if (window.matchMedia("(max-width: 600px)").matches) router.replace("/app");
   }, [router]);
 
   // Escala o aparelho para caber na janela.
@@ -152,6 +153,9 @@ export default function Simulator() {
     >
       <aside className="flex w-[200px] shrink-0 flex-col gap-5 text-ink">
         <div>
+          <Link href="/" className="mb-4 inline-flex items-center gap-1.5 text-caption text-ink-soft hover:text-ink">
+            <ArrowLeft size={13} /> voltar ao início
+          </Link>
           <p className="font-display text-title">pangiz</p>
           <p className="mt-1 text-caption text-muted">simulador de iPhone 15 · 393 × 852</p>
         </div>
@@ -179,7 +183,7 @@ export default function Simulator() {
           <button onClick={() => restart(sample(), "/inicio")} className={cx(btn(false), "flex items-center gap-2")}>
             <RotateCcw size={13} /> recomeçar com exemplo
           </button>
-          <button onClick={() => restart(null, "/")} className={cx(btn(false), "flex items-center gap-2")}>
+          <button onClick={() => restart(null, "/app")} className={cx(btn(false), "flex items-center gap-2")}>
             <Trash2 size={13} /> do zero (onboarding)
           </button>
         </div>
