@@ -1,16 +1,14 @@
 "use client";
 
-import { ArrowUpRight, ChevronLeft, ChevronRight, Eye, EyeOff, RefreshCw } from "lucide-react";
+import { ArrowUpRight, Eye, EyeOff, Receipt, RefreshCw, TrendingUp } from "@/components/icons";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
-import { cx, Money, Roll, Screen } from "@/components/ui";
-import { Island, useTilt } from "@/components/visuals";
+import { Money, Roll, Screen } from "@/components/ui";
+import { Island, Sparkline, useTilt } from "@/components/visuals";
 import { Pullable } from "@/components/pull";
-import { TransactionRow } from "@/components/TransactionRow";
 import { CATEGORIES } from "@/lib/categories";
-import { monthLong, monthShort, relativeDay, todayISO } from "@/lib/dates";
-import { money } from "@/lib/format";
-import { currentBalance, project, upcoming } from "@/lib/projection";
+import { dayLabel, monthShort, relativeDay, todayISO } from "@/lib/dates";
+import { currentBalance, openBill, project, upcoming } from "@/lib/projection";
 import { useStore } from "@/lib/store";
 
 function greeting() {
@@ -20,25 +18,23 @@ function greeting() {
   return "boa noite";
 }
 
-// Início em blocos: o claro mostra o saldo, o verde quanto dá pra investir no mês escolhido,
-// o floresta uma prévia da projeção.
+// Início em bento, sem excesso: o saldo, e dois widgets que abrem o resto.
+// Investimentos abre a projeção; faturas abre os cartões. Embaixo, só o próximo pagamento.
 export default function Home() {
   const { data, setSettings, update } = useStore();
   const p = useMemo(() => project(data), [data]);
   const balance = currentBalance(data);
-  const [picked, setPicked] = useState<number | null>(null);
-  const selIndex = picked ?? Math.max(0, p.months.findIndex((m) => m.investable > 0));
-  const sel = p.months[selIndex];
-  const soon = useMemo(() => upcoming(data, 30).slice(0, 8), [data]);
-  const soonTotal = soon.reduce((s, e) => s + e.amount, 0);
-  const recent = useMemo(() => [...data.transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3), [data.transactions]);
+  const first = p.months.find((m) => m.investable > 0);
+  const card = data.cards[0];
+  const bill = card ? openBill(data, card) : null;
+  const billPct = card && bill ? Math.min(100, (bill.used / (card.limit || 1)) * 100) : 0;
+  const next = useMemo(() => upcoming(data, 45).find((e) => e.amount < 0), [data]);
   const hide = data.settings.hideValues;
   const name = data.user?.name.split(" ")[0].toLowerCase() ?? "você";
   const [island, setIsland] = useState(false);
   const [syncedNow, setSyncedNow] = useState(false);
-  const tilt = useTilt<HTMLElement>(0.5);
-  const bars = p.months.slice(0, 12);
-  const barMax = Math.max(1, ...bars.map((m) => Math.max(m.afterInvesting, 0) + m.investable));
+  const tilt = useTilt<HTMLAnchorElement>(0.5);
+  const curve = [balance, ...p.months.slice(0, 6).map((m) => m.afterInvesting)];
 
   // Simula a sincronização: confere os saldos hoje e mexe alguns centavos, como se o banco tivesse respondido.
   const refresh = useCallback(async () => {
@@ -52,168 +48,117 @@ export default function Home() {
     setTimeout(() => setIsland(false), 1600);
   }, [update]);
 
+  const NextIcon = next ? CATEGORIES[next.category].icon : null;
+
   return (
-    <Screen light="top" className="!px-2.5 !pb-[calc(max(var(--safe-bottom),12px)+92px)]">
+    <Screen light="top" className="!px-2.5 !pb-[calc(max(var(--safe-bottom),12px)+100px)]">
       <Island open={island}>
         <RefreshCw size={13} />
         <span>saldos atualizados</span>
       </Island>
 
-      <Pullable onRefresh={refresh}>
-        <section className="paper animate-rise rounded-card-lg p-5">
-          <div className="flex items-center justify-between">
-            <span aria-hidden className="grid size-11 place-items-center rounded-full bg-ink font-display text-[22px] text-lime">p</span>
-            <button
-              aria-label={hide ? "mostrar valores" : "esconder valores"}
-              onClick={() => setSettings({ hideValues: !hide })}
-              className="grid size-11 place-items-center rounded-full bg-tile transition active:scale-95"
-            >
-              {hide ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-          <p className="mt-5 flex items-center gap-2 text-caption text-muted">
-            <span className="size-1.5 rounded-full bg-ink" /> visão geral
-          </p>
-          <h1 className="mt-2 font-display text-heading">
+      <header className="animate-rise flex h-12 items-center justify-between px-2.5">
+        <span className="flex items-center gap-3">
+          <span aria-hidden className="grid size-10 place-items-center rounded-full bg-lime font-display text-[19px] text-[var(--on-green)]">
+            {name[0]}
+          </span>
+          <h1 className="font-display text-[24px] leading-none tracking-[-0.02em]">
             {greeting()}, {name}
           </h1>
-          <p className="mt-3 text-body-sm text-ink-soft">você tem disponível</p>
-          <p className="big mt-1 text-display">
-            <Roll value={balance} />
-          </p>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <span className="flex h-12 items-center justify-between rounded-full bg-tile px-4 text-label">
-              <span className="text-muted">contas</span>
-              <span className="font-medium">{data.accounts.length}</span>
-            </span>
-            <span className="flex h-12 items-center justify-between rounded-full bg-tile px-4 text-label">
-              <span className="text-muted">{syncedNow ? "atualizado" : "conferido"}</span>
-              <span className="font-medium">{syncedNow ? "agora" : relativeDay(data.accounts[0]?.checkedAt ?? todayISO())}</span>
-            </span>
-          </div>
-        </section>
-      </Pullable>
+        </span>
+        <button
+          aria-label={hide ? "mostrar valores" : "esconder valores"}
+          onClick={() => setSettings({ hideValues: !hide })}
+          className="grid size-11 place-items-center rounded-full bg-tile text-ink-soft transition active:scale-95"
+        >
+          {hide ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      </header>
 
-      <section
-        ref={tilt}
-        className="glow animate-rise delay-1 mt-2.5 rounded-card-lg p-5 [transform:perspective(900px)_rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))]"
-        aria-live="polite"
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-start gap-2">
-              <p className="big text-display-sm">
-                <Roll value={sel.investable} compact />
+      <div className="mt-9 grid grid-cols-2 gap-2.5">
+        <div className="col-span-2">
+          <Pullable onRefresh={refresh}>
+            <Link href="/transacoes" className="paper animate-rise block rounded-card-lg p-5 transition active:scale-[0.985]">
+              <p className="text-caption text-muted">saldo disponível agora</p>
+              <p className="big mt-2.5 text-display">
+                <Roll value={balance} />
               </p>
-              <span className="mt-1 rounded-full bg-ink px-2 py-0.5 text-micro text-on-ink">{monthShort(sel.month)}</span>
-            </div>
-            <p className="mt-1.5 text-label text-ink-soft">
-              {sel.investable > 0
-                ? `dá pra investir em ${monthLong(sel.month)}, sem tocar nos ${money(data.settings.reserve, { compact: true })} de reserva`
-                : `em ${monthLong(sel.month)} não sobra pra investir`}
-            </p>
-          </div>
-          <Link href="/projecao" aria-label="Ver projeção" className="grid size-12 shrink-0 place-items-center rounded-full bg-ink text-on-ink transition active:scale-95">
-            <ArrowUpRight size={18} />
-          </Link>
-        </div>
-        <div className="mt-4 flex items-center gap-2">
-          <div className="flex h-11 items-center gap-1 rounded-full bg-tile px-1.5">
-            <button
-              aria-label="Mês anterior"
-              onClick={() => setPicked(Math.max(0, selIndex - 1))}
-              disabled={selIndex === 0}
-              className="grid size-8 place-items-center rounded-full transition active:scale-90 disabled:opacity-30"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <span className="min-w-8 text-center text-label font-medium">{monthShort(sel.month)}</span>
-            <button
-              aria-label="Próximo mês"
-              onClick={() => setPicked(Math.min(p.months.length - 1, selIndex + 1))}
-              disabled={selIndex === p.months.length - 1}
-              className="grid size-8 place-items-center rounded-full transition active:scale-90 disabled:opacity-30"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
-          <span className="flex h-11 min-w-0 flex-1 items-center justify-between gap-2 rounded-full bg-tile pl-4 pr-4 text-label">
-            <span className="truncate text-ink-soft">fica na conta</span>
-            <Money value={sel.afterInvesting} compact className="shrink-0 font-medium" />
-          </span>
-        </div>
-      </section>
-
-      <Link href="/projecao" className="forest animate-rise delay-2 mt-2.5 block rounded-card-lg p-5">
-        <div className="flex items-center justify-between">
-          <p className="flex items-center gap-2 text-caption text-ink-soft">
-            <span className="size-1.5 rounded-full bg-lime" /> projeção · {bars.length} meses
-          </p>
-          <span className="rounded-full bg-ink px-3 py-1 text-caption font-medium text-on-ink">ver</span>
-        </div>
-        <p className="mt-2 font-display text-value">
-          <Money value={p.totalInvestable} compact /> <span className="text-ink-soft">até {monthShort(bars[bars.length - 1].month)}</span>
-        </p>
-        <div aria-hidden className="mt-4 flex h-20 items-end gap-1.5">
-          {bars.map((m, i) => (
-            <span
-              key={m.month}
-              className={cx("flex-1 rounded-full transition-[height] duration-700")}
-              style={{
-                height: `${Math.max(14, ((Math.max(m.afterInvesting, 0) + m.investable) / barMax) * 100)}%`,
-                background: i === selIndex ? "var(--ink)" : m.investable > 0 ? "rgb(198 242 90 / .7)" : "rgb(255 255 255 / .2)",
-              }}
-            />
-          ))}
-        </div>
-      </Link>
-
-      {soon.length > 0 && (
-        <section className="glass-strong animate-rise delay-3 mt-2.5 rounded-card-lg py-5">
-          <div className="flex items-center justify-between px-5">
-            <p className="flex items-center gap-2 text-caption text-ink-soft">
-              <span className="size-1.5 rounded-full bg-warning" /> próximos 30 dias
-            </p>
-            <Money value={soonTotal} compact className="text-label font-medium" />
-          </div>
-          <div className="no-scrollbar mt-3 flex snap-x scroll-px-5 gap-2 overflow-x-auto px-5">
-            {soon.map((e) => {
-              const Icon = CATEGORIES[e.category].icon;
-              return (
-                <div key={`${e.date}-${e.description}`} className="flex w-[132px] shrink-0 snap-start flex-col rounded-card bg-tile p-3.5">
-                  <span className="flex items-center justify-between">
-                    <span className="grid size-8 place-items-center rounded-full bg-white/8">
-                      <Icon size={14} strokeWidth={1.7} />
-                    </span>
-                    {e.detail && <span className="rounded-full bg-white/8 px-2 py-0.5 text-micro text-ink-soft">{e.detail}</span>}
-                  </span>
-                  <span className="mt-3 truncate text-label font-medium">{e.description.toLowerCase()}</span>
-                  <span className="text-caption text-muted">{relativeDay(e.date)}</span>
-                  <Money value={-e.amount} compact className="mt-2 font-display text-title" />
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {recent.length > 0 && (
-        <section className="paper animate-rise delay-3 mt-2.5 rounded-card-lg px-5 pb-3 pt-5">
-          <div className="flex items-center justify-between">
-            <p className="flex items-center gap-2 text-caption text-muted">
-              <span className="size-1.5 rounded-full bg-ink" /> últimos lançamentos
-            </p>
-            <Link href="/transacoes" className="rounded-full bg-ink px-3 py-1 text-caption font-medium text-on-ink">
-              ver todos
+              <p className="mt-3 truncate text-caption text-muted">
+                {data.accounts.map((a) => a.name.replace(/^conta /i, "").toLowerCase()).join(" · ")} ·{" "}
+                {syncedNow ? "atualizado agora" : `conferido ${relativeDay(data.accounts[0]?.checkedAt ?? todayISO())}`} · puxe para atualizar
+              </p>
             </Link>
-          </div>
-          <div className="mt-1 divide-y divide-line">
-            {recent.map((t) => (
-              <TransactionRow key={t.id} t={t} />
-            ))}
-          </div>
-        </section>
-      )}
+          </Pullable>
+        </div>
+
+        <Link
+          ref={tilt}
+          href="/projecao"
+          aria-label="Ver investimentos e projeção"
+          className="glow animate-rise delay-1 relative flex aspect-square flex-col justify-between overflow-hidden rounded-card-lg p-4 [transform:perspective(900px)_rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))]"
+        >
+          <span className="flex items-start justify-between">
+            <span className="grid size-10 place-items-center rounded-full bg-tile">
+              <TrendingUp size={19} />
+            </span>
+            <span className="grid size-8 place-items-center rounded-full bg-tile">
+              <ArrowUpRight size={13} />
+            </span>
+          </span>
+          <span className="block">
+            <span className="block text-caption text-muted">{first ? `investir em ${monthShort(first.month)}` : "ainda não sobra"}</span>
+            <span className="big mt-1.5 block text-value">
+              <Roll value={first?.investable ?? 0} compact />
+            </span>
+            <Sparkline values={curve} height={30} className="mt-2" />
+          </span>
+        </Link>
+
+        <Link
+          href="/cartoes"
+          aria-label="Ver faturas"
+          className="paper animate-rise delay-2 flex aspect-square flex-col justify-between rounded-card-lg p-4 transition active:scale-[0.975]"
+        >
+          <span className="flex items-start justify-between">
+            <span className="grid size-10 place-items-center rounded-full bg-tile text-lime">
+              <Receipt size={19} />
+            </span>
+            <span className="grid size-8 place-items-center rounded-full bg-tile text-ink-soft">
+              <ArrowUpRight size={13} />
+            </span>
+          </span>
+          {card && bill ? (
+            <span className="block">
+              <span className="block truncate text-caption text-muted">fatura {card.name.toLowerCase()}</span>
+              <span className="big mt-1.5 block text-value">
+                <Roll value={bill.total} compact />
+              </span>
+              <span className="mt-1 block text-caption text-muted">vence {dayLabel(bill.dueDate).toLowerCase()}</span>
+              <span className="mt-2.5 block h-1 overflow-hidden rounded-full bg-tile">
+                <span className="block h-full rounded-full bg-lime transition-[width] duration-700" style={{ width: `${billPct}%` }} />
+              </span>
+            </span>
+          ) : (
+            <span className="block text-caption text-muted">nenhum cartão ainda</span>
+          )}
+        </Link>
+
+        {next && NextIcon && (
+          <Link
+            href="/projecao"
+            className="paper animate-rise delay-3 col-span-2 flex items-center gap-3 rounded-card px-4 py-3.5 transition active:scale-[0.985]"
+          >
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-tile text-lime">
+              <NextIcon size={17} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-body-sm">{next.description.toLowerCase()}</span>
+              <span className="text-caption text-muted">próximo pagamento · {relativeDay(next.date)}</span>
+            </span>
+            <Money value={-next.amount} compact className="text-body-sm font-medium" />
+          </Link>
+        )}
+      </div>
     </Screen>
   );
 }

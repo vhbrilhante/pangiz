@@ -1,6 +1,6 @@
 "use client";
 
-import { LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, OtpInput, Rise, Screen, TopBar } from "@/components/ui";

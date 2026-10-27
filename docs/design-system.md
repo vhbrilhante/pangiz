@@ -1,12 +1,13 @@
-# Design system do pangiz · bento verde
+# Design system do pangiz · bento verde e preto
 
-Base preta e blocos grandes e redondos empilhados, como cartões numa mesa:
+Base preta e blocos sólidos, redondos, em grade de bento. As mesmas cores da landing:
 
-- **claro** (`.paper`): a visão geral, o saldo, listas e formulários;
-- **verde** (`.glow`, o degradê lima → verde → verde-água): a resposta, quanto dá pra investir e quando;
-- **floresta** (`.forest`): a projeção, com barras redondas;
-- **escuro** (`.glass-strong`): detalhe do mês e a navegação.
+- **musgo** (`.paper`, `Card`): o bloco padrão. Saldo, listas, formulários e o widget de faturas;
+- **limão** (`.glow`): a resposta, quanto dá pra investir e quando. Um por tela;
+- **musgo claro** (`.forest`): a projeção, com o brilho limão subindo do fundo;
+- **liquid glass** (`.lg`): só a navegação de baixo e o botão +.
 
+Ícones: Material Symbols Rounded, preenchidos e em negrito (FILL 1, peso 700), em `src/components/icons.tsx`.
 Serifa (Hedvig Letters Serif) para números e títulos, Instrument Sans para o resto, tudo em minúsculas.
 Os tokens estão em `src/app/globals.css`; os componentes em `src/components/ui.tsx` e `src/components/visuals.tsx`.
 
@@ -14,21 +15,18 @@ Os tokens estão em `src/app/globals.css`; os componentes em `src/components/ui.
 
 | Papel | Valor | Token |
 |---|---|---|
-| base | `#0b0c0b` | `page` |
-| texto sobre a base | `#f4f3ee` | `ink` |
-| apoio / rótulos | `#d3d5cd` / `#9a9d95` | `ink-soft`, `muted` |
-| bloco claro | `#f5f4ee`, tiles `#e7e6df`, texto `#121411` | `.paper`, `--paper*` |
-| degradê verde | `#eafc9a` → `#c6f25a` → `#7fdd8c` → `#2fb07a`, texto `#0f1f0d` | `.glow`, `--g1..4`, `lime` |
-| floresta | `#1d5a3e` → `#0e2e21` | `.forest` |
-| escuro | `#1a1c1a` | `.glass-strong` |
-| positivo / negativo / atenção | `#9fe39a` / `#ff8f84` / `#ffcf7a` | `positive`, `negative`, `warning` |
+| base | `#0b0d09` | `page` |
+| texto sobre a base | `#eef0e2` | `ink` |
+| apoio / rótulos | `#cdd1bf` / `#8e9580` | `ink-soft`, `muted` |
+| blocos | `#161d10` (musgo), `#1f2916` (musgo claro) | `--moss`, `--moss-2`, `.paper`, `.forest` |
+| limão | `#efff9a` → `#d4f53c` → `#7fae17`, texto `#0b0d09` | `.glow`, `--g1..4`, `lime` |
+| linhas | `rgb(238 240 226 / .09)` | `line` |
+| positivo / negativo / atenção | `#b9ec6a` / `#ff8f84` / `#ffcf7a` | `positive`, `negative`, `warning` |
 
 - **Cada bloco redefine as cores de dentro.** `ink`, `muted`, `line`, `tile` e `on-ink` mudam por bloco, então
   `bg-tile`, `bg-ink text-on-ink` e `text-muted` funcionam igual em qualquer um deles.
-- **Ação é a cor `ink` do bloco** (`bg-ink text-on-ink`): preta no claro e no verde, clara no escuro e no floresta.
-- **O verde é só do dinheiro pra investir (e da marca).** Entradas não ficam verdes: o sinal `+` diz o que é entrada,
-  então o verde nunca disputa com o "dá pra investir". `positive` fica para confirmações (salvo, conectado).
-- **O verde é o destaque.** Um bloco verde por tela, o botão + e o "simular" da projeção. Barras com sobra pra investir em lima.
+- **O limão é só do dinheiro pra investir (e da marca).** Entradas não ficam verdes: o sinal `+` diz o que é entrada.
+- **Início sem excesso:** saldo, widget de investimentos (abre a projeção), widget de faturas (abre cartões) e o próximo pagamento.
 
 ## Tipografia
 
@@ -62,7 +60,7 @@ Dinheiro por `<Money>`/`<Roll>`, com espaço inseparável (`R$ 1.200` nunca queb
 | `Segmented` / `Chip` | pílulas; o ativo na cor de ação. |
 | `ProjectionScrub` | barras redondas no bloco floresta; o mês escolhido em branco, meses com sobra em lima. |
 | `TransactionRow` | linha sem lixeira; com `onDelete`, arrastar para a esquerda revela o apagar. |
-| `BottomNav` | barra escura com botões redondos de 56 px (o ativo claro) e o + verde. |
+| `BottomNav` | liquid glass: abas redondas com rótulo (a ativa clara) e o + em vidro ao lado. |
 | `Island`, `Roll`, `Tag`, `useTilt` | como antes: aviso no topo, odômetro, etiqueta, inclinação com o dedo. |
 
 ## Movimento
@@ -73,9 +71,8 @@ Dinheiro por `<Money>`/`<Roll>`, com espaço inseparável (`R$ 1.200` nunca queb
 
 Baseado em `research/reports/Fluxos e UI de finance trackers.md` na pasta do projeto:
 
-- **início** segue a ordem dos trackers mais bem avaliados (Copilot, Monarch): o número principal, a resposta (quanto investir),
-  a projeção, depois **próximos 30 dias** (contas e faturas em faixa horizontal, com `3/12` nas parcelas) e
-  **últimos lançamentos** com "ver todos". Cada bloco abre o detalhe dele.
+- **início** (out/2026, pedido do Victor): bento enxuto. O saldo abre as transações, investimentos abre a projeção,
+  faturas abre os cartões. Próximos 30 dias e últimos lançamentos saíram do início; os lançamentos ficam em transações e os pagamentos do mês na projeção.
 - **transações**: resumo do mês (entrou / saiu), busca, filtro, um bloco por dia com o total do dia. Valores sempre com sinal,
   não só cor (daltonismo).
 - **lançar**: valor primeiro no teclado próprio, depois tipo, categoria e conta.

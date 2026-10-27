@@ -1,6 +1,6 @@
 "use client";
 
-import { ScanFace } from "lucide-react";
+import { ScanFace } from "@/components/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { Search, X } from "@/components/icons";
 import { useMemo, useState } from "react";
 import { Money, Screen, Segmented, TopBar } from "@/components/ui";
 import { TransactionRow } from "@/components/TransactionRow";

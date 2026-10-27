@@ -1,10 +1,10 @@
 import {
-  ArrowDownLeft, BookOpen, Car, Coffee, CreditCard, Film, HeartPulse, House, type LucideIcon,
+  ArrowDownLeft, BookOpen, Car, Coffee, CreditCard, Film, HeartPulse, House, type IconType,
   Music, PiggyBank, ShoppingBag, ShoppingBasket, Wallet, Zap, Send,
-} from "lucide-react";
+} from "@/components/icons";
 import type { CategoryId } from "./types";
 
-export const CATEGORIES: Record<CategoryId | "cartao", { label: string; icon: LucideIcon }> = {
+export const CATEGORIES: Record<CategoryId | "cartao", { label: string; icon: IconType }> = {
   mercado: { label: "Mercado", icon: ShoppingBasket },
   alimentacao: { label: "Alimentação", icon: Coffee },
   transporte: { label: "Transporte", icon: Car },

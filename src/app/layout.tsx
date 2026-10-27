@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Hedvig_Letters_Serif, Instrument_Sans } from "next/font/google";
+import { ICON_NAMES } from "@/components/icons";
 import { StoreProvider } from "@/lib/store";
 import "./globals.css";
 
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0c0b",
+  themeColor: "#0b0d09",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -31,6 +32,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        {/* Ícones Material Symbols Rounded, preenchidos e em negrito, só com os glifos que o app usa. */}
+        <link
+          rel="stylesheet"
+          href={`https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,700,1,0&icon_names=${ICON_NAMES}&display=block`}
+        />
+      </head>
       <body className={`${sans.variable} ${serif.variable} antialiased`}>
         <StoreProvider>{children}</StoreProvider>
       </body>

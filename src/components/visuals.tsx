@@ -1,6 +1,6 @@
 "use client";
 
-import { ChartNoAxesCombined, CreditCard, House, Plus, UserRound } from "lucide-react";
+import { ChartNoAxesCombined, CreditCard, House, Plus, UserRound } from "@/components/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
@@ -174,7 +174,7 @@ export function ProjectionScrub({
                 left: `${i * w + gap / 2}%`,
                 width: `${w - gap}%`,
                 height: bh,
-                background: m.end < 0 ? "var(--negative)" : i === selected ? "var(--ink)" : m.investable > 0 ? "rgb(198 242 90 / .7)" : "rgb(255 255 255 / .2)",
+                background: m.end < 0 ? "var(--negative)" : i === selected ? "var(--ink)" : m.investable > 0 ? "rgb(212 245 60 / .75)" : "rgb(238 240 226 / .16)",
               }}
             />
           );
@@ -221,33 +221,36 @@ const TABS = [
   { href: "/perfil", label: "perfil", icon: UserRound },
 ];
 
-/** Navegação: barra escura com botões redondos (o ativo é claro) e o + no verde. */
+/** Navegação: a única peça em liquid glass. Abas redondas com rótulo (a ativa clara) e o + no limão ao lado. */
 export function BottomNav() {
   const path = usePathname();
   const active = Math.max(0, TABS.findIndex((t) => path.startsWith(t.href)));
   return (
     <nav aria-label="Navegação" className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-2.5 pb-[max(var(--safe-bottom),12px)]">
-      <div className="glass-strong flex items-center justify-between rounded-full p-2">
-        {TABS.map(({ href, label, icon: Icon }, i) => (
-          <Link
-            key={href}
-            href={href}
-            aria-label={label}
-            aria-current={i === active ? "page" : undefined}
-            className={cx(
-              "grid size-14 place-items-center rounded-full transition duration-300 active:scale-95",
-              i === active ? "bg-ink text-on-ink" : "bg-tile text-ink-soft",
-            )}
-          >
-            <Icon size={20} strokeWidth={1.6} />
-          </Link>
-        ))}
+      <div className="flex items-center gap-2">
+        <div className="lg flex flex-1 items-center justify-between rounded-full p-1.5">
+          {TABS.map(({ href, label, icon: Icon }, i) => (
+            <Link
+              key={href}
+              href={href}
+              aria-label={label}
+              aria-current={i === active ? "page" : undefined}
+              className={cx(
+                "relative flex h-[52px] flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-micro transition duration-300 active:scale-95",
+                i === active ? "bg-ink text-on-ink shadow-float" : "text-ink-soft",
+              )}
+            >
+              <Icon size={19} />
+              <span>{label}</span>
+            </Link>
+          ))}
+        </div>
         <Link
           href="/lancar"
           aria-label="Novo lançamento"
-          className="group grid size-14 place-items-center rounded-full bg-lime text-[var(--on-green)] transition active:scale-95"
+          className="lg group grid size-16 shrink-0 place-items-center rounded-full text-ink transition active:scale-95"
         >
-          <Plus size={22} className="transition-transform duration-[450ms] ease-[var(--spring)] group-active:rotate-90" />
+          <Plus size={24} className="transition-transform duration-[450ms] ease-[var(--spring)] group-active:rotate-90" />
         </Link>
       </div>
     </nav>

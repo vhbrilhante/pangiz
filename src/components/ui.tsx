@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowUpRight, Eye, EyeOff, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Eye, EyeOff, type IconType } from "@/components/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { forwardRef, useEffect, useRef, useState } from "react";
@@ -19,9 +19,9 @@ export type Light = "bottom" | "middle" | "top" | "none";
  */
 export function Backdrop({ light = "top" }: { light?: Light; rise?: number }) {
   const glow: Record<Exclude<Light, "none">, string> = {
-    top: "radial-gradient(90% 40% at 50% -10%, rgb(127 221 140 / 0.18), transparent 70%)",
-    middle: "radial-gradient(90% 45% at 50% 40%, rgb(127 221 140 / 0.1), transparent 70%)",
-    bottom: "radial-gradient(90% 40% at 50% 110%, rgb(198 242 90 / 0.14), transparent 70%)",
+    top: "radial-gradient(90% 40% at 50% -10%, rgb(212 245 60 / 0.12), transparent 70%)",
+    middle: "radial-gradient(90% 45% at 50% 40%, rgb(212 245 60 / 0.07), transparent 70%)",
+    bottom: "radial-gradient(90% 40% at 50% 110%, rgb(212 245 60 / 0.12), transparent 70%)",
   };
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-page" style={light !== "none" ? { backgroundImage: glow[light] } : undefined}>
@@ -96,7 +96,7 @@ export function TopBar({ back, right }: { back?: string | true; right?: React.Re
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "glass" | "ghost" | "link";
-  icon?: LucideIcon | null;
+  icon?: IconType | null;
   leading?: React.ReactNode;
   size?: "md" | "sm";
   href?: string;
@@ -138,7 +138,7 @@ export function Button({ variant = "primary", icon = ArrowUpRight, leading, size
   );
 }
 
-export function IconButton({ icon: Icon, label, onClick, className }: { icon: LucideIcon; label: string; onClick?: () => void; className?: string }) {
+export function IconButton({ icon: Icon, label, onClick, className }: { icon: IconType; label: string; onClick?: () => void; className?: string }) {
   return (
     <button aria-label={label} onClick={onClick} className={cx("grid size-11 place-items-center rounded-full bg-tile text-ink transition active:scale-95", className)}>
       <Icon size={16} />
@@ -304,7 +304,7 @@ export function Card({ children, className }: { children: React.ReactNode; class
   return <section className={cx("paper rounded-card-lg p-5", className)}>{children}</section>;
 }
 
-export function IconBubble({ icon: Icon, tone = "neutral" }: { icon: LucideIcon; tone?: "neutral" | "positive" | "dark" }) {
+export function IconBubble({ icon: Icon, tone = "neutral" }: { icon: IconType; tone?: "neutral" | "positive" | "dark" }) {
   return (
     <span
       className={cx(

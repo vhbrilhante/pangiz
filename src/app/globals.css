@@ -1,39 +1,35 @@
 @import "tailwindcss";
 
 /*
- * pangiz · bento verde. Base preta e blocos grandes e redondos empilhados:
- * um claro (visão geral), um no degradê verde (quanto investir) e um verde-floresta (projeção).
+ * pangiz · bento verde e preto, igual à landing. Base preta, blocos sólidos verde-musgo e um só bloco no
+ * verde-limão (quanto investir). Liquid glass só na navegação de baixo. Ícones Material Symbols Rounded preenchidos.
  * Serifa (Hedvig Letters Serif) para números e títulos, Instrument Sans para o resto, tudo em minúsculas.
  */
 :root {
   color-scheme: dark;
-  --page: #0b0c0b;
-  --ink: #f4f3ee;
-  --ink-soft: #d3d5cd;
-  --muted: #9a9d95;
-  --line: rgb(244 243 238 / 0.1);
-  --glass: rgb(255 255 255 / 0.08);
-  --glass-strong: #1a1c1a;
-  --glass-border: rgb(255 255 255 / 0.08);
-  --positive: #9fe39a;
+  --page: #0b0d09;
+  --ink: #eef0e2;
+  --ink-soft: #cdd1bf;
+  --muted: #8e9580;
+  --line: rgb(238 240 226 / 0.09);
+  --glass: rgb(238 240 226 / 0.07);
+  --glass-strong: #161d10;
+  --glass-border: rgb(238 240 226 / 0.09);
+  --positive: #b9ec6a;
   --negative: #ff8f84;
   --warning: #ffcf7a;
   /* "graphite" é a cor sólida de ação e seleção. */
-  --graphite: #f4f3ee;
-  /* Degradê verde: lima clara → lima → verde → verde-água. */
-  --g1: #eafc9a;
-  --g2: #c6f25a;
-  --g3: #7fdd8c;
-  --g4: #2fb07a;
-  --on-green: #0f1f0d;
-  /* Bloco claro e bloco verde-floresta. */
-  --paper: #f5f4ee;
-  --paper-tile: #e7e6df;
-  --paper-ink: #121411;
-  --paper-muted: #6c6f68;
-  --forest-1: #1d5a3e;
-  --forest-2: #0e2e21;
-  --raised: #151715;
+  --graphite: #eef0e2;
+  /* Verde-limão da landing: claro → limão → brilho escuro. */
+  --g1: #efff9a;
+  --g2: #d4f53c;
+  --g3: #a9d62a;
+  --g4: #7fae17;
+  --on-green: #0b0d09;
+  /* Blocos sólidos verde-musgo (o bento). */
+  --moss: #161d10;
+  --moss-2: #1f2916;
+  --raised: #1f2916;
   /* Texto sobre a cor de ação (ink). Cada bloco redefine. */
   --on-ink: var(--page);
   --spring: cubic-bezier(0.2, 0.9, 0.25, 1.15);
@@ -104,9 +100,9 @@
   --color-graphite: var(--graphite);
   --color-glow: var(--g2);
   --color-glow-light: var(--g1);
-  --color-glow-wash: rgb(198 242 90 / 0.16);
+  --color-glow-wash: rgb(212 245 60 / 0.14);
   --color-lime: var(--g2);
-  --color-tile: var(--tile, rgb(255 255 255 / 0.08));
+  --color-tile: var(--tile, rgb(238 240 226 / 0.07));
   --color-raised: var(--raised);
   --color-on-ink: var(--on-ink);
   --font-sans: var(--font-ui-sans), system-ui, sans-serif;
@@ -165,46 +161,78 @@ button {
   border: 1px solid var(--glass-border);
 }
 
-/* Bloco claro. Dentro dele o texto vira escuro e os "tiles" ficam cinza-quente. */
-.paper {
-  --ink: var(--paper-ink);
-  --ink-soft: rgb(18 20 17 / 0.78);
-  --muted: var(--paper-muted);
-  --line: rgb(18 20 17 / 0.08);
-  --graphite: var(--paper-ink);
-  --tile: var(--paper-tile);
-  --on-ink: var(--paper);
-  --glass: var(--paper-tile);
-  --glass-border: transparent;
-  color: var(--paper-ink);
-  background: var(--paper);
+/* Ícone Material Symbols Rounded, preenchido e em negrito. */
+.ms {
+  font-family: "Material Symbols Rounded";
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1;
+  display: inline-block;
+  white-space: nowrap;
+  font-variation-settings: "FILL" 1, "wght" 700, "GRAD" 0, "opsz" 24;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
 }
 
-/* Bloco no degradê verde: quanto dá pra investir. Texto escuro por dentro. */
+/* Bloco do bento: sólido verde-musgo. (O nome "paper" ficou do tema claro antigo.) */
+.paper {
+  --tile: rgb(238 240 226 / 0.07);
+  --glass: rgb(238 240 226 / 0.07);
+  color: var(--ink);
+  background: var(--moss);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* Bloco no verde-limão: quanto dá pra investir. Um por tela. Texto escuro por dentro. */
 .glow {
   --ink: var(--on-green);
-  --ink-soft: rgb(15 31 13 / 0.78);
-  --muted: rgb(15 31 13 / 0.62);
-  --line: rgb(15 31 13 / 0.12);
+  --ink-soft: rgb(11 13 9 / 0.78);
+  --muted: rgb(11 13 9 / 0.6);
+  --line: rgb(11 13 9 / 0.12);
   --graphite: var(--on-green);
-  --tile: rgb(255 255 255 / 0.55);
-  --on-ink: var(--g1);
-  --glass: rgb(255 255 255 / 0.55);
+  --tile: rgb(11 13 9 / 0.1);
+  --on-ink: var(--g2);
+  --glass: rgb(11 13 9 / 0.1);
   --glass-border: transparent;
   color: var(--on-green);
   background:
-    radial-gradient(70% 90% at var(--sx, 85%) 0%, rgb(255 255 255 / 0.5), transparent 60%),
-    linear-gradient(135deg, var(--g1) 0%, var(--g2) 38%, var(--g3) 74%, var(--g4) 100%);
+    radial-gradient(60% 55% at var(--sx, 25%) 15%, var(--g1), transparent 70%),
+    radial-gradient(70% 70% at 85% 80%, var(--g2), transparent 75%),
+    linear-gradient(150deg, var(--g2) 0%, var(--g3) 60%, var(--g4) 100%);
 }
 
-/* Bloco verde-floresta: a projeção. Texto claro por dentro. */
+/* Bloco da projeção: musgo mais claro com o brilho limão subindo do fundo, como na landing. */
 .forest {
-  --tile: rgb(255 255 255 / 0.1);
-  --glass: rgb(255 255 255 / 0.1);
+  --tile: rgb(238 240 226 / 0.08);
+  --glass: rgb(238 240 226 / 0.08);
   color: var(--ink);
   background:
-    radial-gradient(80% 60% at 100% 0%, rgb(127 221 140 / 0.25), transparent 60%),
-    linear-gradient(160deg, var(--forest-1) 0%, var(--forest-2) 100%);
+    radial-gradient(90% 60% at 50% 130%, rgb(212 245 60 / 0.22), transparent 70%),
+    var(--moss-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* Liquid glass: só na navegação de baixo. */
+.lg {
+  position: relative;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.05));
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.45),
+    inset 0 -1px 0 rgb(255 255 255 / 0.08),
+    inset 0 0 0 1px rgb(255 255 255 / 0.12),
+    inset 0 -12px 24px -14px rgb(212 245 60 / 0.35),
+    0 18px 40px -10px rgb(0 0 0 / 0.6);
+}
+.lg::before {
+  content: "";
+  position: absolute;
+  inset: 1px 18% auto;
+  height: 45%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.22), transparent);
+  pointer-events: none;
 }
 
 /* Valores escondidos: desfoque em vez de bolinhas. */
