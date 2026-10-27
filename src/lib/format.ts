@@ -1,0 +1,27 @@
+const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+const brlCompact = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+  maximumFractionDigits: 0,
+});
+
+export function money(value: number, opts: { hide?: boolean; compact?: boolean; sign?: boolean } = {}): string {
+  if (opts.hide) return "R$ •••••";
+  const f = opts.compact ? brlCompact : brl;
+  // Espaço inseparável entre "R$" e o número, para o valor nunca quebrar em duas linhas.
+  const text = f.format(Math.abs(value)).replace(/\s/g, " ");
+  if (value < 0) return `− ${text}`; // sinal de menos tipográfico (U+2212)
+  if (opts.sign && value > 0) return `+ ${text}`;
+  return text;
+}
+
+/** Converte o texto digitado ("1.234,56" ou "1234.56") em número. */
+export function parseMoney(text: string): number {
+  const clean = text.replace(/[^\d,.-]/g, "");
+  if (clean.includes(",")) return Number(clean.replace(/\./g, "").replace(",", ".")) || 0;
+  return Number(clean) || 0;
+}
+
+export function uid(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
