@@ -59,9 +59,21 @@ Dinheiro por `<Money>`/`<Roll>`, com espaço inseparável (`R$ 1.200` nunca queb
 | `Button` | `primary` na cor de ação do bloco; `link` para a segunda ação. |
 | `Segmented` / `Chip` | pílulas; o ativo na cor de ação. |
 | `ProjectionScrub` | barras redondas no bloco floresta; o mês escolhido em branco, meses com sobra em lima. |
+| `TransactionRow` | linha sem lixeira; com `onDelete`, arrastar para a esquerda revela o apagar. |
 | `BottomNav` | barra escura com botões redondos de 56 px (o ativo claro) e o + verde. |
 | `Island`, `Roll`, `Tag`, `useTilt` | como antes: aviso no topo, odômetro, etiqueta, inclinação com o dedo. |
 
 ## Movimento
 
 `--ease` para entradas, `--spring` para o que desliza. As micro-interações são a próxima etapa.
+
+## Fluxos (pesquisa de finance trackers, out/2026)
+
+Baseado em `research/reports/Fluxos e UI de finance trackers.md` na pasta do projeto:
+
+- **início** segue a ordem dos trackers mais bem avaliados (Copilot, Monarch): o número principal, a resposta (quanto investir),
+  a projeção, depois **próximos 30 dias** (contas e faturas em faixa horizontal, com `3/12` nas parcelas) e
+  **últimos lançamentos** com "ver todos". Cada bloco abre o detalhe dele.
+- **transações**: resumo do mês (entrou / saiu), busca, filtro, um bloco por dia com o total do dia. Valores sempre com sinal,
+  não só cor (daltonismo).
+- **lançar**: valor primeiro no teclado próprio, depois tipo, categoria e conta.

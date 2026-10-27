@@ -42,7 +42,7 @@ function NewEntry() {
   const income = kind === "receita";
   const categories = income ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
   const sources = [
-    ...(income ? [] : data.cards.map((c) => ({ id: c.id, label: "cartão" }))),
+    ...(income ? [] : data.cards.map((c) => ({ id: c.id, label: `cartão ${c.name}` }))),
     ...data.accounts.map((a) => ({ id: a.id, label: a.name })),
   ];
   const isCard = data.cards.some((c) => c.id === source);
@@ -154,6 +154,12 @@ function NewEntry() {
           </span>
         )}
       </div>
+
+      {isCard && (
+        <p className="mt-2 px-1 text-label text-muted">
+          entra na fatura de {monthLong(addMonths(month, 1))}
+        </p>
+      )}
 
       <div
         className="glow mt-4 flex min-h-[56px] items-center gap-3 rounded-card px-4 py-3 text-label leading-normal"
