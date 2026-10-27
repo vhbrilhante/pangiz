@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, LogOut, Plus, Trash2 } from "lucide-react";
+import { Check, LogOut, Plus, Trash2 } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, Card, Field, IconBubble, Money, Screen, SectionHeader } from "@/components/ui";

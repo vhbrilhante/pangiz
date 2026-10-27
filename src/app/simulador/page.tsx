@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, Trash2 } from "lucide-react";
+import { RotateCcw, Trash2 } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cx } from "@/components/ui";
@@ -148,7 +148,7 @@ export default function Simulator() {
   return (
     <div
       className="flex min-h-dvh items-center justify-center gap-10 px-6"
-      style={{ background: "radial-gradient(70% 60% at 50% 30%, #23221f 0%, #121211 70%)" }}
+      style={{ background: "radial-gradient(70% 60% at 50% 30%, #1a2212 0%, #0b0d09 70%)" }}
     >
       <aside className="flex w-[200px] shrink-0 flex-col gap-5 text-ink">
         <div>
@@ -192,8 +192,8 @@ export default function Simulator() {
       <div style={{ width: (W + 24) * scale, height: (H + 24) * scale }} className="shrink-0">
         <div style={{ transform: `scale(${scale})`, transformOrigin: "top left" }} className="p-3">
           <div
-            className="relative overflow-hidden rounded-[58px] bg-[#0a0a09]"
-            style={{ width: W, height: H, boxShadow: "0 0 0 11px #1b1b1a, 0 0 0 12px #3a3936, 0 40px 90px -20px rgb(0 0 0 / 0.8)" }}
+            className="relative overflow-hidden rounded-[58px] bg-[#0b0d09]"
+            style={{ width: W, height: H, boxShadow: "0 0 0 11px #161814, 0 0 0 12px #34372f, 0 40px 90px -20px rgb(0 0 0 / 0.8)" }}
           >
             <iframe
               key={reloads}

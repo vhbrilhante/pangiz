@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Landmark, Search, ShieldCheck } from "lucide-react";
+import { Check, Landmark, Search, ShieldCheck } from "@/components/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";

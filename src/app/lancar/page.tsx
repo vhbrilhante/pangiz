@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Delete, Minus, Plus, X } from "lucide-react";
+import { Check, Delete, Minus, Plus, X } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Gate } from "@/components/Gate";

@@ -24,7 +24,7 @@ com atalhos para cada tela e para recomeçar com dados de exemplo ou do zero.
 2. `/cadastro` e `/login`
 3. `/verificacao`: código de 6 dígitos
 4. `/conectar`: escolher bancos, sincronizando, sucesso
-5. `/inicio`: saldo, saldo previsto, quanto investir, fatura, próximas contas, projeção, últimas transações
+5. `/inicio`: bento com o saldo, o widget de investimentos (abre a projeção), o de faturas (abre cartões) e o próximo pagamento
 
 Além do Figma:
 
