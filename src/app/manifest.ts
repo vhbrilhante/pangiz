@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "pangiz",
     short_name: "pangiz",
     description: "Saiba quanto você pode investir, e em que mês.",
-    start_url: `${BASE}/`,
+    start_url: `${BASE}/app/`,
     display: "standalone",
     background_color: "#09090c",
     theme_color: "#09090c",

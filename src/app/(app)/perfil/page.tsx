@@ -153,7 +153,7 @@ export default function Profile() {
           onClick={() => {
             if (confirm("apagar todos os dados deste aparelho?")) {
               reset();
-              router.push("/");
+              router.push("/app");
             }
           }}
         >
