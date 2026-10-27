@@ -6,6 +6,8 @@ import { useCallback, useMemo, useState } from "react";
 import { cx, Money, Roll, Screen } from "@/components/ui";
 import { Island, useTilt } from "@/components/visuals";
 import { Pullable } from "@/components/pull";
+import { TransactionRow } from "@/components/TransactionRow";
+import { CATEGORIES } from "@/lib/categories";
 import { monthLong, monthShort, relativeDay, todayISO } from "@/lib/dates";
 import { money } from "@/lib/format";
 import { currentBalance, project, upcoming } from "@/lib/projection";
@@ -27,7 +29,9 @@ export default function Home() {
   const [picked, setPicked] = useState<number | null>(null);
   const selIndex = picked ?? Math.max(0, p.months.findIndex((m) => m.investable > 0));
   const sel = p.months[selIndex];
-  const next = useMemo(() => upcoming(data, 45)[0], [data]);
+  const soon = useMemo(() => upcoming(data, 30).slice(0, 8), [data]);
+  const soonTotal = soon.reduce((s, e) => s + e.amount, 0);
+  const recent = useMemo(() => [...data.transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3), [data.transactions]);
   const hide = data.settings.hideValues;
   const name = data.user?.name.split(" ")[0].toLowerCase() ?? "você";
   const [island, setIsland] = useState(false);
@@ -133,14 +137,10 @@ export default function Home() {
               <ChevronRight size={16} />
             </button>
           </div>
-          {next && (
-            <span className="flex h-11 min-w-0 flex-1 items-center justify-between gap-2 rounded-full bg-tile pl-4 pr-3 text-label">
-              <span className="truncate">
-                {next.description.toLowerCase()} · {relativeDay(next.date)}
-              </span>
-              <Money value={-next.amount} compact className="shrink-0 font-medium" />
-            </span>
-          )}
+          <span className="flex h-11 min-w-0 flex-1 items-center justify-between gap-2 rounded-full bg-tile pl-4 pr-4 text-label">
+            <span className="truncate text-ink-soft">fica na conta</span>
+            <Money value={sel.afterInvesting} compact className="shrink-0 font-medium" />
+          </span>
         </div>
       </section>
 
@@ -167,6 +167,53 @@ export default function Home() {
           ))}
         </div>
       </Link>
+
+      {soon.length > 0 && (
+        <section className="glass-strong animate-rise delay-3 mt-2.5 rounded-card-lg py-5">
+          <div className="flex items-center justify-between px-5">
+            <p className="flex items-center gap-2 text-caption text-ink-soft">
+              <span className="size-1.5 rounded-full bg-warning" /> próximos 30 dias
+            </p>
+            <Money value={soonTotal} compact className="text-label font-medium" />
+          </div>
+          <div className="no-scrollbar mt-3 flex snap-x scroll-px-5 gap-2 overflow-x-auto px-5">
+            {soon.map((e) => {
+              const Icon = CATEGORIES[e.category].icon;
+              return (
+                <div key={`${e.date}-${e.description}`} className="flex w-[132px] shrink-0 snap-start flex-col rounded-card bg-tile p-3.5">
+                  <span className="flex items-center justify-between">
+                    <span className="grid size-8 place-items-center rounded-full bg-white/8">
+                      <Icon size={14} strokeWidth={1.7} />
+                    </span>
+                    {e.detail && <span className="rounded-full bg-white/8 px-2 py-0.5 text-micro text-ink-soft">{e.detail}</span>}
+                  </span>
+                  <span className="mt-3 truncate text-label font-medium">{e.description.toLowerCase()}</span>
+                  <span className="text-caption text-muted">{relativeDay(e.date)}</span>
+                  <Money value={-e.amount} compact className="mt-2 font-display text-title" />
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {recent.length > 0 && (
+        <section className="paper animate-rise delay-3 mt-2.5 rounded-card-lg px-5 pb-3 pt-5">
+          <div className="flex items-center justify-between">
+            <p className="flex items-center gap-2 text-caption text-muted">
+              <span className="size-1.5 rounded-full bg-ink" /> últimos lançamentos
+            </p>
+            <Link href="/transacoes" className="rounded-full bg-ink px-3 py-1 text-caption font-medium text-on-ink">
+              ver todos
+            </Link>
+          </div>
+          <div className="mt-1 divide-y divide-line">
+            {recent.map((t) => (
+              <TransactionRow key={t.id} t={t} />
+            ))}
+          </div>
+        </section>
+      )}
     </Screen>
   );
 }
